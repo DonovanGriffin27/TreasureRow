@@ -1,0 +1,71 @@
+<!--
+Created by Kaila Roberts 3/23/26
+Updated by Day Ekoi 4/22/26 - wired to checkout.js, added field IDs, error display
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | The Vault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+</head>
+<body>
+    <header class="storefront-top">
+        <div class="storefront-banner">
+           <a href="{{ url_for('auth.view_cart') }}" style="text-decoration: none;">
+                <button class="secondary-btn">&larr; BACK TO CART</button>
+            </a>
+
+            <div class="brand-block">
+                <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
+                <p class="brand-subtitle">Finalize Purchase</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-layout-wrapper">
+        <section class="checkout-form-container form-card">
+            <h3 class="section-label">Buyer Details</h3>
+            <div id="checkoutError" class="error-msg" style="display:none;"></div>
+            <form id="checkoutForm">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" id="firstName" placeholder="Enter First Name" required>
+                </div>
+                <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" id="lastName" placeholder="Enter Last Name" required>
+                </div>
+                <div class="input-group">
+                    <label>Campus Email</label>
+                    <input type="email" id="buyerEmail" placeholder="student@campus.edu" required>
+                </div>
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <input type="text" id="contactNumber" placeholder="e.g. (123) 456-7890" required>
+                </div>
+                <div class="input-group">
+                    <label>Meeting Location</label>
+                    <textarea id="meetingLocation" placeholder="e.g. Student Center, 1st Floor" required></textarea>
+                </div>
+            </form>
+        </section>
+
+        <aside class="order-summary-container form-card">
+            <h3 class="section-label">Review Order</h3>
+            <div id="checkoutItemsList">
+                <p class="helper-text">Loading your bag...</p>
+            </div>
+            <div class="price-display">
+                <span class="gold">Total: </span>
+                <span class="total-amount">$0.00</span>
+            </div>
+            <button type="submit" id="submitCheckoutBtn" form="checkoutForm" class="primary-btn">Complete Transaction</button>
+        </aside>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!--
+ edit_listing.html
+
+    The Vault Campus Marketplace
+    CSC 405 Sp 26'
+    Updated by Day E - April 22nd - multi-image edit support and image management UI
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Listing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
+    <style>
+        .helper-note {
+            color: #bfbfbf;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        .existing-image-grid,
+        .preview-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+        .existing-image-card,
+        .preview-slot {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 14px;
+            padding: 0.85rem;
+        }
+        .existing-image-card img,
+        .image-preview-row img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(184, 134, 11, 0.35);
+        }
+        .existing-image-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            margin-top: 0.7rem;
+            flex-wrap: wrap;
+        }
+        .mini-btn {
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            background: rgba(0, 0, 0, 0.32);
+            color: #f3d372;
+            padding: 0.38rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .mini-btn.is-active {
+            background: rgba(212, 175, 55, 0.18);
+            border-color: #d4af37;
+        }
+        .mini-btn.is-danger {
+            border-color: rgba(183, 63, 63, 0.75);
+            color: #ffb3b3;
+        }
+        .mini-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        .drop-zone {
+            border: 2px dashed #d4af37;
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            color: #888;
+            transition: background 0.2s, border-color 0.2s;
+            width: 100%;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .drop-zone.dragover {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: #f0cc55;
+        }
+        .drop-zone.has-image {
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-style: solid;
+        }
+        .drop-zone.has-image p {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .drop-zone .image-selected-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.72);
+            border: 1px solid rgba(212, 175, 55, 0.75);
+            color: #f2d06c;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            padding: 0.22rem 0.45rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .drop-link { color: #d4af37; text-decoration: underline; cursor: pointer; }
+        .image-preview-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .image-preview-row .thumb-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+        }
+        .image-preview-row .thumb-name {
+            font-size: 0.7rem;
+            color: #aaa;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .slot-label,
+        .image-slot-label {
+            font-size: 0.82rem;
+            color: #d4af37;
+            font-weight: 700;
+            margin: 0;
+            text-align: center;
+        }
+        .image-status-note {
+            color: #d4af37;
+            font-size: 0.82rem;
+            text-align: center;
+            margin-top: 0.6rem;
+        }
+        @media (max-width: 860px) {
+            .existing-image-grid,
+            .preview-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="create-header">
+        <div class="brand-block">
+            <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
+            <p class="brand-subtitle">Fashion Marketplace</p>
+        </div>
+        <h2 class="page-title">Edit Listing</h2>
+    </header>
+
+    <main class="create-page">
+        <form class="storefront-form" id="editListingForm">
+            <section class="form-card banner-card">
+                <label class="section-label">Listing Images (up to 4)</label>
+                <p class="helper-note">The primary image is shown first across storefront cards and wishlist views.</p>
+
+                <div id="currentImageGallery" class="existing-image-grid"></div>
+                <div id="imageFallback" class="helper-note">No listing image available.</div>
+
+                <div class="preview-grid-4">
+                    <div class="preview-slot">
+                        <p class="slot-label">New Image 1</p>
+                        <div class="drop-zone" id="previewZone1"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage1" accept="image/*" hidden></div>
+                        <div class="image-preview-row" id="previewPreview1"></div>
+                    </div>
+                    <div class="preview-slot">
+                        <p class="slot-label">New Image 2</p>
+                        <div class="drop-zone" id="previewZone2"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage2" accept="image/*" hidden></div>
+                        <div class="image-preview-row" id="previewPreview2"></div>
+                    </div>
+                    <div class="preview-slot">
+                        <p class="slot-label">New Image 3</p>
+                        <div class="drop-zone" id="previewZone3"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage3" accept="image/*" hidden></div>
+                        <div class="image-preview-row" id="previewPreview3"></div>
+                    </div>
+                    <div class="preview-slot">
+                        <p class="slot-label">New Image 4</p>
+                        <div class="drop-zone" id="previewZone4"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage4" accept="image/*" hidden></div>
+                        <div class="image-preview-row" id="previewPreview4"></div>
+                    </div>
+                </div>
+
+                <p id="imageStatusNote" class="image-status-note"></p>
+            </section>
+
+            <section class="middle-row">
+                <div class="form-card input-card">
+                    <label for="listingName" class="section-label">Listing Name <span class="required">*</span></label>
+                    <input type="text" id="listingName" name="listing_name" placeholder="Enter listing name" required>
+                </div>
+
+                <div class="form-card input-card">
+                    <label for="storefrontName" class="section-label">Storefront</label>
+                    <input type="text" id="storefrontName" readonly>
+                </div>
+            </section>
+
+            <section class="bottom-row">
+                <div class="form-card category-card">
+                    <p class="section-label">Available Sizes <span class="required">*</span></p>
+
+                    <div style="margin-bottom:0.75rem;">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="oneSizeToggle" name="one_size" value="One Size">
+                            <span style="font-weight:600;color:#d4af37;">One Size</span>
+                            <span style="color:#aaa;font-size:0.8rem;">(hides all other sizes)</span>
+                        </label>
+                    </div>
+
+                    <div id="multiSizeGrid" class="category-grid" style="gap:0.6rem;">
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="XS"> XS</label>
+                            <input type="number" class="size-qty-input" data-size="XS" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="S"> Small (S)</label>
+                            <input type="number" class="size-qty-input" data-size="S" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="M"> Medium (M)</label>
+                            <input type="number" class="size-qty-input" data-size="M" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="L"> Large (L)</label>
+                            <input type="number" class="size-qty-input" data-size="L" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="XL"> XL</label>
+                            <input type="number" class="size-qty-input" data-size="XL" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                        <div class="size-qty-row" style="display:flex;align-items:center;gap:0.5rem;">
+                            <label style="min-width:80px;"><input type="checkbox" name="sizes" value="XXL"> XXL</label>
+                            <input type="number" class="size-qty-input" data-size="XXL" placeholder="Qty" min="0" style="width:70px;display:none;">
+                        </div>
+                    </div>
+
+                    <div id="oneSizeQtyRow" style="display:none;margin-top:0.75rem;">
+                        <label for="oneSizeQty" class="section-label">One Size — Quantity <span class="required">*</span></label>
+                        <input type="number" id="oneSizeQty" min="0" placeholder="Enter quantity" style="width:90%;margin:0 auto;display:block;">
+                    </div>
+
+                    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(212,175,55,0.2);">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="madeToOrderToggle" name="is_made_to_order" value="true">
+                            <span style="font-weight:600;color:#d4af37;">Made to Order</span>
+                            <span style="color:#aaa;font-size:0.8rem;">(ignores inventory limits)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-card description-card">
+                    <div style="width:100%; display:grid; grid-template-columns:1fr; gap:2rem;">
+                        <div>
+                            <label for="price" class="section-label">Price <span class="required">*</span></label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <p style="color:#bfbfbf;font-size:0.85rem;margin-top:0.75rem;text-align:center;">Set quantity per size above. Total is calculated automatically.</p>
+                </div>
+            </section>
+
+            <section class="form-actions">
+                <button type="submit" class="primary-btn">Save Changes</button>
+                <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+            </section>
+        </form>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/edit_listing.js') }}"></script>
+</body>
+</html>

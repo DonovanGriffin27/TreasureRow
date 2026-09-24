@@ -1,0 +1,119 @@
+<!-- Created 3/21/2026 by Ryan Grimes-->  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault | Create Account</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: #000; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .vault-wrapper {
+            position: relative;
+            width: 100vw; height: 100vh;
+            background: url('/static/images/background.png') no-repeat center center;
+            background-size: cover;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Metallic Glass Form Panel */
+        .auth-card {
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #B8860B;
+            padding: 40px;
+            width: 350px;
+            border-radius: 2px;
+            box-shadow: 0 0 25px rgba(184, 134, 11, 0.3);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .auth-card h2 {
+            color: white;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+            font-size: 2.5vh;
+        }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+
+        .input-group label {
+            color: #B8860B;
+            font-size: 1.2vh;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(184, 134, 11, 0.5);
+            padding: 12px;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .input-group input:focus { border-color: #B8860B; background: rgba(255, 255, 255, 0.1); }
+
+        /* Match the metallic button feel */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #B8860B, #8B6508);
+            border: none;
+            padding: 15px;
+            color: black;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: rgba(204, 178, 128, 0.6);
+            font-size: 1.3vh;
+            text-decoration: none;
+        }
+
+        .back-link:hover { color: #B8860B; }
+    </style>
+</head>
+<body>
+    <div class="vault-wrapper">
+        <div class="auth-card">
+            <h2>INITIALIZE ACCESS</h2>
+            <form action="{{ url_for('auth.signup') }}" method="POST">
+                <div class="input-group">
+                    <label>Designation (Username)</label>
+                    <input type="text" name="username" required placeholder="User_01">
+                </div>
+                <div class="input-group">
+                    <label>Neural Link (Email)</label>
+                    <input type="email" name="email" required placeholder="email@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Security Cipher (Password)</label>
+                    <input type="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="submit-btn">Create Identity</button>
+            </form>
+            <a href="{{ url_for('index') }}" class="back-link">Return to Portal</a>
+        </div>
+    </div>
+</body>
+</html>

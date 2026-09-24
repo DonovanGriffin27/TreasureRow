@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
+    <style>
+        .back-row {
+            width: min(1200px, 92%);
+            margin: 0 auto 0.8rem;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 999px;
+            color: #d4af37;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(212,175,55,0.15);
+            color: #f0cc55;
+        }
+        .drop-zone {
+            border: 2px dashed #d4af37;
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            color: #888;
+            transition: background 0.2s, border-color 0.2s;
+            width: 90%;
+            margin: 0 auto;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drop-zone.dragover {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: #f0cc55;
+        }
+        .drop-link {
+            color: #d4af37;
+            text-decoration: underline;
+        }
+        .image-preview-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+        .thumb-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .thumb-wrap img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(184, 134, 11, 0.5);
+        }
+        .thumb-name {
+            font-size: 0.76rem;
+            color: #aaa;
+        }
+        .returns-feedback {
+            display: none;
+            width: min(700px, 92%);
+            margin: 1rem auto 0;
+            background: rgba(0, 0, 0, 0.86);
+            border: 1px solid rgba(184, 134, 11, 0.65);
+            color: #f0cc55;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(184, 134, 11, 0.18);
+        }
+        .returns-feedback.error {
+            border-color: rgba(220, 53, 53, 0.55);
+            color: #ff8f8f;
+        }
+        .radio-grid label {
+            min-width: 120px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-row">
+        <button class="back-btn" id="backBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back
+        </button>
+    </div>
+
+    <header class="create-header">
+        <div class="brand-block">
+            <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
+            <p class="brand-subtitle">Fashion Marketplace</p>
+        </div>
+        <h2 class="page-title">Returns</h2>
+    </header>
+
+    <main class="create-page">
+        <form class="storefront-form" id="returnsForm" enctype="multipart/form-data">
+            <section class="form-card description-card">
+                <label class="section-label">Return Instructions</label>
+                <textarea rows="6" readonly>
+All sellers are required to include contact information on their storefront.
+
+Please contact the seller first to request your return.
+
+If you are unable to reach the seller, email TheVaultAdmins@my.hamptonu.edu.
+
+Please still complete this form so The Vault can track the return request.
+                </textarea>
+            </section>
+
+            <section class="middle-row">
+                <div class="form-card input-card">
+                    <label for="orderNumber" class="section-label">Order Number <span class="required">*</span></label>
+                    <input type="text" id="orderNumber" name="order_number" placeholder="Enter your order number" required>
+                </div>
+
+                <div class="form-card category-card">
+                    <p class="section-label">Any Damage? <span class="required">*</span></p>
+                    <div class="category-grid radio-grid">
+                        <label><input type="radio" name="has_damage" value="yes" required> Yes</label>
+                        <label><input type="radio" name="has_damage" value="no" required> No</label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bottom-row">
+                <div class="form-card description-card">
+                    <label for="returnReason" class="section-label">Return Reason <span class="required">*</span></label>
+                    <textarea id="returnReason" name="reason" rows="7" placeholder="Tell us why you are requesting a return." required></textarea>
+                </div>
+
+                <div class="form-card preview-card">
+                    <label class="section-label">Upload Damage Photo</label>
+                    <div class="drop-zone" id="damageZone">
+                        <p>Drag & drop or <span class="drop-link">browse</span></p>
+                        <input type="file" id="damageImage" name="damage_image" accept="image/*" hidden>
+                    </div>
+                    <div class="image-preview-row" id="damagePreview"></div>
+                    <p class="helper-text">Optional, but supported when damage is present.</p>
+                </div>
+            </section>
+
+            <section class="form-actions">
+                <button type="submit" class="primary-btn">Submit Return</button>
+                <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+            </section>
+        </form>
+    </main>
+
+    <div class="returns-feedback" id="returnsFeedback"></div>
+
+    <script src="{{ url_for('static', filename='js/returns.js') }}"></script>
+</body>
+</html>

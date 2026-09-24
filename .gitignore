@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+venv/
+ENV/
+
+# Flask / app secrets
+.env
+app/static/uploads/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+
+# Elastic Beanstalk
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Office lock files
+~$*.docx
+~$*.pptx
+~$*.xlsx

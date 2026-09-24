@@ -1,0 +1,72 @@
+/* File Created By David Jackson */
+
+/* General page styling */
+/* Updated 4/20/26 */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+
+    background-image: url("../images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Main title styling */
+/* Updated 4/21/2026 */
+h1 {
+    text-align: center;
+    color: #d4af37;
+}
+
+/* Section styling (each admin block) */
+/* Updated 4/21/2026 */
+section {
+    margin-bottom: 40px;
+    background: rgba(0, 0, 0, 0.75); /* Dark glass look */
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #d4af37;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* Table styling */
+table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Remove spacing between borders */
+    margin-top: 10px;
+}
+
+/* Table cell styling */
+th, td {
+    border: 1px solid #ccc; /* Light borders */
+    padding: 10px;
+    text-align: left;
+}
+
+/* General button styling */
+button {
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+/* Delete button styling (red for danger action) */
+button.delete {
+    background-color: red;
+    color: white;
+}
+
+/* Logout button styling - added 4/23/2026 by David Jackson */
+.logout-btn {
+    background: #d4af37;
+    color: black;
+    font-weight: bold;
+    border: none;
+}
+
+.logout-btn:hover {
+    filter: brightness(1.2);
+}

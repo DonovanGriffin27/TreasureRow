@@ -1,0 +1,171 @@
+<!-- Created 3/19/2026 by Ryan Grimes-->  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault | Portal</title>
+    <style>
+        /* Index.html was made on 3/19/2026 by Ryan Grimes */
+
+        
+        /* Locks the screen */
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: #000; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* Background layer */
+        .vault-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: url('/static/images/background.png') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* The logo  */
+        /* Locks the logo position in place regardless if it's in full screen */
+        .logo-container {
+            position: absolute;
+            top: 43.5%;    /* Increase to move DOWN, Decrease to move UP */
+            left: 50.75%;   /* Increase to move RIGHT, Decrease to move LEFT */
+            
+            transform: translate(-53%, -50%); 
+            z-index: 1; /* Sits behind the "The Vault" text */
+        }
+
+        .logo-container img {
+            height: 48vh; /* Scales with screen height */
+            width: auto;
+        }
+
+        /* 4. The text and buttons layer */
+        .bottom-section {
+            position: absolute;
+            bottom: 10vh; 
+            width: 100%;
+            text-align: center;
+            z-index: 10; /* Makes sure it always stays in front of the logo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-title {
+            color: white; 
+            font-size: 9vh; 
+            font-weight: bold; 
+            margin: 0; 
+            line-height: 0.8;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+        }
+
+        .sub-title {
+            color: #B8860B; 
+            font-size: 3vh; 
+            margin-top: 0.5vh; 
+            letter-spacing: 4px;
+            font-weight: 500;
+        }
+
+        /* 5. METALLIC BUTTONS */
+        .button-row {
+            display: flex; 
+            justify-content: center; 
+            gap: 8vw; 
+            margin-top: 4vh;
+            width: 100%;
+        }
+
+        .metallic-btn {
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            width: 22vw; 
+            max-width: 260px; 
+            padding: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .metallic-btn:hover { 
+            transform: scale(1.05); 
+            filter: brightness(1.2);
+        }
+
+        .metallic-btn img { width: 100%; height: auto; }
+
+        /* Loading Bar */
+        .footer-area { 
+            width: 50%; 
+            margin-top: 5vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        progress { 
+            width: 100%; 
+            height: 8px; 
+            accent-color: #B8860B; 
+            background: #333; 
+            border-radius: 10px; 
+        }
+
+        /* For centered progress styling */
+        progress::-webkit-progress-bar { background-color: #333; border-radius: 10px; }
+        progress::-webkit-progress-value { background-color: #B8860B; border-radius: 10px; }
+
+        .footer-text { 
+            color: rgba(204,178,128,0.5); 
+            font-size: 1.6vh; 
+            margin-top: 8px; 
+            letter-spacing: 1px;
+        }
+
+        .portal-header {
+            position: absolute;
+            top: 5vh;
+            color: rgba(204, 178, 128, 0.7);
+            font-size: 2vh;
+            font-style: italic;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="vault-wrapper">
+        <div class="portal-header">YOU HAVE ARRIVED AT THE PORTAL TO...</div>
+
+        <div class="logo-container">
+            <img src="/static/images/logo.png" alt="Vault Logo">
+        </div>
+
+        <div class="bottom-section">
+            <h1 class="main-title">THE VAULT</h1>
+            <div class="sub-title">FASHION MARKETPLACE</div>
+
+            <div class="button-row">
+                <a href="{{ url_for('auth.login') }}" class="metallic-btn">
+                    <img src="/static/images/login_button.png" alt="Log In">
+                </a>
+                <a href="{{ url_for('auth.signup') }}" class="metallic-btn">
+                    <img src="/static/images/signup_button.png" alt="Sign Up">
+                </a>
+            </div>
+
+            <div class="footer-area">
+                <progress value="88" max="100"></progress>
+                <div class="footer-text">LOADING SECURE MARKETS... 1868%</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

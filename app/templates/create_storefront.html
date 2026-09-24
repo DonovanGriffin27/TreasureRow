@@ -1,0 +1,292 @@
+<!--
+ create_storefront.html
+
+    The Vault Campus Marketplace 
+    CSC 405 Sp 26'
+    Created by Day Ekoi - Iteration 4 - 3/22/2026
+    Updated by Day Ekoi - Iteration 5 - 4/20/26 - added drag-drop image upload zones and preview thumbnails for banner, logo, and preview images
+
+
+This file is the Create Storefront page where users create their storefronts using a form based UI 
+
+Users can:
+- Upload a storefront banner image
+- Upload a logo
+- Enter brand name and contact information
+- Provide a description of their store
+- Select storefront categories
+- Upload preview images for their storefront
+
+This page is rendered using Flask and connects to the static CSS and JS files.
+
+This doesnt do this rn. But it will be updated so this form will submit data to the backend (Flask API) where the storefront will be stored
+in the database and then displayed dynamically on the homepage.
+
+This file acts as the UI structure (skeleton) of the Create Storefront feature.
+-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+    <!-- Metadata stuff -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title shown in browser tab -->
+    <title>Create Storefront</title>
+
+    <!-- live server version 
+    <link rel="stylesheet" href="./create_storefront.css"> -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
+    <!-- Drag-drop zone styles - Added by Day Ekoi 4/20/26 -->
+    <style>
+        .drop-zone {
+            border: 2px dashed #d4af37;
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            color: #888;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .drop-zone.dragover {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: #f0cc55;
+        }
+        .drop-link { color: #d4af37; text-decoration: underline; cursor: pointer; }
+        .image-preview-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-preview-row .thumb-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .image-preview-row img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        .image-preview-row .thumb-name {
+            font-size: 0.7rem;
+            color: #aaa;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .preview-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .preview-slot { display: flex; flex-direction: column; gap: 6px; }
+        .slot-label { font-size: 0.8rem; color: #d4af37; font-weight: 700; margin: 0; }
+    </style>
+    
+
+</head>
+
+
+
+
+<body> 
+<!-- Start of main body code -->
+
+    <!-- Header -->
+    <header class="create-header">
+        <div class="brand-block">
+            <h1 class="brand-title">
+                <span class="gold">The</span> Vault
+            </h1>
+            <p class="brand-subtitle">Fashion Marketplace</p>
+        </div>
+
+        <h2 class="page-title">Create Storefront</h2>
+    </header>
+
+
+    <!-- Main container -->
+    <main class="create-page">
+
+        <form class="storefront-form" id="storefrontForm" enctype="multipart/form-data">
+
+            <!-- banner - Updated by Day Ekoi 4/20/26 - replaced plain input with drag-drop zone -->
+            <section class="form-card banner-card">
+                <label class="section-label">Upload Store Banner Image</label>
+                <div class="drop-zone" id="bannerZone">
+                    <p>Drag & drop or <span class="drop-link">browse</span></p>
+                    <input type="file" id="bannerUpload" name="banner" accept="image/*" hidden>
+                </div>
+                <div class="image-preview-row" id="bannerPreview"></div>
+            </section>
+
+
+            <!-- logo + info -->
+            <section class="middle-row">
+
+                <div class="form-card logo-card">
+                    <label class="section-label">Upload Store Logo <span class="required">*</span></label>
+                    <div class="drop-zone" id="logoZone">
+                        <p>Drag & drop or <span class="drop-link">browse</span></p>
+                        <input type="file" id="logoUpload" name="logo" accept="image/*" hidden>
+                    </div>
+                    <div class="image-preview-row" id="logoPreview"></div>
+                </div>
+
+                <div class="info-column">
+
+                    <div class="form-card input-card">
+                        <label for="brandName" class="section-label">
+                            Brand Name <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="brandName" 
+                            name="brand_name" 
+                            placeholder="Enter brand name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-card input-card">
+                        <label for="contactInfo" class="section-label">
+                            Instagram / Contact Info <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="contactInfo" 
+                            name="contact_info" 
+                            placeholder="@brandname or email"
+                        >
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- description -->
+            <section class="form-card description-card">
+
+                <label for="storeDescription" class="section-label">
+                    Store Description <span class="required">*</span>
+                </label>
+
+                <textarea 
+                    id="storeDescription" 
+                    name="description" 
+                    rows="5"
+                    placeholder="Describe your brand, what you sell, your style, and your target audience."
+                    required
+                ></textarea>
+
+            </section>
+
+
+
+
+            <!-- categories + preview -->
+            <section class="bottom-row">
+
+                <div class="form-card category-card">
+
+                    <p class="section-label"> Enter Store Categories</p>
+                    <p class="category-limit-copy">Select up to 3 categories for your storefront.</p>
+
+                    <div class="category-grid">
+                        <label><input type="checkbox" name="categories" value="Streetwear"> Streetwear</label>
+                        <label><input type="checkbox" name="categories" value="Casual"> Casual</label>
+                        <label><input type="checkbox" name="categories" value="Vintage"> Vintage</label>
+                        <label><input type="checkbox" name="categories" value="Earthy"> Earthy</label>
+                        <label><input type="checkbox" name="categories" value="Athleisure"> Athleisure</label>
+                        <label><input type="checkbox" name="categories" value="Retro"> Retro</label>
+                        <label><input type="checkbox" name="categories" value="Accessories"> Accessories</label>
+                        <label><input type="checkbox" name="categories" value="Other"> Other</label>
+                    </div>
+
+                    <p class="category-validation-message" id="categoryValidationMessage" aria-live="polite"></p>
+
+                </div>
+
+
+                <!-- Preview images section - Updated by Day Ekoi 4/20/26 - 4 individual slots -->
+                <div class="form-card preview-card">
+
+                    <label class="section-label">
+                        Storefront Preview Images (up to 4)
+                    </label>
+
+                    <div class="preview-grid-4">
+                        <div class="preview-slot">
+                            <p class="slot-label">Image 1</p>
+                            <div class="drop-zone" id="previewZone1"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage1" accept="image/*" hidden></div>
+                            <div class="image-preview-row" id="previewPreview1"></div>
+                        </div>
+                        <div class="preview-slot">
+                            <p class="slot-label">Image 2</p>
+                            <div class="drop-zone" id="previewZone2"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage2" accept="image/*" hidden></div>
+                            <div class="image-preview-row" id="previewPreview2"></div>
+                        </div>
+                        <div class="preview-slot">
+                            <p class="slot-label">Image 3</p>
+                            <div class="drop-zone" id="previewZone3"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage3" accept="image/*" hidden></div>
+                            <div class="image-preview-row" id="previewPreview3"></div>
+                        </div>
+                        <div class="preview-slot">
+                            <p class="slot-label">Image 4</p>
+                            <div class="drop-zone" id="previewZone4"><p>Drag & drop or <span class="drop-link">browse</span></p><input type="file" id="previewImage4" accept="image/*" hidden></div>
+                            <div class="image-preview-row" id="previewPreview4"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+
+            <!-- buttons -->
+            <section class="form-actions">
+
+                <button type="submit" class="primary-btn">
+                    Create Storefront
+                </button>
+
+                <button type="button" class="secondary-btn" id="cancelBtn">
+                    Cancel
+                </button>
+
+            </section>
+
+        </form>
+    </main>
+
+
+
+
+    <!-- javascript -->
+
+    <!-- live server version 
+    <script src="./create_storefront.js"></script> -->
+
+    <!-- flask version (for later use) -->
+    <script src="{{ url_for('static', filename='js/create_storefront.js') }}"></script>
+
+
+</body>
+</html>
