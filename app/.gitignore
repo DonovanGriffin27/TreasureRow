@@ -1,0 +1,19 @@
+.env
+
+# Python: Ignore local environment and cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+
+# OS: Ignore Mac-specific system files
+.DS_Store
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Local-dev image uploads (S3 fallback)
+static/uploads/

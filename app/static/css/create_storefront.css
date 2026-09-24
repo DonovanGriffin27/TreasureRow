@@ -1,0 +1,485 @@
+/*
+    create_storefront.css
+
+    The Vault Campus Marketplace 
+    CSC 405 Sp 26'
+    Created by Day Ekoi - Iteration 5
+    3/22/2026
+
+
+Description:
+This file controls the styling and layout of the Create Storefront page.
+It defines the page theme, layout structure, form sections, inputs, category grid,
+preview section, and action buttons.
+
+Works with:
+- create_storefront.html
+- create_storefront.js
+*/
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* page base: background, font, and default text color */
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
+        url("/static/images/background.png") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    padding: 30px 0;
+}
+
+
+/* header layout: top branding and page title */
+.create-header {
+    width: min(1200px, 92%);
+    margin: 1.5rem auto 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+
+/* branding block: holds vault title + subtitle */
+.brand-block {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* main vault title styling */
+.brand-title {
+    font-size: 3.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+
+/* gold accent color */
+.gold {
+    color: #d4af37;
+}
+
+
+/* subtitle under title */
+.brand-subtitle {
+    margin-top: 0.3rem;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: #f1f1f1;
+}
+
+
+/* page title styling */
+.page-title {
+    font-size: 2.8rem;
+    font-style: italic;
+    font-weight: 800;
+    color: white;
+    margin-top: 0.5rem;
+}
+
+
+/* main container: wraps entire form */
+.create-page {
+    width: min(1200px, 92%);
+    margin: 0 auto 2rem;
+}
+
+
+/* form layout: vertical stacking with spacing */
+.storefront-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+
+/* form card: reusable black/gold section styling */
+.form-card {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(184, 134, 11, 0.65);
+    border-radius: 2px;
+    padding: 1.5rem;
+    box-shadow: 0 0 25px rgba(184, 134, 11, 0.18);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    color: white;
+}
+
+
+/* section label: title text above inputs */
+.section-label {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #d4af37;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+
+/* required asterisk */
+.required {
+    color: red;
+    margin-left: 4px;
+}
+
+
+/* helper text: small instructions under inputs */
+.helper-text {
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+    color: #dddddd;
+    text-align: center;
+}
+
+
+/* banner section: large upload area */
+.banner-card {
+    min-height: 180px;
+}
+
+
+/* middle row: logo + info fields */
+.middle-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+
+/* logo section */
+.logo-card {
+    min-height: 220px;
+}
+
+
+/* info column: stacks brand name + contact */
+.info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+/* input card: standard input container */
+.input-card {
+    min-height: 90px;
+}
+
+
+/* description section: larger text area */
+.description-card {
+    width: 100%;
+}
+
+
+/* bottom row: categories + preview images */
+.bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+
+/* category section */
+.category-card {
+    min-height: 240px;
+}
+
+.category-limit-copy {
+    margin-top: -8px;
+    margin-bottom: 16px;
+    text-align: center;
+    color: #d8d8d8;
+    font-size: 0.92rem;
+}
+
+.category-validation-message {
+    min-height: 20px;
+    margin-top: 1rem;
+    text-align: center;
+    color: #ff9b9b;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+
+/* preview image section */
+.preview-card {
+    min-height: 240px;
+}
+
+
+/* text inputs: styling for input fields */
+input[type="text"] {
+    width: 90%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(184, 134, 11, 0.5);
+    border-radius: 2px;
+    padding: 0.9rem 1rem;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* select styling: match text inputs */
+select {
+    width: 90%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(184, 134, 11, 0.5);
+    border-radius: 2px;
+    padding: 0.9rem 1rem;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* select focus state */
+select:focus {
+    border-color: #f0cf5a;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.12);
+}
+
+/* improve readability of native dropdown options */
+select option {
+    background: #111111;
+    color: #ffffff;
+}
+
+
+/* input placeholder text */
+input[type="text"]::placeholder {
+    color: #bfbfbf;
+}
+
+
+/* input focus state */
+input[type="text"]:focus {
+    border-color: #f0cf5a;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.12);
+}
+
+
+/* textarea styling */
+textarea {
+    width: 90%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(184, 134, 11, 0.5);
+    border-radius: 2px;
+    padding: 1rem;
+    color: white;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 150px;
+    outline: none;
+}
+
+
+/* textarea placeholder */
+textarea::placeholder {
+    color: #bfbfbf;
+}
+
+
+/* textarea focus state */
+textarea:focus {
+    border-color: #f0cf5a;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.12);
+}
+
+
+/* file inputs: centered */
+input[type="file"] {
+    display: block;
+    margin: 0 auto;
+    color: white;
+    font-size: 0.95rem;
+}
+
+
+/* category grid: centered properly */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 1rem 3rem;
+    margin-top: 0.5rem;
+}
+
+
+/* category label */
+.category-grid label {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+
+/* checkbox styling */
+.category-grid input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #d4af37;
+}
+
+
+/* action buttons: bottom button container */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    margin-top: 0.5rem;
+}
+
+.form-actions--split {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-actions-right {
+    display: flex;
+    gap: 1rem;
+}
+
+
+/* shared button styling */
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.reactivate-btn {
+    min-width: 240px;
+    border-radius: 2px;
+    padding: 0.95rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+/* primary button */
+.primary-btn {
+    background: linear-gradient(145deg, #B8860B, #8B6508);
+    color: black;
+    border: none;
+}
+
+
+/* secondary button */
+.secondary-btn {
+    background: transparent;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+}
+
+.danger-btn {
+    background: rgba(132, 18, 18, 0.18);
+    color: #ff8f8f;
+    border: 1px solid rgba(220, 53, 53, 0.75);
+}
+
+.reactivate-btn {
+    background: rgba(24, 110, 54, 0.22);
+    color: #98efb2;
+    border: 1px solid rgba(76, 175, 80, 0.82);
+}
+
+
+/* hover */
+.primary-btn:hover,
+.secondary-btn:hover,
+.danger-btn:hover,
+.reactivate-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.97;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+
+/* responsive */
+@media (max-width: 900px) {
+    .create-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 2.3rem;
+    }
+
+    .middle-row,
+    .bottom-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .form-actions-right {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+}
+
+
+/* mobile */
+@media (max-width: 600px) {
+    .brand-title {
+        font-size: 2.7rem;
+    }
+
+    .brand-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .section-label {
+        font-size: 1rem;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        min-width: 200px;
+        width: 100%;
+    }
+}

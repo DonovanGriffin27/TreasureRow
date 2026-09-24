@@ -1,0 +1,128 @@
+<!-- File Created By David Jackson -->
+<!-- Updated by David Jackson 4/21/2026 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Title shown in browser tab -->
+    <title>Admin Dashboard</title>
+
+    <!-- Link to external CSS file for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+
+    <!-- Main page title -->
+    <h1>Admin Dashboard</h1>
+
+    <!-- Added 4/23/2026 by David Jackson -->
+    <!-- Logout Button -->
+    <div style="text-align: right; margin-bottom: 20px;">
+        <a href="{{ url_for('auth.logout') }}">
+            <button class="logout-btn">Logout</button>
+        </a>
+    </div>
+
+    <!-- USERS SECTION -->
+    <section>
+        <h2>Users</h2>
+
+        <!-- Button triggers JavaScript function to load users from backend -->
+        <button onclick="loadUsers()">Load Users</button>
+
+        <!-- Table to display users dynamically -->
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <!-- Data will be inserted here using JavaScript -->
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- LISTINGS SECTION -->
+    <section>
+        <h2>Listings</h2>
+
+        <!-- Button loads listings from backend -->
+        <button onclick="loadListings()">Load Listings</button>
+
+        <table id="listingsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Storefront ID</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Fulfillment Type</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <!-- Filled dynamically with JavaScript -->
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- STOREFRONTS SECTION -->
+    <section>
+        <h2>Storefronts</h2>
+
+        <!-- Button loads storefronts -->
+        <button onclick="loadStorefronts()">Load Storefronts</button>
+
+        <table id="storefrontsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Owner ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <!-- Populated dynamically -->
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- RETURNS SECTION -->
+    <section>
+        <h2>Returns</h2>
+
+        <button onclick="loadReturns()">Load Returns</button>
+
+        <table id="returnsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Order #</th>
+                    <th>Damage</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- Link to JavaScript file (handles API calls and UI updates) -->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,605 @@
+/* 
+    storefront.css
+
+    The Vault Campus Marketplace
+    CSC 405 Sp 26'
+    Created by Day Ekoi - Iteration 4 - 3/18/2026-3/22/2026
+    Updated by Day Ekoi - Iteration 5 - 4/20/26 - added lightbox overlay styles for storefront card image previews
+    Updated by Day Ekoi - Iteration 5 - 4/20/26 - restyled enter/page buttons to pill style; increased carousel image height; commented out bag-form styles
+    Updated by Day Ekoi - Iteration 5 - 4/20/26 - aligned storefront CTA and pagination buttons with back-button styling; expanded image area on cards
+
+Description: 
+The purpose of this file is to control the style and layout of the storefront homepage.
+Responsible for page background styles, top nav bar, branding, search bar storefront cards (grid & layout), image area, and page controls. Its overall purpose is to
+make the storefront page visually organized and responsive
+
+This file works hand in hand with:
+- storefront.html
+- storefront.js
+
+Overall it does 4 major things:
+1. Sets the theme by setting background, gold color, white text, and font styles for the page
+2. Layout: organizes the top nav bar, title/search area, and storefront cards
+3. Styling of storefront cards including background, borders, spacing, and hover effects.
+it also ensures that each card looks correct once a storefront is created and it is added
+4. Styling of the carousel within the storefront cards, including image size and carousel button styles
+*/
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Styling for the entire page body, including background color, text color, and font */
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
+        url("/static/images/background.png") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* Overlay for dimming the page when nav is open */
+.nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.25s ease;
+    z-index: 20;
+}
+
+.nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* Side navigation pane/menu */
+.nav-pane {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 300px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.92); /* Updated by Day E 3/22/26 */
+    border-right: 1px solid #B8860B;
+    padding: 30px 22px 24px 22px; /* Updated by Day E 3/22/26 */
+    z-index: 30;
+    transition: left 0.3s ease;
+    overflow-y: auto; /* Updated by Day E 3/22/26 */
+}
+
+.nav-pane.active {
+    left: 0;
+}
+
+
+/* Top half button and actions */
+.nav-top {
+    margin-bottom: 28px;
+}
+
+
+/* Metallic button styling */
+/* .create-btn,
+.enter-btn,
+.page-btn {
+    background: linear-gradient(145deg, #B8860B, #8B6508);
+    color: black;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 2px;
+} */
+
+/* .create-btn:hover,
+.enter-btn:hover,
+.page-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+} */
+
+/* Removed by Day Ekoi - Iteration 5 - 4/20/26: old metallic gradient style replaced with pill style below.
+   Updated by Day E 4/9/26 - separated create-btn from enter/page btns, added white border and transparent bg
+.enter-btn,
+.page-btn {
+    background: linear-gradient(145deg, #B8860B, #8B6508);
+    color: black;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+.enter-btn:hover,
+.page-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
+*/
+
+/* Removed by Day Ekoi - Iteration 5 - 4/20/26: earlier storefront pill style replaced below with the exact shared back-button treatment.
+.enter-btn,
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    border-radius: 999px;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 22px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.enter-btn:hover,
+.page-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    color: #f0cc55;
+    border-color: rgba(212, 175, 55, 0.8);
+}
+*/
+
+/* Updated by Day Ekoi - Iteration 5 - 4/20/26: exact back-button styling reused for storefront CTA and pagination */
+.enter-btn,
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(212,175,55,0.5);
+    border-radius: 999px;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.enter-btn:hover,
+.page-btn:hover {
+    background: rgba(212,175,55,0.15);
+    color: #f0cc55;
+}
+
+.enter-btn {
+    width: 100%;
+}
+
+.page-btn {
+    min-width: 112px;
+}
+.create-btn {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+.create-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.my-storefront-btn {
+    border-color: #D4AF37;
+    color: #D4AF37;
+}
+
+.my-storefront-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+}
+
+nav-divider { /* updated by Day E 4/9/2026 */
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    margin: 18px 0;
+}
+
+/* Main navigation */
+.nav-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.nav-item {
+    color: white;
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex; /* Updated by Day E 3/22/26 */
+    justify-content: space-between; /* Updated by Day E 3/22/26 */
+    align-items: center; /* Updated by Day E 3/22/26 */
+    padding: 4px 0; /* Updated by Day E 3/22/26 */
+}
+
+.nav-item:hover {
+    color: #B8860B;
+}
+
+.nav-heading {
+    color: rgba(204, 178, 128, 0.75); /* Updated by Day E 3/22/26 */
+    font-size: 0.95rem; /* Updated by Day E 3/22/26 */
+    margin-bottom: 12px; /* Updated by Day E 3/22/26 */
+}
+
+.nav-subitem {
+    color: white; /* Updated by Day E 3/22/26 */
+    margin-bottom: 10px; /* Updated by Day E 3/22/26 */
+    cursor: pointer; /* Updated by Day E 3/22/26 */
+    text-decoration: none;
+    display: block;
+}
+
+.nav-subitem:hover {
+    color: #B8860B; /* Updated by Day E 3/22/26 */
+}
+
+
+/* Updated nav bar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 42px;
+    padding: 6px 4px; /* Updated by Day E 3/22/26 */
+}
+
+.topbar-actions {
+    display: flex; /* Updated by Day E 3/22/26 */
+    align-items: center; /* Updated by Day E 3/22/26 */
+    gap: 18px; /* Updated by Day E 3/22/26 */
+}
+
+
+/* Hamburger menu */
+.menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Updated by Day E 3/22/26 */
+    gap: 6px;
+    width: 46px; /* Updated by Day E 3/22/26 */
+    height: 46px; /* Updated by Day E 3/22/26 */
+    background: transparent; /* Updated by Day E 3/22/26 */
+    border: none; /* Updated by Day E 3/22/26 */
+    cursor: pointer; /* Updated by Day E 3/22/26 */
+}
+
+.menu-line {
+    width: 30px; /* Updated by Day E 3/22/26 */
+    height: 3px; /* Updated by Day E 3/22/26 */
+    background: white;
+    border-radius: 2px; /* Updated by Day E 3/22/26 */
+}
+
+
+/* Bag icon */
+.bag-btn {
+    width: 42px; /* Updated by Day E 3/22/26 */
+    height: 42px; /* Updated by Day E 3/22/26 */
+    display: flex; /* Updated by Day E 3/22/26 */
+    color: white;
+    align-items: center; /* Updated by Day E 3/22/26 */
+    justify-content: center; /* Updated by Day E 3/22/26 */
+    background: transparent; /* Updated by Day E 3/22/26 */
+    border: none; /* Updated by Day E 3/22/26 */
+    cursor: pointer; /* Updated by Day E 3/22/26 */
+}
+
+/* Removed by Day Ekoi - Iteration 5 - 4/20/26: bag form removed from storefront cards.
+   Originally added by Ryan 3/25/26. Kept as version history.
+.bag-form {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.selection-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.vault-select, .vault-qty {
+    background: #000;
+    color: #D4AF37;
+    border: 1px solid #B8860B;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.vault-select { flex: 2; }
+.vault-qty { flex: 1; }
+
+.add-bag-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: #D4AF37;
+    border: 1px solid #D4AF37;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-bag-btn:hover {
+    background: #D4AF37;
+    color: #000;
+}
+*/
+
+.topbar-svg {
+    width: 48px; /* Updated by Day E 3/22/26 */
+    height: 48px; /* Updated by Day E 3/22/26 */
+    stroke: white; /* Updated by Day E 3/22/26 */
+    fill: white;
+    color: white;
+}
+
+
+/* Profile button */
+.profile-btn {
+    background: transparent; /* Updated by Day E 3/22/26 */
+    border: none; /* Updated by Day E 3/22/26 */
+    cursor: pointer; /* Updated by Day E 3/22/26 */
+}
+
+.profile-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid #D4AF37;
+    background: white;
+    display: flex; /* Updated by Day E 3/22/26 */
+    align-items: center; /* Updated by Day E 3/22/26 */
+    justify-content: center; /* Updated by Day E 3/22/26 */
+}
+
+.profile-svg {
+    width: 28px; /* Updated by Day E 3/22/26 */
+    height: 28px; /* Updated by Day E 3/22/26 */
+    stroke: #4d4d4d; /* Updated by Day E 3/22/26 */
+}
+
+
+/* Brand/logo/title and search area */
+.logo-search-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-title {
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+.gold {
+    color: #D4AF37;
+}
+
+.brand-subtitle {
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid #B8860B;
+    padding: 16px;
+    color: white;
+    border-radius: 999px;
+    text-align: center;
+}
+
+
+/* Main page content */
+.page-content {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+
+/* Storefront card grid */
+.storefront-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Updated by Day E 3/22/26 */
+    gap: 24px;
+    max-width: 1020px;
+    margin: 0 auto;
+}
+
+
+/* Individual storefront card */
+.storefront-card {
+    background: rgba(0, 0, 0, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 26px;
+    padding: 22px;
+    /* min-height: 520px; — Updated by Day Ekoi - Iteration 5 - 4/20/26: removed fixed min-height, card height now driven by image */
+    transition: transform 0.22s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.storefront-card:hover {
+    transform: translateY(-3px);
+}
+
+.storefront-card-body {
+    flex: 1;
+}
+
+
+/* Card header */
+.storefront-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.storefront-logo {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 2px solid #D4AF37;
+}
+
+.storefront-name {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.storefront-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* Carousel */
+.carousel-shell {
+    position: relative;
+    margin-top: 16px;
+    margin-bottom: 22px;
+    padding: 12px 0;
+}
+
+/* Updated by Day Ekoi - Iteration 5 - 4/20/26: height increased again so the image fills space freed by the removed extra controls */
+.carousel-image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.carousel-btn.left { left: 10px; }
+.carousel-btn.right { right: 10px; }
+
+
+/* Footer button */
+.storefront-footer {
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Removed by Day Ekoi - Iteration 5 - 4/20/26: padding/radius override no longer needed, handled by pill style above.
+.enter-btn {
+    padding: 14px 30px;
+    border-radius: 2px;
+}
+*/
+
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 34px;
+}
+
+.page-indicator {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+
+/* Lightbox overlay - Added by Day Ekoi 4/20/26 */
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    cursor: zoom-out;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.lightbox-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+}
+
+.carousel-image {
+    cursor: zoom-in;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .storefront-grid {
+        grid-template-columns: 1fr; /* Updated by Day E 3/22/26 */
+    }
+
+    .carousel-image {
+        height: 320px;
+    }
+}

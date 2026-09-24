@@ -1,0 +1,133 @@
+<!-- Admin Login Page - Created by David Jackson 4/18/26 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault | Admin Login</title>
+    <style>
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: #000; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .vault-wrapper {
+            position: relative;
+            width: 100vw; height: 100vh;
+            background: url('/static/images/background.png') no-repeat center center;
+            background-size: cover;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .auth-card {
+            background: rgba(0, 0, 0, 0.88);
+            border: 1px solid #B8860B;
+            padding: 45px;
+            width: 360px;
+            border-radius: 2px;
+            box-shadow: 0 0 30px rgba(184, 134, 11, 0.4);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .auth-card h2 {
+            color: white;
+            letter-spacing: 5px;
+            margin-bottom: 35px;
+            font-size: 2.8vh;
+            font-weight: bold;
+        }
+
+        .input-group { margin-bottom: 25px; text-align: left; }
+
+        .input-group label {
+            color: #B8860B;
+            font-size: 1.3vh;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(184, 134, 11, 0.4);
+            padding: 14px;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 1.8vh;
+        }
+
+        .input-group input:focus { 
+            border-color: #B8860B; 
+            background: rgba(255, 255, 255, 0.1); 
+            box-shadow: inset 0 0 5px rgba(184, 134, 11, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #B8860B, #9A7107);
+            border: none;
+            padding: 16px;
+            color: black;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover {
+            filter: brightness(1.2);
+            letter-spacing: 4px;
+            box-shadow: 0 0 15px rgba(184, 134, 11, 0.6);
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3vh;
+        }
+
+        .footer-links a {
+            color: rgba(204, 178, 128, 0.5);
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .footer-links a:hover { color: #B8860B; }
+    </style>
+</head>
+<body>
+    <div class="vault-wrapper">
+        <div class="auth-card">
+            <h2>ADMIN ACCESS</h2>
+
+            <form action="{{ url_for('auth.admin_login') }}" method="POST">
+                <div class="input-group">
+                    <label>Admin Username</label>
+                    <input type="text" name="username" required placeholder="admin" autofocus>
+                </div>
+
+                <div class="input-group">
+                    <label>Admin Password</label>
+                    <input type="password" name="password" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="submit-btn">Authorize</button>
+            </form>
+
+            <div class="footer-links">
+                <a href="{{ url_for('auth.login') }}">← User Login</a>
+                <a href="{{ url_for('index') }}">Portal</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

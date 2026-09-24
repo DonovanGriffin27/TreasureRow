@@ -1,0 +1,547 @@
+<!--Made by Madison Boyd on  3/23/2026-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault | Account Console</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
+    <style>
+        :root { --gold: #B8860B; --dark-bg: #121212; }
+        
+        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; }
+
+        .account-container {
+            max-width: 1000px; margin: 50px auto; padding: 20px;
+            background: rgba(18, 18, 18, 0.9); border: 1px solid var(--gold);
+        }
+
+        .profile-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 30px;
+        }
+
+        .user-meta h1 { margin: 0; color: var(--gold); letter-spacing: 2px; }
+        .role-badge { 
+            background: var(--gold); color: black; padding: 2px 10px; 
+            font-size: 0.8rem; font-weight: bold; text-transform: uppercase; 
+        }
+
+        /* Tabs Styling */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+        .tab-link {
+            padding: 10px 20px; cursor: pointer; background: none; border: none;
+            color: #888; text-transform: uppercase; transition: 0.3s;
+        }
+        .tab-link.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+
+        .tab-content { display: none; padding: 20px; background: #1a1a1a; min-height: 200px; }
+        .tab-content.active { display: block; }
+
+        .empty-state { color: #555; text-align: center; padding-top: 50px; font-style: italic; }
+
+        .listing-items { display: grid; gap: 12px; margin-top: 16px; }
+        .listing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #333;
+            background: #111;
+            padding: 12px 14px;
+        }
+        .listing-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .delete-listing-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #8b2d2d;
+            background: #2a1010;
+            color: #ff6b6b;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .delete-listing-btn:hover {
+            background: #3a1414;
+            color: #ff8f8f;
+        }
+        .delete-listing-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .listing-title { font-weight: 700; color: #f0f0f0; }
+        .listing-meta { color: #bbb; font-size: 0.9rem; margin-top: 3px; }
+        .listing-price { color: var(--gold); font-weight: 700; }
+
+        .wishlist-items { display: grid; gap: 12px; margin-top: 16px; }
+        .wishlist-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #333;
+            background: #111;
+            padding: 12px 14px;
+        }
+        .wishlist-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .wishlist-thumb {
+            width: 46px;
+            height: 46px;
+            object-fit: cover;
+            border: 1px solid #333;
+            background: #1a1a1a;
+        }
+        .wishlist-title { font-weight: 700; color: #f0f0f0; }
+        .wishlist-meta { color: #bbb; font-size: 0.9rem; margin-top: 3px; }
+        .wishlist-remove-btn {
+            border: 1px solid #666;
+            background: transparent;
+            color: #ddd;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .wishlist-remove-btn:hover { border-color: #aaa; color: #fff; }
+
+        .wishlist-cart-btn {
+            border: 1px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-right: 6px;
+        }
+        .wishlist-cart-btn:hover { background: rgba(184,134,11,0.15); }
+        .wishlist-cart-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .purchase-items { display: grid; gap: 12px; margin-top: 16px; }
+        .purchase-row {
+            border: 1px solid #333;
+            background: #111;
+            padding: 14px;
+        }
+        .purchase-conf { color: var(--gold); font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
+        .purchase-meta { color: #aaa; font-size: 0.85rem; margin-top: 4px; }
+        .purchase-total { color: var(--gold); font-weight: bold; float: right; }
+
+        .back-btn { color: var(--gold); text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="account-container">
+    <a href="{{ url_for('storefront_pages_bp.my_storefront_page') }}" class="back-btn">← BACK TO STOREFRONT</a>
+    
+    <div class="profile-header">
+        <div class="user-meta">
+            <h1>{{ session['user'] if 'user' in session else 'OPERATOR' }}</h1>
+            <span class="role-badge">{{ session['role'] if 'role' in session else 'USER' }}</span>
+        </div>
+        <div class="logout-section">
+            <a href="{{ url_for('auth.logout')}}" style="color: #ff4444; text-decoration: none;">LOGOUT</a>
+        </div>
+    </div>
+
+    <div class="tab-menu">
+        <button class="tab-link active" onclick="openTab(event, 'listings')">My Listings</button>
+        <button class="tab-link" onclick="openTab(event, 'wishlist')">Wishlist</button>
+        <button class="tab-link" onclick="openTab(event, 'purchases')">Purchases</button>
+        <button class="tab-link" onclick="openTab(event, 'sales')">Sales History</button>
+    </div>
+
+    <div id="listings" class="tab-content active">
+        <h3>YOUR CREATED LISTINGS</h3>
+        <p id="listingsEmptyState" class="empty-state">Loading your listings...</p>
+        <div id="myListingsContainer" class="listing-items"></div>
+    </div>
+
+    <div id="wishlist" class="tab-content">
+        <h3>SECURED WISHLIST</h3>
+        <p id="wishlistEmptyState" class="empty-state">Your wishlist is currently empty.</p>
+        <div id="wishlistItemsContainer" class="wishlist-items"></div>
+    </div>
+
+    <div id="purchases" class="tab-content">
+        <h3>PURCHASE HISTORY</h3>
+        <p id="purchasesEmptyState" class="empty-state">Loading your orders...</p>
+        <div id="purchasesContainer" class="purchase-items"></div>
+    </div>
+
+    <div id="sales" class="tab-content">
+        <h3>SALES HISTORY</h3>
+        <p class="empty-state">No items sold yet.</p>
+    </div>
+</div>
+
+<script>
+    async function getCurrentUserId() {
+        const storedUserId = localStorage.getItem("vaultUserId") || sessionStorage.getItem("vaultUserId");
+        if (storedUserId) return storedUserId;
+
+        try {
+            const response = await fetch("/auth/api/auth/me");
+            if (!response.ok) return null;
+
+            const user = await response.json();
+            if (user?.id) {
+                localStorage.setItem("vaultUserId", String(user.id));
+                sessionStorage.setItem("vaultUserId", String(user.id));
+                return String(user.id);
+            }
+        } catch (error) {
+            console.error("Unable to resolve current user id:", error);
+        }
+
+        return null;
+    }
+
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+        if (tabName === "wishlist") loadWishlist();
+        if (tabName === "purchases") loadPurchases();
+    }
+
+    function getLocalWishlistItems() {
+        try {
+            const raw = localStorage.getItem("vaultWishlistLocalItems");
+            return raw ? JSON.parse(raw) : [];
+        } catch (error) {
+            console.error("Failed to parse local wishlist items:", error);
+            return [];
+        }
+    }
+
+    function normalizeWishlistItem(item) {
+        return {
+            listing_id: Number(item.listing_id || item.id),
+            title: item.title || item.name || item.listing?.title || "Untitled Listing",
+            price: item.price ?? item.listing?.price ?? 0,
+            image_url: item.listing?.image_url || item.image_url || item.storefront?.logo_url || "/static/images/logo.png",
+            storefront_name: item.storefront_name || item.storefront?.brand_name || "Storefront",
+        };
+    }
+
+    function setLocalWishlistItems(items) {
+        const normalized = (items || []).map(normalizeWishlistItem);
+
+        localStorage.setItem("vaultWishlistLocalItems", JSON.stringify(normalized));
+        localStorage.setItem("vaultWishlistListingIds", JSON.stringify(normalized.map((i) => String(i.listing_id))));
+        return normalized;
+    }
+
+    function formatWishlistPrice(price) {
+        if (typeof price === "string" && price.includes("$")) return price;
+        return `$${Number(price || 0).toFixed(2)}`;
+    }
+
+    function renderWishlist(items) {
+        const container = document.getElementById("wishlistItemsContainer");
+        const emptyState = document.getElementById("wishlistEmptyState");
+        const normalizedItems = (items || []).map(normalizeWishlistItem);
+
+        if (!container || !emptyState) return;
+
+        container.innerHTML = "";
+
+        if (!normalizedItems.length) {
+            emptyState.textContent = "Your wishlist is currently empty.";
+            emptyState.style.display = "block";
+            return;
+        }
+
+        emptyState.style.display = "none";
+
+        normalizedItems.forEach((item) => {
+            const row = document.createElement("div");
+            row.className = "wishlist-row";
+            row.innerHTML = `
+                <div class="wishlist-left">
+                    <img class="wishlist-thumb" src="${item.image_url || "/static/images/logo.png"}"
+                         alt="${item.title || "Wishlist item"}"
+                         onerror="this.src='/static/images/logo.png'">
+                    <div>
+                        <div class="wishlist-title">${item.title || "Untitled Listing"}</div>
+                        <div class="wishlist-meta">${item.storefront_name || "Storefront"} | ${formatWishlistPrice(item.price)}</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="wishlist-cart-btn" type="button">+ Cart</button>
+                    <button class="wishlist-remove-btn" type="button">Remove</button>
+                </div>
+            `;
+
+            const cartBtn = row.querySelector(".wishlist-cart-btn");
+            cartBtn.addEventListener("click", async () => {
+                cartBtn.disabled = true;
+                cartBtn.textContent = "Adding...";
+                try {
+                    // Fetch available sizes to pick a default
+                    let defaultSize = null;
+                    try {
+                        const sizesRes = await fetch(`/api/listings/${item.listing_id}/sizes`);
+                        if (sizesRes.ok) {
+                            const sizesData = await sizesRes.json();
+                            if (Array.isArray(sizesData) && sizesData.length > 0) {
+                                defaultSize = sizesData[0].size;
+                            }
+                        }
+                    } catch (_) {}
+
+                    const formData = new FormData();
+                    formData.append("item_id", String(item.listing_id));
+                    formData.append("item_name", item.title || "Item");
+                    formData.append("price", String(item.price || 0));
+                    formData.append("quantity", "1");
+                    if (defaultSize) formData.append("size", defaultSize);
+
+                    const res = await fetch("/auth/add_to_cart", { method: "POST", body: formData });
+                    if (res.ok || res.redirected) {
+                        cartBtn.textContent = "Added!";
+                        setTimeout(() => {
+                            cartBtn.textContent = "+ Cart";
+                            cartBtn.disabled = false;
+                        }, 2000);
+                    } else {
+                        throw new Error("Could not add to cart.");
+                    }
+                } catch (err) {
+                    alert("Unable to add to cart: " + err.message);
+                    cartBtn.textContent = "+ Cart";
+                    cartBtn.disabled = false;
+                }
+            });
+
+            const removeBtn = row.querySelector(".wishlist-remove-btn");
+            removeBtn.addEventListener("click", async () => {
+                removeBtn.disabled = true;
+
+                try {
+                    const userId = await getCurrentUserId();
+                    if (userId) {
+                        const response = await fetch(`/api/wishlist/${Number(item.listing_id || item.id)}`, {
+                            method: "DELETE",
+                            headers: { "X-User-Id": String(userId) }
+                        });
+
+                        const result = await response.json().catch(() => ({}));
+                        if (!response.ok) {
+                            throw new Error(result.error || "Failed to remove wishlist item");
+                        }
+                    }
+
+                    const updated = getLocalWishlistItems().filter((x) => String(x.listing_id || x.id) !== String(item.listing_id || item.id));
+                    setLocalWishlistItems(updated);
+                    renderWishlist(updated);
+                } catch (error) {
+                    console.error("Unable to remove wishlist item:", error);
+                    alert("Unable to remove wishlist item: " + error.message);
+                    removeBtn.disabled = false;
+                }
+            });
+
+            container.appendChild(row);
+        });
+    }
+
+    async function loadWishlist() {
+        const emptyState = document.getElementById("wishlistEmptyState");
+
+        try {
+            if (emptyState) {
+                emptyState.textContent = "Loading your wishlist...";
+                emptyState.style.display = "block";
+            }
+
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                renderWishlist(getLocalWishlistItems());
+                return;
+            }
+
+            const response = await fetch("/api/wishlist", {
+                headers: {
+                    "X-User-Id": String(userId)
+                }
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to load wishlist");
+            }
+
+            const items = Array.isArray(data.wishlist) ? data.wishlist : [];
+            const normalizedItems = setLocalWishlistItems(items);
+            renderWishlist(normalizedItems);
+        } catch (error) {
+            console.error("Error loading wishlist:", error);
+            renderWishlist(getLocalWishlistItems());
+        }
+    }
+
+    function renderMyListings(listings) {
+        const container = document.getElementById("myListingsContainer");
+        const emptyState = document.getElementById("listingsEmptyState");
+
+        if (!container || !emptyState) return;
+
+        container.innerHTML = "";
+
+        const visibleListings = listings.filter((item) => item.status !== "DELETED");
+
+        if (!visibleListings.length) {
+            emptyState.textContent = "No active listings found in the vault.";
+            emptyState.style.display = "block";
+            return;
+        }
+
+        emptyState.style.display = "none";
+
+        visibleListings.forEach((item) => {
+            const price = Number(item.price || 0).toFixed(2);
+            const qty = item.quantity_on_hand ?? 0;
+
+            const row = document.createElement("div");
+            row.className = "listing-row";
+            row.innerHTML = `
+                <div class="listing-main">
+                    <button class="delete-listing-btn" type="button" aria-label="Delete listing" title="Delete listing">x</button>
+                    <div>
+                        <div class="listing-title">${item.title || "Untitled Listing"}</div>
+                        <div class="listing-meta">Qty: ${qty} | Status: ${item.status || "ACTIVE"}</div>
+                    </div>
+                </div>
+                <div class="listing-price">$${price}</div>
+            `;
+
+            const deleteBtn = row.querySelector(".delete-listing-btn");
+            if (deleteBtn && item.id) {
+                deleteBtn.addEventListener("click", async () => {
+                    const shouldDelete = window.confirm(`Delete listing \"${item.title || "Untitled Listing"}\"?`);
+                    if (!shouldDelete) return;
+
+                    deleteBtn.disabled = true;
+
+                    try {
+                        const userId = await getCurrentUserId();
+                        const response = await fetch(`/api/listings/${item.id}`, {
+                            method: "DELETE",
+                            headers: {
+                                "X-User-Id": userId || ""
+                            }
+                        });
+
+                        const result = await response.json();
+                        if (!response.ok) {
+                            throw new Error(result.error || "Failed to delete listing");
+                        }
+
+                        await loadMyListings();
+                    } catch (error) {
+                        console.error("Error deleting listing:", error);
+                        alert("Unable to delete listing: " + error.message);
+                        deleteBtn.disabled = false;
+                    }
+                });
+            }
+
+            container.appendChild(row);
+        });
+    }
+
+    async function loadMyListings() {
+        const emptyState = document.getElementById("listingsEmptyState");
+
+        try {
+            const userId = await getCurrentUserId();
+            const response = await fetch("/api/listings/my", {
+                headers: {
+                    "X-User-Id": userId || ""
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to load listings");
+            }
+
+            renderMyListings(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Error loading My Listings:", error);
+            if (emptyState) {
+                emptyState.textContent = "Unable to load listings right now.";
+            }
+        }
+    }
+
+    async function loadPurchases() {
+        const emptyState = document.getElementById("purchasesEmptyState");
+        const container = document.getElementById("purchasesContainer");
+
+        try {
+            const res = await fetch("/api/orders/my");
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || "Failed to load orders");
+
+            const orders = Array.isArray(data.orders) ? data.orders : [];
+
+            if (!orders.length) {
+                if (emptyState) emptyState.textContent = "No transaction records found.";
+                return;
+            }
+
+            if (emptyState) emptyState.style.display = "none";
+            if (container) container.innerHTML = "";
+
+            orders.forEach((order) => {
+                const date = order.created_at
+                    ? new Date(order.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+                    : "N/A";
+                const row = document.createElement("div");
+                row.className = "purchase-row";
+                row.innerHTML = `
+                    <div class="purchase-conf">${order.confirmation_number}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <div class="purchase-meta">${date} &nbsp;|&nbsp; ${order.order_status}</div>
+                        <span class="purchase-total">$${parseFloat(order.total_amount).toFixed(2)}</span>
+                    </div>
+                    <div class="purchase-meta" style="margin-top:6px;">
+                        ${order.buyer_first_name} ${order.buyer_last_name}
+                        &nbsp;&mdash;&nbsp;
+                        <a href="/order-confirmation?conf=${encodeURIComponent(order.confirmation_number)}"
+                           style="color:var(--gold); font-size:0.8rem;">View Details</a>
+                    </div>
+                `;
+                if (container) container.appendChild(row);
+            });
+        } catch (error) {
+            console.error("Error loading purchases:", error);
+            if (emptyState) emptyState.textContent = "Unable to load orders right now.";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadMyListings);
+    document.addEventListener("DOMContentLoaded", loadWishlist);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault | Your Bag</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
+    <style>
+        :root { --gold: #B8860B; --dark-bg: #121212; }
+        
+        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; }
+
+        .cart-container {
+            max-width: 900px; margin: 50px auto; padding: 30px;
+            background: rgba(18, 18, 18, 0.95); border: 1px solid var(--gold);
+            box-shadow: 0 0 20px rgba(184, 134, 11, 0.2);
+        }
+
+        .cart-header {
+            border-bottom: 2px solid var(--gold); padding-bottom: 15px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .cart-header h1 { margin: 0; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
+
+        .cart-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .cart-table th { text-align: left; color: var(--gold); border-bottom: 1px solid #333; padding: 15px; text-transform: uppercase; font-size: 0.8rem; }
+        .cart-table td { padding: 15px; border-bottom: 1px solid #222; }
+
+        .item-info h4 { margin: 0; color: white; }
+        .item-info span { color: #888; font-size: 0.85rem; }
+
+        .price-col { font-family: 'Courier New', monospace; color: var(--gold); }
+
+        .cart-summary {
+            background: #1a1a1a; padding: 20px; border: 1px solid #333;
+            text-align: right;
+        }
+
+        .total-row { font-size: 1.5rem; color: var(--gold); font-weight: bold; margin-bottom: 20px; }
+
+        .checkout-btn {
+            background: var(--gold); color: black; border: none; padding: 15px 40px;
+            font-weight: bold; text-transform: uppercase; cursor: pointer;
+            transition: 0.3s; letter-spacing: 2px;
+        }
+
+        .checkout-btn:hover { background: #DAA520; transform: translateY(-2px); }
+
+        .empty-msg { text-align: center; padding: 50px; color: #555; font-style: italic; }
+        
+        .back-link { color: var(--gold); text-decoration: none; font-size: 0.9rem; margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="cart-container">
+    <div class="cart-header">
+        <h1>Secured Bag</h1>
+        <a href="{{ url_for('auth.listings') }}" class="back-link">← CONTINUE SHOPPING</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="color: var(--gold); margin-bottom: 15px; font-size: 0.9rem;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if session['cart'] and session['cart']|length > 0 %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Designation (Item)</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in session['cart'] %}
+                    <tr>
+                        <td>
+                            <div class="item-info">
+                                <h4>{{ item.name }}</h4>
+                                <span>ID: {{ item.id }}</span>
+                            </div>
+                        </td>
+                        <td>{{ item.size }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="price-col">${{ "%.2f"|format(item.price|float) }}</td>
+                        <td>
+                            <form action="{{ url_for('auth.remove_from_cart', index=loop.index0) }}" method="POST">
+                                <button type="submit" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size: 1.2rem;" title="Remove Item">×</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="total-row">
+                <span>TOTAL: </span>
+                <span>$
+                    {% set total_price = namespace(value=0) %}
+                    {% for item in session['cart'] %}
+                        {% set total_price.value = total_price.value + (item.price|float * item.quantity|int) %}
+                    {% endfor %}
+                    {{ "%.2f"|format(total_price.value) }}
+                </span>
+            </div>
+           <a href="{{ url_for('checkout') }}" style="text-decoration: none;">
+    <button class="checkout-btn">Initialize Checkout</button>
+</a>
+        </div>
+    {% else %}
+        <div class="empty-msg">
+            <p>Your vault bag is currently empty.</p>
+            <a href="{{ url_for('auth.listings') }}" class="back-link">Browse Storefronts</a>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!--
+Created by Kaila Roberts 4/18/26
+Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed | The Vault</title>
+    <style>
+        :root { --gold: #B8860B; --gold-light: #d4af37; }
+
+        body {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                        url("/static/images/background.png") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .page-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .conf-card {
+            background: rgba(0, 0, 0, 0.88);
+            border: 1px solid rgba(184, 134, 11, 0.6);
+            box-shadow: 0 0 30px rgba(184, 134, 11, 0.15);
+            padding: 36px;
+        }
+
+        .conf-header {
+            text-align: center;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(184, 134, 11, 0.4);
+            padding-bottom: 24px;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: rgba(30, 120, 60, 0.3);
+            border: 1px solid rgba(50, 180, 90, 0.5);
+            color: #5dde8a;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .conf-header h1 {
+            margin: 0 0 8px;
+            font-size: 1.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .conf-header h1 span { color: var(--gold-light); }
+
+        .conf-number {
+            font-size: 0.9rem;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        .conf-number strong { color: var(--gold-light); }
+
+        .section {
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .section:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+        .section h2 {
+            color: var(--gold-light);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .detail-item span { color: #e0e0e0; }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--gold-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(184,134,11,0.4);
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            color: #ddd;
+        }
+
+        .text-right { text-align: right; }
+
+        .order-total {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--gold-light);
+        }
+
+        .button-row {
+            margin-top: 32px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .btn-primary { background: linear-gradient(145deg, #B8860B, #8B6508); color: black; }
+        .btn-primary:hover { filter: brightness(1.2); }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--gold-light);
+            border: 1px solid var(--gold-light);
+        }
+        .btn-secondary:hover { background: rgba(184,134,11,0.1); }
+
+        .loading-msg { text-align: center; color: #888; padding: 40px 0; }
+        .error-msg { color: #ff8a8a; text-align: center; padding: 30px 0; }
+
+        @media (max-width: 600px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .conf-card { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="conf-card" id="confCard">
+            <p class="loading-msg" id="loadingMsg">Loading your order confirmation...</p>
+        </div>
+    </div>
+
+    <script>
+    (async () => {
+        const card = document.getElementById("confCard");
+
+        function renderError(msg) {
+            card.innerHTML = `
+                <p class="error-msg">${msg}</p>
+                <div class="button-row">
+                    <a href="/auth/listings" class="btn btn-primary">Continue Shopping</a>
+                </div>
+            `;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const conf = params.get("conf");
+
+        if (!conf) {
+            renderError("No confirmation number found.");
+            return;
+        }
+
+        let order, orderItems;
+        try {
+            const res = await fetch(`/api/orders/by-confirmation/${encodeURIComponent(conf)}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Order not found.");
+            order = data.order;
+            orderItems = data.order_items || [];
+        } catch (e) {
+            renderError(e.message || "Could not load order details.");
+            return;
+        }
+
+        const createdDate = order.created_at
+            ? new Date(order.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+            : "N/A";
+
+        const itemRows = orderItems.map(item => `
+            <tr>
+                <td>${item.item_name || "Item"}</td>
+                <td>${item.selected_size || "—"}</td>
+                <td>${item.quantity}</td>
+                <td>$${parseFloat(item.price_at_purchase).toFixed(2)}</td>
+                <td class="text-right">$${(item.quantity * parseFloat(item.price_at_purchase)).toFixed(2)}</td>
+            </tr>
+        `).join("");
+
+        card.innerHTML = `
+            <div class="conf-header">
+                <div class="success-badge">&#10003; Order Submitted</div>
+                <h1><span>The</span> Vault — Thank You!</h1>
+                <p class="conf-number">Confirmation: <strong>${order.confirmation_number}</strong></p>
+            </div>
+
+            <div class="section">
+                <h2>Order Details</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Order Date</strong>
+                        <span>${createdDate}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Status</strong>
+                        <span>${order.order_status}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Order Total</strong>
+                        <span>$${parseFloat(order.total_amount).toFixed(2)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Buyer Information</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Name</strong>
+                        <span>${order.buyer_first_name} ${order.buyer_last_name}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Email</strong>
+                        <span>${order.buyer_email}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Contact</strong>
+                        <span>${order.buyer_contact}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Meeting Location</strong>
+                        <span>${order.buyer_meeting_location}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Items Purchased</h2>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Size</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th class="text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>${itemRows}</tbody>
+                </table>
+                <div class="order-total">Total: $${parseFloat(order.total_amount).toFixed(2)}</div>
+            </div>
+
+            <div class="button-row">
+                <a href="/auth/listings" class="btn btn-primary">Continue Shopping</a>
+                <a href="/auth/account" class="btn btn-secondary">View My Orders</a>
+            </div>
+        `;
+    })();
+    </script>
+</body>
+</html>

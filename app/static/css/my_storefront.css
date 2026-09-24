@@ -1,0 +1,476 @@
+/*
+    my_storefront.css
+
+    The Vault Campus Marketplace 
+    CSC 405 Sp 26'
+    Created by Day Ekoi - Iteration 4 - 3/22/2026
+    Fully Integrated and Updated by Day Ekoi - Iteration 5 - 4/9/2026
+
+
+Description:
+This file controls the styling and layout of the My Storefront page.
+It styles the seller dashboard view including the banner, overlapping logo,
+brand name, action buttons, and listing grid.
+
+Works with:
+- my_storefront.html
+- my_storefront.js
+*/
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* page base - Updated by Day Ekoi 4/20/26 - vault background to match other pages */
+body {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
+        url("/static/images/background.png") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    padding: 28px 0 40px;
+}
+
+
+/* main dashboard wrapper */
+.storefront-dashboard {
+    width: min(1280px, 94%);
+    margin: 0 auto;
+    padding: 1rem 0 3rem;
+}
+
+
+/* back button - Added by Day Ekoi 4/20/26 */
+.back-row {
+    margin-bottom: 0.6rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(212,175,55,0.5);
+    border-radius: 999px;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(212,175,55,0.15);
+    color: #f0cc55;
+}
+
+/* banner section - Updated by Day Ekoi 4/20/26 - Facebook/Twitter profile layout */
+.banner-section {
+    position: relative;
+    margin-bottom: 2.5rem;
+}
+
+/* page title */
+.dashboard-title {
+    text-align: center;
+    font-size: 2.6rem;
+    font-style: italic;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+}
+
+/* banner box - edge-to-edge, minimal radius like Facebook cover photo */
+.banner-box {
+    width: 100%;
+    min-height: 240px;
+    background: rgba(0,0,0,0.84);
+    border: 1px solid #d4af37;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 25px rgba(184,134,11,0.18);
+}
+
+/* hide fallback text when banner image loads */
+.banner-box p {
+    display: none;
+}
+
+/* logo circle: overlaps bottom-left of banner halfway - Facebook style */
+.logo-circle {
+    position: absolute;
+    left: 2rem;
+    bottom: -4rem;
+
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 4px solid #d4af37;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* logo fallback text */
+.logo-circle p {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #888;
+}
+
+
+/* Profile info section - Updated by Day Ekoi 4/20/26
+   Offset left to clear the overlapping logo */
+.store-info-row {
+    padding-left: calc(160px + 3rem);
+    margin-bottom: 2rem;
+}
+
+.storefront-status-banner {
+    margin-bottom: 1rem;
+    background: rgba(132, 18, 18, 0.2);
+    border: 1px solid rgba(220, 53, 53, 0.55);
+    color: #ffd1d1;
+    padding: 0.95rem 1.1rem;
+    line-height: 1.45;
+}
+
+/* Updated by Day Ekoi - Iteration 5 - 4/20/26: two-column layout keeps description left and management buttons on the right */
+.store-info-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) auto;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.store-info-primary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100%;
+}
+
+.store-info-secondary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-self: end;
+    width: auto;
+}
+
+/* Removed by Day Ekoi - Iteration 5 - 4/20/26: inline brand name no longer used under banner.
+.brand-name {
+    font-size: 2rem;
+    font-style: italic;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+}
+*/
+
+/* bio in left column */
+.store-bio {
+    color: #c9c9c9;
+    font-size: 1rem;
+    max-width: 640px;
+    line-height: 1.5;
+    margin-bottom: 0.6rem;
+    text-align: left;
+}
+
+/* contact info below description */
+.store-contact {
+    color: #d4af37;
+    font-size: 0.95rem;
+}
+
+/* action buttons sit side by side on the right */
+.dashboard-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+
+/* shared action button styling - Updated by Day Ekoi 4/20/26 - matches back button pill */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(212,175,55,0.5);
+    border-radius: 999px;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+
+/* button hover */
+.action-btn:hover {
+    background: rgba(212,175,55,0.15);
+    color: #f0cc55;
+}
+
+.action-btn.is-disabled,
+.action-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* deactivate button - danger variant */
+.action-btn--danger {
+    border-color: rgba(220, 53, 53, 0.5);
+    color: #e05555;
+}
+
+.action-btn--danger:hover {
+    background: rgba(220, 53, 53, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 53, 0.8);
+}
+
+
+/* listings section */
+.listings-section {
+    margin-top: 2rem;
+}
+
+
+/* listings grid */
+.listing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+
+/* listing card placeholder */
+.listing-card {
+    min-height: 320px;
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.28);
+    position: relative;
+}
+
+.listing-card-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.listing-card-image--empty {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.listing-card-body {
+    padding: 1rem 1rem 1.2rem;
+    position: relative;
+}
+
+.listing-card-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.35rem;
+}
+
+.listing-card-price {
+    color: #d4af37;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.listing-card-meta {
+    color: #c9c9c9;
+    font-size: 0.84rem;
+}
+
+.listing-menu-wrap {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 0.9rem;
+}
+
+.listing-menu-trigger {
+    background: transparent;
+    color: #d4af37;
+    border: none;
+    border-radius: 999px;
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.listing-menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    min-width: 180px;
+    background: rgba(0, 0, 0, 0.96);
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 10px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.34);
+    overflow: hidden;
+    z-index: 10;
+}
+
+.listing-menu-dropdown.active {
+    display: block;
+}
+
+.listing-menu-item {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: white;
+    text-align: left;
+    padding: 0.8rem 0.9rem;
+    cursor: pointer;
+}
+
+.listing-menu-item:last-child {
+    border-bottom: none;
+}
+
+.listing-menu-item:hover {
+    background: rgba(212,175,55,0.12);
+}
+
+.listing-menu-item.is-disabled,
+.listing-menu-item:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.listing-menu-item.is-disabled:hover,
+.listing-menu-item:disabled:hover {
+    background: transparent;
+}
+
+.listing-menu-delete {
+    color: #ff8f8f;
+}
+
+
+/* tablet */
+@media (max-width: 1100px) {
+    .listing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .store-info-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .store-info-secondary {
+        justify-self: start;
+        align-items: flex-start;
+    }
+
+    .dashboard-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+}
+
+
+/* smaller tablet */
+@media (max-width: 850px) {
+    .listing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .banner-box p {
+        font-size: 2.8rem;
+    }
+
+    .logo-circle {
+        width: 180px;
+        height: 180px;
+        bottom: -4.5rem;
+    }
+
+    .logo-circle p {
+        font-size: 2rem;
+    }
+
+    .store-info-row {
+        padding-left: 0;
+        padding-top: 4.8rem;
+    }
+}
+
+
+/* mobile */
+@media (max-width: 600px) {
+    .dashboard-title {
+        font-size: 2rem;
+    }
+
+    .banner-box {
+        min-height: 200px;
+    }
+
+    .banner-box p {
+        font-size: 2.1rem;
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .logo-circle {
+        width: 140px;
+        height: 140px;
+        left: 1rem;
+        bottom: -3.5rem;
+    }
+
+    .logo-circle p {
+        font-size: 1.6rem;
+    }
+
+    .listing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .store-info-row {
+        padding-top: 4.2rem;
+    }
+}

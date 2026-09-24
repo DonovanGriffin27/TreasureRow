@@ -1,0 +1,71 @@
+<!--
+ storefront_view.html
+    The Vault Campus Marketplace
+    CSC 405 Sp 26'
+    Created by Day Ekoi - Iteration 4
+    3/18/2026-3/22/2026
+    Updated by Day Ekoi - Iteration 5 - 4/20/26 - Facebook-style layout, back arrow above banner, info moved below banner
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storefront View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront_view.css') }}">
+</head>
+<body>
+
+<main class="storefront-view-page">
+
+    <!-- back arrow sits above the banner, always visible -->
+    <div class="back-row">
+        <button class="back-btn" onclick="window.location.href='/storefronts'">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back
+        </button>
+    </div>
+
+    <!-- banner + overlapping logo -->
+    <section class="storefront-top">
+        <h1 class="page-title" id="pageTitle">Loading...</h1>
+        <div class="storefront-banner" id="storefrontBanner"></div>
+
+        <div class="storefront-logo" id="storefrontLogoWrap">
+            <img id="storefrontLogo" alt="Storefront Logo" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            <p id="logoFallback">Logo</p>
+        </div>
+    </section>
+
+    <!-- profile info row: Facebook-style, below banner -->
+    <section class="profile-info-row">
+        <div class="profile-left">
+            <p class="store-bio" id="storeDescription"></p>
+            <p class="contact-info" id="contactInfo"></p>
+        </div>
+    </section>
+
+    <!-- listings -->
+    <section class="storefront-listings-section">
+        <h3 class="listings-heading" id="listingsHeading">Listings</h3>
+        <div class="listing-grid" id="listingGrid"></div>
+    </section>
+
+    <div class="listing-lightbox" id="listingLightbox">
+        <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close image preview">&times;</button>
+        <button class="lightbox-nav lightbox-nav--left" id="lightboxPrev" type="button" aria-label="Previous image">&#10094;</button>
+        <div class="lightbox-stage">
+            <img id="lightboxImage" class="lightbox-image" alt="Listing preview">
+            <div id="lightboxDots" class="lightbox-dots"></div>
+        </div>
+        <button class="lightbox-nav lightbox-nav--right" id="lightboxNext" type="button" aria-label="Next image">&#10095;</button>
+    </div>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/storefront_view.js') }}"></script>
+</body>
+</html>
