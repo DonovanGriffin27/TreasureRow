@@ -1,4 +1,5 @@
 <!--Made by Madison Boyd on  3/23/2026-->
+<!--Updated by Donovan Griffin - 10/1/2026 - fixed account ownership bug: getCurrentUserId() now always fetches /auth/api/auth/me instead of trusting cached localStorage/sessionStorage, which let a second account inherit the first account's cached id after switching logins in the same browser; added clearCachedIdentity() on logout as a safety net-->
 
 <!DOCTYPE html>
 <html lang="en">
