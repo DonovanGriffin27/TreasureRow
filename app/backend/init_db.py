@@ -330,6 +330,35 @@ def create_vault_tables():
         """
         cur.execute(create_order_items_table)
 
+        # messages table (new)
+        create_messages_table = """
+            CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                receiver_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                listing_id INTEGER REFERENCES listings(id) ON DELETE SET NULL,
+                body TEXT NOT NULL,
+                is_read BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CHECK (sender_id <> receiver_id)
+            );
+        """
+        cur.execute(create_messages_table)
+
+        # reviews table (new)
+        create_reviews_table = """
+            CREATE TABLE IF NOT EXISTS reviews (
+                id SERIAL PRIMARY KEY,
+                storefront_id INTEGER NOT NULL REFERENCES storefronts(id) ON DELETE CASCADE,
+                reviewer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                rating INTEGER NOT NULL CHECK (rating BETWEEN 1 and 5),
+                comment TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (storefront_id, reviewer_id)
+        );
+        """
+        cur.execute(create_reviews_table)
+
         conn.commit()
 
         print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, and order_items tables are ready.")
