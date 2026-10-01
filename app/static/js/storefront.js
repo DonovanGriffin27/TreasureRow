@@ -1,5 +1,6 @@
 /* 
 storefront.js
+// Test commit by Donovan - verifying push workflow
 
   The Vault Campus Marketplace
   CSC 405 Sp 26
