@@ -1,4 +1,5 @@
-# By Ryan Grimes - Updated 3/19/2026
+# By Ryan Grimes - Updated 3/19/2026 | Edited by Jonah Goodwine 9/30
+import os
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash, jsonify
 from services.auth_services import AuthService 
 from config.db import get_connection
@@ -223,8 +224,10 @@ def admin_login():
         user = request.form.get('username')
         pw = request.form.get('password')
 
-        # temporary hardcoded admin login for testing
-        if user == "admin" and pw == "admin123":
+        # admin login pulled from .env (changed from temp hardcode)
+        adminUser = os.getenv("ADMIN_USERNAME")
+        adminPass = os.getenv("ADMIN_PASSWORD")
+        if adminUser and adminPass and user == adminUser and pw == adminPass:
             session['user'] = user
             session['role'] = 'admin'
             return redirect(url_for('admin.admin_dashboard'))
