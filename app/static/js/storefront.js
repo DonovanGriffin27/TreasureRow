@@ -83,7 +83,7 @@ function createCard(store) {
     <div class="storefront-card-body">
       <div class="storefront-header">
         ${logo
-          ? `<img class="storefront-logo" src="${logo}">`
+          ? `<img class="storefront-logo" src="${logo}" onerror="this.onerror=null;this.src='/static/images/logo.png';">`
           : `<div class="storefront-logo"></div>`
         }
         <div>
@@ -132,6 +132,16 @@ function createCard(store) {
   const left = card.querySelector(".left");
   const right = card.querySelector(".right");
   const enterBtn = card.querySelector(".enter-btn");
+
+  // Fallback for the carousel image — covers the initial render above and
+  // both arrow-click updates below, so a broken image never shows the
+  // browser's default broken-icon.
+  if (img && img.tagName === "IMG") {
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = "/static/images/logo.png";
+    };
+  }
 
 
 // Card Arrow button functionality 
