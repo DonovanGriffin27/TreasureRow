@@ -1,7 +1,7 @@
 import sys
 import os
 from flask import Flask, render_template, redirect, url_for, session
-
+#Cameron Ridgley edited 10/01
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend'))) # Updated 3/19/2026 by Ryan Grimes
 
 from controllers.listing_controller import listing_bp
@@ -20,7 +20,9 @@ def create_app():
                 template_folder='templates',
                 static_folder='static')
 
-    app.secret_key = 'vault_secure_key_2026'
+    app.secret_key = os.getenv("SECRET_KEY") # pull secret key from .env
+    if not app.secret_key:
+        print("Error: SECRET_KEY not set in .env file")
 
     # Run DB migrations on every startup so new columns are always present
     try:
@@ -32,12 +34,18 @@ def create_app():
     #The Welcome Screen (Default) Ryan Grimes 3/19/2026
     @app.route('/')
     def index():
-        return render_template('index.html')
+         if not session.get("user"):
+            return redirect(url_for("auth.login"))
+         else:
+            return render_template('index.html')
 
     # Route to the main storefront page after login - Updated 3/22/2026
     @app.route('/storefront')
     def storefront():
-        return render_template('storefront.html')
+         if not session.get("user"):
+            return redirect(url_for("auth.login"))
+         else:
+            return render_template('storefront.html')
 
     # Route to the "Create Storefront" form - Updated 3/22/2026
     @app.route('/create-storefront')
@@ -52,7 +60,10 @@ def create_app():
     #Route to the Cart screen - Updated 3/22/2026
     @app.route('/cart')
     def cart():
-        return render_template('cart.html')
+         if not session.get("user"):
+            return redirect(url_for("auth.login"))
+         else:
+            return render_template('cart.html')
 
     #Route to the Checkout - Updated 4/22/2026
     @app.route('/checkout')
