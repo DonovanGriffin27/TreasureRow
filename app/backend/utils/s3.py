@@ -2,6 +2,10 @@
 # The Vault Campus Marketplace
 # Created by Day Ekoi - Iteration 5 4/10/26
 # Handles all S3 image upload functionality
+# Updated by Donovan Griffin - 9/8/2026 - added a local-storage fallback for
+# local development: when AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or
+# AWS_S3_BUCKET aren't set, uploads save to static/uploads/ instead of S3;
+# behavior is unchanged when real AWS credentials are present
 
 import boto3
 import os
