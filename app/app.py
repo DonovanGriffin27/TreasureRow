@@ -20,7 +20,9 @@ def create_app():
                 template_folder='templates',
                 static_folder='static')
 
-    app.secret_key = 'vault_secure_key_2026'
+    app.secret_key = os.getenv("SECRET_KEY") # pull secret key from .env
+    if not app.secret_key:
+        print("Error: SECRET_KEY not set in .env file")
 
     # Run DB migrations on every startup so new columns are always present
     try:

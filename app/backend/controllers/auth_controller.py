@@ -1,7 +1,9 @@
-# By Ryan Grimes - Updated 3/19/2026
+# By Ryan Grimes - Updated 3/19/2026 | Edited by Jonah Goodwine 9/30
+import os
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash, jsonify
 from services.auth_services import AuthService 
 from config.db import get_connection
+from models.auth_model import get_user_by_username, get_listing_availability, add_cart_item, remove_cart_item
 
 auth_bp = Blueprint('auth', __name__)
 service = AuthService()
@@ -25,13 +27,10 @@ def login():
 
             #store user_id in sesion for storefront ownership checks - added by Day E 4/9/26
             try:
-                cur = conn.cursor()
-                cur.execute("SELECT id FROM users WHERE username = %s", (user,))
-                row = cur.fetchone()
+                row = get_user_by_username(user)
                 if row:
                     session['user_id'] = row[0] # Store user_id in session
                     session['cart'] = service.get_user_cart(conn, row[0]) # Load user's cart into session on login
-                    cur.close()
             except Exception as e:
                 print(f"Error fetching user_id for session: {e}")
             finally:
@@ -106,15 +105,7 @@ def add_to_cart():
 
     # Validate listing availability before adding to cart
     try:
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute(
-            "SELECT status, quantity_on_hand, is_made_to_order FROM listings WHERE id = %s",
-            (item_id,)
-        )
-        listing = cur.fetchone()
-        cur.close()
-        conn.close()
+        listing = get_listing_availability(item_id)
         if not listing:
             return jsonify({"error": "This item is no longer available."}), 404
         listing_status, qty_on_hand, is_made_to_order = listing
@@ -127,15 +118,7 @@ def add_to_cart():
 
     # PERSIST TO DATABASE
     try:
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("""
-            INSERT INTO cart_items (user_id, item_id, item_name, price, quantity, size)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (session['user_id'], item_id, item_name, price, quantity, size))
-        conn.commit()
-        cur.close()
-        conn.close()
+        add_cart_item(session['user_id'], item_id, item_name, price, quantity, size)
     except Exception as e:
         print(f"DB Error adding to cart: {e}")
 
@@ -161,20 +144,7 @@ def remove_from_cart(index):
             
             # REMOVE FROM DATABASE
             try:
-                conn = get_connection()
-                cur = conn.cursor()
-                # We delete one instance of this item for this user
-                cur.execute("""
-                    DELETE FROM cart_items 
-                    WHERE id = (
-                        SELECT id FROM cart_items 
-                        WHERE user_id = %s AND item_name = %s AND size = %s
-                        LIMIT 1
-                    )
-                """, (session['user_id'], removed_item['name'], removed_item['size']))
-                conn.commit()
-                cur.close()
-                conn.close()
+                remove_cart_item(session['user_id'], removed_item['name'], removed_item['size'])
             except Exception as e:
                 print(f"DB Error removing item: {e}")
 
@@ -190,11 +160,7 @@ def get_current_session_user():
         return jsonify({"error": "Not logged in"}), 401
     
     try:
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT id, username, role FROM users WHERE username = %s", (session['user'],))
-        user = cur.fetchone()
-        conn.close()
+        user = get_user_by_username(session['user'])
 
         if not user:
             return jsonify({"error": "User not found"}), 404
@@ -223,8 +189,10 @@ def admin_login():
         user = request.form.get('username')
         pw = request.form.get('password')
 
-        # temporary hardcoded admin login for testing
-        if user == "admin" and pw == "admin123":
+        # admin login pulled from .env (changed from temp hardcode)
+        adminUser = os.getenv("ADMIN_USERNAME")
+        adminPass = os.getenv("ADMIN_PASSWORD")
+        if adminUser and adminPass and user == adminUser and pw == adminPass:
             session['user'] = user
             session['role'] = 'admin'
             return redirect(url_for('admin.admin_dashboard'))
