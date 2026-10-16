@@ -86,6 +86,18 @@ def create_app():
             return redirect(url_for("auth.login"))
         return render_template('my_storefront.html')
 
+    # Route to the About page - Added by Donovan Griffin, Iteration 3
+    # (fixes the "About" storefront nav link, previously commented out with no destination)
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+    # Route to the Sitemap page - Added by Donovan Griffin, Iteration 3
+    # (fixes the "Sitemap" storefront nav link, previously commented out with no destination)
+    @app.route('/sitemap')
+    def sitemap():
+        return render_template('sitemap.html')
+
     # Register Blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(listing_bp)

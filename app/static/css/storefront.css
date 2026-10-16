@@ -247,6 +247,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
     justify-content: space-between; /* Updated by Day E 3/22/26 */
     align-items: center; /* Updated by Day E 3/22/26 */
     padding: 4px 0; /* Updated by Day E 3/22/26 */
+    text-decoration: none; /* Added by Donovan Griffin, Iteration 3 - nav-item is now a real <a> link */
 }
 
 .nav-item:hover {
