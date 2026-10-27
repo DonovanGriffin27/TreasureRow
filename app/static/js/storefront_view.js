@@ -1,3 +1,7 @@
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+}
+
 /*
     storefront_view.js
 
@@ -246,7 +250,7 @@ async function getWishlistIdSet(userId) {
 }
 
 function renderEmpty(message) {
-    listingGrid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column: 1/-1;">${message}</p>`;
+    listingGrid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column: 1/-1;">${escapeHtml(message)}</p>`;
 }
 
 function updateDots(container, images, activeIndex, dotClassName, onSelect) {
@@ -399,7 +403,7 @@ async function createListingCard(item, wishlistIds, currentUserId) {
         `;
     } else if (hasSizes) {
         const sizeOptionsMarkup = sizeOptions
-            .map((size, index) => `<option value="${size}" ${index === 0 ? "selected" : ""}>${size}</option>`)
+            .map((size, index) => `<option value="${escapeHtml(size)}" ${index === 0 ? "selected" : ""}>${escapeHtml(size)}</option>`)
             .join("");
         sizeFieldMarkup = `
             <label class="field-label" for="sizeSelect-${listingId}">Size</label>
@@ -417,7 +421,7 @@ async function createListingCard(item, wishlistIds, currentUserId) {
         : "";
 
     const descriptionMarkup = item.description
-        ? `<p class="listing-description">${item.description}</p>`
+        ? `<p class="listing-description">${escapeHtml(item.description)}</p>`
         : "";
 
     const carousel = createListingImageCarousel(images, title);
@@ -425,8 +429,8 @@ async function createListingCard(item, wishlistIds, currentUserId) {
     card.innerHTML = `
         <div class="listing-info">
             <div class="listing-copy">
-                <span class="item-name">${title}</span>
-                <span class="item-price">${price}</span>
+                <span class="item-name">${escapeHtml(title)}</span>
+                <span class="item-price">${escapeHtml(price)}</span>
                 ${madeToOrderBadge}
             </div>
             <div class="listing-actions">

@@ -706,14 +706,13 @@ def run_api_tests(owner_id, storefront_id):
         print(f"  [SKIP] Could not load Flask app for API tests: {e}")
         return
 
-    auth_headers = {
-        "X-User-Id": str(owner_id),
-        "X-User-Role": "student"
-    }
-    admin_headers = {
-        "X-User-Id": "0",
-        "X-User-Role": "admin"
-    }
+    def login_as(user_id, role="student"):
+        with client.session_transaction() as sess:
+            sess.clear()
+            sess["user"] = f"test-user-{user_id}"
+            sess["user_id"] = user_id
+            sess["role"] = role
+        return {}
 
     # ----------------------------------------------------------
     # TEST 4.1 — GET /api/storefronts (all storefronts)
@@ -765,7 +764,7 @@ def run_api_tests(owner_id, storefront_id):
 
     res = client.post("/api/storefronts",
         json={"brand_name": "API Created Brand"},
-        headers={"X-User-Id": str(api_create_uid), "X-User-Role": "student"},
+        headers=login_as(api_create_uid),
         content_type="application/json"
     )
     check("Status 201", res.status_code == 201)
@@ -811,7 +810,7 @@ def run_api_tests(owner_id, storefront_id):
 
     res = client.post("/api/storefronts",
         json={},
-        headers={"X-User-Id": str(nobrand_api_uid), "X-User-Role": "student"},
+        headers=login_as(nobrand_api_uid),
         content_type="application/json"
     )
     check("Status 400", res.status_code == 400)
@@ -829,7 +828,7 @@ def run_api_tests(owner_id, storefront_id):
     #              Expects 200 and a storefront owned by that user.
     # ----------------------------------------------------------
     subsection("TEST 4.7 — GET /api/storefronts/me: authenticated returns own storefront")
-    res = client.get("/api/storefronts/me", headers=auth_headers)
+    res = client.get("/api/storefronts/me", headers=login_as(owner_id))
     check("Status 200", res.status_code == 200)
     data = res.get_json()
     check("owner_id matches authenticated user", data.get("owner_id") == owner_id)
@@ -851,7 +850,7 @@ def run_api_tests(owner_id, storefront_id):
     subsection("TEST 4.9 — PUT /api/storefronts/<id>: owner update returns 200")
     res = client.put(f"/api/storefronts/{storefront_id}",
         json={"bio": "API updated bio"},
-        headers=auth_headers,
+        headers=login_as(owner_id),
         content_type="application/json"
     )
     check("Status 200", res.status_code == 200)
@@ -864,10 +863,9 @@ def run_api_tests(owner_id, storefront_id):
     #              Expects a 403 Forbidden response.
     # ----------------------------------------------------------
     subsection("TEST 4.10 — PUT /api/storefronts/<id>: non-owner returns 403")
-    wrong_headers = {"X-User-Id": "999999997", "X-User-Role": "student"}
     res = client.put(f"/api/storefronts/{storefront_id}",
         json={"bio": "Hacked bio"},
-        headers=wrong_headers,
+        headers=login_as(999999997),
         content_type="application/json"
     )
     check("Status 403", res.status_code == 403)
@@ -878,7 +876,7 @@ def run_api_tests(owner_id, storefront_id):
     #              Expects 200 and is_active = False in the response.
     # ----------------------------------------------------------
     subsection("TEST 4.11 — PATCH /api/storefronts/<id>/deactivate: owner deactivates")
-    res = client.patch(f"/api/storefronts/{storefront_id}/deactivate", headers=auth_headers)
+    res = client.patch(f"/api/storefronts/{storefront_id}/deactivate", headers=login_as(owner_id))
     check("Status 200", res.status_code == 200)
     data = res.get_json()
     check("is_active is False in response", data.get("is_active") is False)
@@ -890,8 +888,7 @@ def run_api_tests(owner_id, storefront_id):
     #              Expects a 403 Forbidden response.
     # ----------------------------------------------------------
     subsection("TEST 4.12 — PATCH /api/storefronts/<id>/deactivate: non-owner returns 403")
-    wrong_headers = {"X-User-Id": "999999997", "X-User-Role": "student"}
-    res = client.patch(f"/api/storefronts/{storefront_id}/deactivate", headers=wrong_headers)
+    res = client.patch(f"/api/storefronts/{storefront_id}/deactivate", headers=login_as(999999997))
     check("Status 403", res.status_code == 403)
 
 

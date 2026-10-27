@@ -25,6 +25,23 @@ def get_user_by_username(username):
 
     return row
 
+def get_listing_for_cart(itemId):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT title, price, status, quantity_on_hand, is_made_to_order FROM listings
+            WHERE id = %s
+    """
+
+    cur.execute(query, (itemId,))
+    row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return row
+
 # returns -> (status, quantity_on_hand, is_made_to_order) or nothing
 def get_listing_availability(itemId):
     conn = get_connection()

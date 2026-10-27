@@ -2,7 +2,7 @@
 # CSC 405 Sp 26'
 # Updated by Day Ekoi - 4/22/26
 
-import random
+import secrets
 import string
 from datetime import datetime
 
@@ -21,7 +21,7 @@ from models.checkout_model import (
 
 def _generate_confirmation_number():
     date_str = datetime.now().strftime("%y%m%d")
-    suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    suffix = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     return f"VAULT-{date_str}-{suffix}"
 
 

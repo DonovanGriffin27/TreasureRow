@@ -48,6 +48,8 @@ class TestWishlistFeature(unittest.TestCase):
             conn.close()
 
     def setUp(self):
+        with self.client.session_transaction() as sess:
+            sess.clear()
         self._cleanup_wishlist_item()
 
     def tearDown(self):
@@ -70,7 +72,12 @@ class TestWishlistFeature(unittest.TestCase):
             conn.close()
 
     def _auth_headers(self):
-        return {"X-User-Id": str(self.user_id)}
+        with self.client.session_transaction() as sess:
+            sess.clear()
+            sess["user"] = f"test-user-{self.user_id}"
+            sess["user_id"] = self.user_id
+            sess["role"] = "user"
+        return {}
 
     def test_add_get_check_and_remove_wishlist_item(self):
         add_response = self.client.post(
