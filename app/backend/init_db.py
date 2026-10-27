@@ -13,7 +13,7 @@ Run this file manually when:
 
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - Iteration 5 - 4/20/26 - added contact_info, preview_image_1-4, categories columns to storefronts; added ALTER TABLE migrations
+# Updated - Iteration 5 - 4/20/26 - added contact_info, preview_image_1-4, categories columns to storefronts; added ALTER TABLE migrations
 
 import psycopg2
 import os
@@ -21,15 +21,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from db import get_connection
+
 
 def create_vault_tables():
     try:
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            database=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD")
-        )
+        # shared connection settings (SSL + timeout) - Donovan Griffin, Iteration 3
+        conn = get_connection()
 
         cur = conn.cursor()
 
@@ -50,8 +48,7 @@ def create_vault_tables():
 
         # ________________________________________________________
         # STOREFRONTS TABLE (One storefront per user)
-        # Added by Day Ekoi 2/26/26
-        # Updated by Day Ekoi 4/20/26 - added contact_info, preview_image_1-4 columns
+        # Updated 4/20/26 - added contact_info, preview_image_1-4 columns
         # ________________________________________________________
         create_storefronts_table = """
             CREATE TABLE IF NOT EXISTS storefronts (
@@ -79,7 +76,7 @@ def create_vault_tables():
         """
         cur.execute(create_storefronts_table)
 
-        # Migrations for existing databases - Added by Day Ekoi 4/20/26
+        # Migrations for existing databases - Added 4/20/26
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS contact_info TEXT;")
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS preview_image_1 TEXT;")
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS preview_image_2 TEXT;")
@@ -92,7 +89,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTINGS TABLE (Each listing belongs to a storefront)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listings_table = """
             CREATE TABLE IF NOT EXISTS listings (
@@ -133,7 +129,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTING IMAGES TABLE (Multiple images per listing)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listing_images_table = """
             CREATE TABLE IF NOT EXISTS listing_images (
@@ -153,7 +148,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTING SIZES TABLE (Inventory per size)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listing_sizes_table = """
             CREATE TABLE IF NOT EXISTS listing_sizes (
@@ -176,7 +170,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # PURCHASES TABLE (Purchase history for users)
-        # Added by Elali McNair 3/3/26
         # The frontend protion of this code is not finished or implemented yet. Therfore, this code is not oporational or properly implemented yet.
         # ________________________________________________________
         create_purchases_table = """
@@ -203,7 +196,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # WISHLIST TABLE (User wishlists)
-        # Added by Elali McNair 3/3/26
         # The frontend protion of this code is not finished or implemented yet. Therfore, this code is not oporational or properly implemented yet.
         # ________________________________________________________
         create_wishlist_table = """
@@ -261,7 +253,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # CART ITEMS TABLE (Persistent Bag)
-        # Added by Ryan Grimes 4/12/26
         # ________________________________________________________
         create_cart_items_table = """
             CREATE TABLE IF NOT EXISTS cart_items (
@@ -284,7 +275,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # ORDERS TABLE (Checkout orders)
-        # Added by Day Ekoi 4/22/26
         # ________________________________________________________
         create_orders_table = """
             CREATE TABLE IF NOT EXISTS orders (
@@ -310,7 +300,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # ORDER ITEMS TABLE (Items per order)
-        # Added by Day Ekoi 4/22/26
         # ________________________________________________________
         create_order_items_table = """
             CREATE TABLE IF NOT EXISTS order_items (
@@ -329,6 +318,54 @@ def create_vault_tables():
             );
         """
         cur.execute(create_order_items_table)
+
+        # ________________________________________________________
+        # TREASURE TOKENS: wallets, ledger, and order escrow
+        # Added by Donovan Griffin, Iteration 3 - in-app token payment system.
+        # 1 Treasure Token (TT) = $1.00 of listing price; no real money or card
+        # data is ever handled. See docs/payment-tokens/README.md.
+        # ________________________________________________________
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS wallets (
+                user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                balance NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS order_escrow (
+                id SERIAL PRIMARY KEY,
+                order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+                buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                amount NUMERIC(12,2) NOT NULL CHECK (amount > 0),
+                status VARCHAR(20) NOT NULL DEFAULT 'HELD'
+                    CHECK (status IN ('HELD', 'RELEASED', 'REFUNDED', 'LOCKED')),
+                code_nonce VARCHAR(64) NOT NULL,
+                failed_attempts INTEGER NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                resolved_at TIMESTAMP,
+                UNIQUE (order_id, seller_id)
+            );
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS token_ledger (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                amount NUMERIC(12,2) NOT NULL CHECK (amount <> 0),
+                entry_type VARCHAR(30) NOT NULL CHECK (entry_type IN
+                    ('STARTING_BALANCE', 'ADMIN_GRANT', 'ESCROW_HOLD', 'ESCROW_RELEASE', 'ESCROW_REFUND')),
+                order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+                escrow_id INTEGER REFERENCES order_escrow(id) ON DELETE SET NULL,
+                note TEXT,
+                created_by VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_token_ledger_user ON token_ledger(user_id);")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_order_escrow_seller ON order_escrow(seller_id, status);")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_order_escrow_buyer ON order_escrow(buyer_id, status);")
 
         # messages table (new)
         create_messages_table = """
@@ -361,7 +398,7 @@ def create_vault_tables():
 
         conn.commit()
 
-        print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, and order_items tables are ready.")
+        print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, order_items, wallets, order_escrow, and token_ledger tables are ready.")
 
         cur.close()
         conn.close()

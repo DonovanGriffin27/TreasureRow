@@ -17,3 +17,6 @@ ENV/
 
 # Local-dev image uploads (S3 fallback)
 static/uploads/
+
+# local test-database settings (see .env.test.example)
+.env.test
