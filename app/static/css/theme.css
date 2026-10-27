@@ -1060,6 +1060,9 @@ body.tr-app {
 
 .tr-app.tr-admin h2 { margin-top: 0; font-size: 1.05rem; }
 
+/* admin.css sets section text to white (old dark theme); sections are white now */
+.tr-app.tr-admin section { color: var(--tr-text); }
+
 .tr-app.tr-admin table { width: 100%; border-collapse: collapse; background: var(--tr-surface); color: var(--tr-text); }
 
 .tr-app.tr-admin th {
@@ -1072,7 +1075,7 @@ body.tr-app {
 
 .tr-app.tr-admin td { border: none; border-bottom: 1px solid var(--tr-divider); color: var(--tr-text); }
 
-.tr-app.tr-admin button {
+.tr-app.tr-admin main button {
     background: var(--tr-blue);
     color: var(--tr-white);
     border: none;
@@ -1082,7 +1085,7 @@ body.tr-app {
     cursor: pointer;
 }
 
-.tr-app.tr-admin button.delete { background: var(--tr-red); }
+.tr-app.tr-admin main button.delete { background: var(--tr-red); }
 
 
 /* ===================== Sign-in pages (portal, login, signup, admin) ===================== */
@@ -1475,6 +1478,150 @@ body.tr-app {
             url("/static/images/landing_treasure.jpg") 72% center / cover no-repeat,
             var(--tr-navy);
     }
+}
+
+
+/* ===================== Treasure Tokens ===================== */
+/* Wallet, checkout summary, pickup codes - Donovan Griffin, Iteration 3 */
+
+.tr-token-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: var(--tr-white) !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.tr-token-chip:hover { background: rgba(255, 255, 255, 0.24); }
+
+.tr-token-chip[hidden] { display: none; }
+
+.tr-token-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #f6d778, var(--tr-gold) 60%, #a77c0c);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.tr-app .token-summary {
+    margin: 14px 0;
+    padding: 12px 14px;
+    border-radius: var(--tr-radius);
+    background: var(--tr-gold-50);
+    border: 1px solid var(--tr-gold);
+    font-size: 0.92rem;
+}
+
+.tr-app .token-summary div { display: flex; justify-content: space-between; padding: 3px 0; }
+
+.tr-app .token-summary .is-short { color: var(--tr-red); }
+
+.tr-app .token-note { margin: 8px 0 0; color: var(--tr-muted); font-size: 0.82rem; line-height: 1.4; }
+
+.tr-app .pickup-help,
+.tr-app .token-help { color: var(--tr-muted); font-size: 0.9rem; margin: 0 0 12px; }
+
+.tr-app .pickup-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: var(--tr-radius);
+    border: 1px solid var(--tr-divider);
+    border-left: 5px solid var(--tr-gold);
+    background: var(--tr-surface);
+}
+
+.tr-app .pickup-card.pickup-released { border-left-color: var(--tr-blue); }
+.tr-app .pickup-card.pickup-refunded,
+.tr-app .pickup-card.pickup-locked { border-left-color: var(--tr-red); }
+
+.tr-app .pickup-meta { display: flex; flex-direction: column; gap: 2px; }
+
+.tr-app .pickup-meta span { color: var(--tr-muted); font-size: 0.88rem; }
+
+.tr-app .pickup-code {
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: var(--tr-blue-50);
+    color: var(--tr-blue-dark);
+    border: 1px dashed var(--tr-blue);
+}
+
+.tr-app .pickup-code.small { font-size: 1.05rem; letter-spacing: 2px; padding: 4px 10px; }
+
+.tr-app .wallet-balance {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 14px 22px;
+    margin-bottom: 18px;
+    border-radius: var(--tr-radius);
+    background: var(--tr-gold-50);
+    border: 1px solid var(--tr-gold);
+}
+
+.tr-app .wallet-balance span { color: var(--tr-gold-text); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+.tr-app .wallet-balance strong { font-size: 1.8rem; color: var(--tr-text); }
+
+.tr-app .token-subhead { margin: 18px 0 6px; font-size: 1rem; }
+
+.tr-app .token-rows { display: flex; flex-direction: column; gap: 10px; }
+
+.tr-app .token-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    border-radius: var(--tr-radius);
+    background: var(--tr-surface);
+    border: 1px solid var(--tr-divider);
+}
+
+.tr-app .token-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; }
+
+.tr-app .token-row-main span { color: var(--tr-muted); font-size: 0.85rem; }
+
+.tr-app .pickup-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.tr-app .pickup-form input { width: 130px; padding: 8px 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+.tr-app .token-ledger { display: flex; flex-direction: column; }
+
+.tr-app .token-ledger-row {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 12px;
+    padding: 9px 4px;
+    border-bottom: 1px solid var(--tr-divider);
+    font-size: 0.9rem;
+    align-items: baseline;
+}
+
+.tr-app .token-ledger-row small { display: block; color: var(--tr-muted); }
+
+.tr-app .token-ledger-row .is-credit { color: var(--tr-green); }
+
+.tr-app .token-ledger-row .is-debit { color: var(--tr-red); }
+
+@media (max-width: 760px) {
+    .tr-token-chip { padding: 5px 9px; font-size: 0.78rem; }
 }
 
 

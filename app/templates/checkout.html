@@ -55,7 +55,14 @@ Updated 4/22/26 - wired to checkout.js, added field IDs, error display
                 <span class="gold">Total: </span>
                 <span class="total-amount">$0.00</span>
             </div>
-            <button type="submit" id="submitCheckoutBtn" form="checkoutForm" class="primary-btn">Place Order</button>
+            <!-- Treasure Tokens - Donovan Griffin, Iteration 3 -->
+            <div class="token-summary" id="tokenSummary">
+                <div><span>You pay</span><strong id="tokenTotal">0.00 TT</strong></div>
+                <div><span>Your wallet</span><strong id="walletBalance">…</strong></div>
+                <div><span>After this order</span><strong id="walletAfter">…</strong></div>
+                <p class="token-note">Tokens are held safely until you pick up your items. Give each seller your pickup code at the meetup.</p>
+            </div>
+            <button type="submit" id="submitCheckoutBtn" form="checkoutForm" class="primary-btn">Pay with Treasure Tokens</button>
         </aside>
     </main>
 

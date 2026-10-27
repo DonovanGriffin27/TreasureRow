@@ -124,6 +124,48 @@
         </table>
     </section>
 
+    <!-- TREASURE TOKENS SECTIONS - Donovan Griffin, Iteration 3 -->
+    <section>
+        <h2>Treasure Tokens: Wallets</h2>
+
+        <button onclick="loadWallets()">Load Wallets</button>
+
+        <table id="walletsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Balance (TT)</th>
+                    <th>Grant Tokens</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Pickups Awaiting Confirmation</h2>
+
+        <button onclick="loadEscrow()">Load Pickups</button>
+
+        <table id="escrowTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order #</th>
+                    <th>Buyer</th>
+                    <th>Seller</th>
+                    <th>Amount (TT)</th>
+                    <th>Status</th>
+                    <th>Wrong Codes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
     <!-- Link to JavaScript file (handles API calls and UI updates) -->
     </main>
     <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>

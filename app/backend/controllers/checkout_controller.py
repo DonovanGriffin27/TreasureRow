@@ -3,6 +3,7 @@
 # Updated - 4/22/26 - API-only blueprint
 
 from flask import Blueprint, request, jsonify, session
+from services.wallet_service import TokenError
 
 from services.checkout_service import (
     complete_transaction_from_session,
@@ -34,7 +35,10 @@ def complete_checkout():
             "confirmation_number": result["confirmation_number"],
             "order_id": result["order"]["id"],
             "total_amount": result["total_amount"],
+            "escrows": result["escrows"],  # pickup codes per seller (Treasure Tokens)
         }), 200
+    except TokenError as e:
+        return jsonify({"error": str(e)}), e.status
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

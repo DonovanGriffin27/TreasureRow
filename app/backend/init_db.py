@@ -319,6 +319,54 @@ def create_vault_tables():
         """
         cur.execute(create_order_items_table)
 
+        # ________________________________________________________
+        # TREASURE TOKENS: wallets, ledger, and order escrow
+        # Added by Donovan Griffin, Iteration 3 - in-app token payment system.
+        # 1 Treasure Token (TT) = $1.00 of listing price; no real money or card
+        # data is ever handled. See docs/payment-tokens/README.md.
+        # ________________________________________________________
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS wallets (
+                user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                balance NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS order_escrow (
+                id SERIAL PRIMARY KEY,
+                order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+                buyer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                amount NUMERIC(12,2) NOT NULL CHECK (amount > 0),
+                status VARCHAR(20) NOT NULL DEFAULT 'HELD'
+                    CHECK (status IN ('HELD', 'RELEASED', 'REFUNDED', 'LOCKED')),
+                code_nonce VARCHAR(64) NOT NULL,
+                failed_attempts INTEGER NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                resolved_at TIMESTAMP,
+                UNIQUE (order_id, seller_id)
+            );
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS token_ledger (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                amount NUMERIC(12,2) NOT NULL CHECK (amount <> 0),
+                entry_type VARCHAR(30) NOT NULL CHECK (entry_type IN
+                    ('STARTING_BALANCE', 'ADMIN_GRANT', 'ESCROW_HOLD', 'ESCROW_RELEASE', 'ESCROW_REFUND')),
+                order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+                escrow_id INTEGER REFERENCES order_escrow(id) ON DELETE SET NULL,
+                note TEXT,
+                created_by VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_token_ledger_user ON token_ledger(user_id);")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_order_escrow_seller ON order_escrow(seller_id, status);")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_order_escrow_buyer ON order_escrow(buyer_id, status);")
+
         # messages table (new)
         create_messages_table = """
             CREATE TABLE IF NOT EXISTS messages (
@@ -350,7 +398,7 @@ def create_vault_tables():
 
         conn.commit()
 
-        print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, and order_items tables are ready.")
+        print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, order_items, wallets, order_escrow, and token_ledger tables are ready.")
 
         cur.close()
         conn.close()

@@ -6,6 +6,7 @@ import string
 from datetime import datetime
 
 from models.listing_model import get_listing_by_id
+from services import wallet_service
 from models.checkout_model import (
     create_order,
     create_order_item,
@@ -16,6 +17,7 @@ from models.checkout_model import (
     update_listing_size_inventory,
     remove_purchased_from_wishlist,
     check_listing_availability,
+    delete_order,
 )
 
 
@@ -82,6 +84,11 @@ def complete_transaction_from_session(user_id, session_cart, buyer_details):
         2,
     )
 
+    # Treasure Tokens: work out each seller's share and make sure the buyer can
+    # afford it before anything is written - Donovan Griffin, Iteration 3
+    portions = wallet_service.seller_portions(session_cart)
+    wallet_service.assert_can_afford(user_id, total_amount)
+
     confirmation_number = _generate_confirmation_number()
 
     order = create_order(
@@ -94,6 +101,14 @@ def complete_transaction_from_session(user_id, session_cart, buyer_details):
         buyer_meeting_location=meeting_location,
         total_amount=total_amount,
     )
+
+    # Move the tokens into escrow (one locked transaction). If that fails -
+    # e.g. the balance changed since the check above - remove the unpaid order.
+    try:
+        escrows = wallet_service.hold_escrow(order["id"], user_id, portions)
+    except Exception:
+        delete_order(order["id"])
+        raise
 
     order_items = []
     for item in session_cart:
@@ -133,6 +148,7 @@ def complete_transaction_from_session(user_id, session_cart, buyer_details):
         "order": order,
         "order_items": order_items,
         "total_amount": total_amount,
+        "escrows": escrows,
     }
 
 
@@ -144,7 +160,8 @@ def get_order_summary_service(confirmation_number, user_id):
     if order["user_id"] != user_id:
         raise Exception("Access denied.")
     items = get_order_items_by_order_id(order["id"])
-    return {"order": order, "order_items": items}
+    escrows = wallet_service.order_escrows_for_buyer(order["id"], user_id)
+    return {"order": order, "order_items": items, "escrows": escrows}
 
 
 def get_user_orders_service(user_id):

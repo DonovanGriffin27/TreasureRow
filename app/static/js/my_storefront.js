@@ -319,3 +319,18 @@ loadMyStorefront();
 document.addEventListener("click", () => {
     closeListingMenus();
 });
+
+
+// Treasure Tokens: show how many sales are waiting for the buyer's pickup code
+// - Donovan Griffin, Iteration 3
+(async function showPendingPickups() {
+    const btn = document.getElementById("pickupsBtn");
+    if (!btn) return;
+    try {
+        const res = await fetch("/api/wallet");
+        if (!res.ok) return;
+        const wallet = await res.json();
+        const waiting = wallet.sales.filter((s) => s.status === "HELD").length;
+        btn.textContent = waiting ? `Pickups to confirm (${waiting})` : "Pickups to confirm";
+    } catch (_) { /* button still links to the Sales tab */ }
+})();
