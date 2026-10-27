@@ -95,24 +95,14 @@
             justify-content: center;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
-    <div class="back-row">
-        <button class="back-btn" id="backBtn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-            Back
-        </button>
-    </div>
+<body class="tr-app">
 
-    <header class="create-header">
-        <div class="brand-block">
-            <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
-            <p class="brand-subtitle">Fashion Marketplace</p>
-        </div>
-        <h2 class="page-title">Returns</h2>
-    </header>
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Returns" %}
+    {% set tr_subtitle = "Request a return for an order." %}
+    {% include "partials/_app_header.html" %}
 
     <main class="create-page">
         <form class="storefront-form" id="returnsForm" enctype="multipart/form-data">
@@ -123,9 +113,9 @@ All sellers are required to include contact information on their storefront.
 
 Please contact the seller first to request your return.
 
-If you are unable to reach the seller, email TheVaultAdmins@my.hamptonu.edu.
+If you are unable to reach the seller, email TreasureRowAdmins@my.hamptonu.edu.
 
-Please still complete this form so The Vault can track the return request.
+Please still complete this form so Treasure Row can track the return request.
                 </textarea>
             </section>
 

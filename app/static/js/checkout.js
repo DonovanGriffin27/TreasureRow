@@ -2,7 +2,6 @@
     checkout.js
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Updated by Day Ekoi - 4/22/26
     - Reads cart from session via /auth/cart/json
     - Displays items with size, qty, and subtotals
     - Submits buyer details to /api/checkout/complete
@@ -56,12 +55,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             total += subtotal;
 
             const row = document.createElement("div");
-            row.style.cssText = "display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(184,134,11,0.2); padding-bottom:8px;";
+            row.style.cssText = "display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #e6e8eb; padding-bottom:8px;";
             row.innerHTML = `
                 <div>
-                    <div style="font-weight:bold; color:#f0f0f0;">${item.name || "Item"}</div>
+                    <div style="font-weight:bold; color:#1f2328;">${escapeHtml(item.name || "Item")}</div>
                     <div style="color:#888; font-size:0.82rem; margin-top:2px;">
-                        ${item.size ? `Size: ${item.size} &nbsp;|&nbsp; ` : ""}Qty: ${qty}
+                        ${item.size ? `Size: ${escapeHtml(item.size)} &nbsp;|&nbsp; ` : ""}Qty: ${qty}
                     </div>
                 </div>
                 <span class="gold" style="white-space:nowrap; align-self:center;">$${subtotal.toFixed(2)}</span>

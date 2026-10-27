@@ -3,7 +3,7 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Updated by Day E - April 22nd - multi-image edit support and image management UI
+    Updated - April 22nd - multi-image edit support and image management UI
 -->
 
 <!DOCTYPE html>
@@ -164,15 +164,13 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
-    <header class="create-header">
-        <div class="brand-block">
-            <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
-            <p class="brand-subtitle">Fashion Marketplace</p>
-        </div>
-        <h2 class="page-title">Edit Listing</h2>
-    </header>
+<body class="tr-app">
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Edit Listing" %}
+    {% set tr_subtitle = "Update photos, sizes, or pricing for this item." %}
+    {% include "partials/_app_header.html" %}
 
     <main class="create-page">
         <form class="storefront-form" id="editListingForm">
@@ -228,8 +226,8 @@
                     <div style="margin-bottom:0.75rem;">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
                             <input type="checkbox" id="oneSizeToggle" name="one_size" value="One Size">
-                            <span style="font-weight:600;color:#d4af37;">One Size</span>
-                            <span style="color:#aaa;font-size:0.8rem;">(hides all other sizes)</span>
+                            <span style="font-weight:600;color:var(--tr-blue);">One Size</span>
+                            <span style="color:var(--tr-muted);font-size:0.8rem;">(hides all other sizes)</span>
                         </label>
                     </div>
 
@@ -265,11 +263,11 @@
                         <input type="number" id="oneSizeQty" min="0" placeholder="Enter quantity" style="width:90%;margin:0 auto;display:block;">
                     </div>
 
-                    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(212,175,55,0.2);">
+                    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--tr-divider);">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
                             <input type="checkbox" id="madeToOrderToggle" name="is_made_to_order" value="true">
-                            <span style="font-weight:600;color:#d4af37;">Made to Order</span>
-                            <span style="color:#aaa;font-size:0.8rem;">(ignores inventory limits)</span>
+                            <span style="font-weight:600;color:var(--tr-blue);">Made to Order</span>
+                            <span style="color:var(--tr-muted);font-size:0.8rem;">(ignores inventory limits)</span>
                         </label>
                     </div>
                 </div>
@@ -292,6 +290,7 @@
         </form>
     </main>
 
-    <script src="{{ url_for('static', filename='js/edit_listing.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/edit_listing.js') }}"></script>
 </body>
 </html>
