@@ -44,6 +44,9 @@ def login():
             else:
                 return redirect(url_for('auth.listings'))
         
+        # Noah Higgs
+        # a failed login must not leave its database connection open
+        conn.close()
         # errors now show on the form instead of a bare text page - Donovan Griffin, Iteration 3
         return render_template('login.html', error="Incorrect username or password.", username=user), 401
     
