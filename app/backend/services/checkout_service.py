@@ -1,11 +1,11 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - 4/22/26
 
 import random
 import string
 from datetime import datetime
 
+from models.listing_model import get_listing_by_id
 from models.checkout_model import (
     create_order,
     create_order_item,
@@ -22,7 +22,34 @@ from models.checkout_model import (
 def _generate_confirmation_number():
     date_str = datetime.now().strftime("%y%m%d")
     suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    return f"VAULT-{date_str}-{suffix}"
+    return f"TR-{date_str}-{suffix}"  # was VAULT-; renamed for Treasure Row (Iteration 3)
+
+
+def _price_cart_from_database(session_cart):
+    """Return the cart rebuilt from listing data: real title + price, validated quantity."""
+    priced = []
+    for item in session_cart:
+        try:
+            listing_id = int(item.get("id"))
+            quantity = int(item.get("quantity", 1))
+        except (TypeError, ValueError):
+            raise Exception("Your bag has an item that is no longer available. Please remove it and try again.")
+        if quantity < 1:
+            raise Exception("Item quantities must be at least 1.")
+
+        listing = get_listing_by_id(listing_id)
+        if listing is None or listing["status"] in ("DELETED", "INACTIVE"):
+            raise Exception(f"Item (ID {listing_id}) is no longer available.")
+        check_listing_availability(listing_id, quantity)
+
+        priced.append({
+            "id": listing_id,
+            "name": listing["title"],
+            "price": float(listing["price"]),
+            "quantity": quantity,
+            "size": item.get("size"),
+        })
+    return priced
 
 
 def complete_transaction_from_session(user_id, session_cart, buyer_details):
@@ -35,12 +62,11 @@ def complete_transaction_from_session(user_id, session_cart, buyer_details):
     if not session_cart:
         raise Exception("Cart is empty.")
 
-    # Validate all cart items are still available before creating the order
-    for item in session_cart:
-        item_id = item.get("id")
-        quantity = int(item.get("quantity", 1))
-        if item_id:
-            check_listing_availability(int(item_id), quantity)
+    # Re-price every cart item from the database: the cart's own price/name
+    # came from the browser (and older carts may hold tampered prices), so it
+    # is never trusted. Every item must be a real, available listing.
+    # Updated by Donovan Griffin, Iteration 3
+    session_cart = _price_cart_from_database(session_cart)
 
     first_name = (buyer_details.get("first_name") or "").strip()
     last_name = (buyer_details.get("last_name") or "").strip()

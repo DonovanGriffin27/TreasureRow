@@ -1,5 +1,4 @@
 # controllers/admin_controller.py
-# File created by David Jackson
 
 """
 Admin Controller
@@ -48,7 +47,7 @@ def require_admin():
     This prevents normal users from accessing admin-only routes.
     """
 
-    # Check if the user is logged in - updated by David Jackson 3/23/2026
+    # Check if the user is logged in - updated 3/23/2026
     if "user" not in session:
         abort(401)  # Unauthorized (user not logged in)
 

@@ -5,6 +5,7 @@ Business rules and validation for return requests.
 """
 
 from models.return_model import create_return_record, get_all_returns, update_return_status
+from models.checkout_model import get_order_by_confirmation
 
 VALID_RETURN_STATUSES = {"pending", "reviewed", "resolved"}
 
@@ -19,6 +20,14 @@ def _normalize_has_damage(value):
     if normalized in {"false", "no", "n", "0"}:
         return False
     raise Exception("has_damage is required.")
+
+
+def assert_order_belongs_to_user(current_user, order_number):
+    """A return must name one of the signed-in user's own orders.
+    Added by Donovan Griffin, Iteration 3 (any order number used to be accepted)."""
+    order = get_order_by_confirmation(str(order_number or "").strip())
+    if not order or order["user_id"] != current_user["id"]:
+        raise Exception("We couldn't find that order on your account. Check the confirmation number.")
 
 
 def create_return_service(current_user, data, damage_image_url=None):
@@ -37,6 +46,7 @@ def create_return_service(current_user, data, damage_image_url=None):
         raise Exception("has_damage is required.")
 
     has_damage = _normalize_has_damage(raw_has_damage)
+    assert_order_belongs_to_user(current_user, order_number)
 
     return create_return_record(
         user_id=current_user["id"],

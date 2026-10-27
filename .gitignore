@@ -25,3 +25,7 @@ app/static/uploads/
 ~$*.docx
 ~$*.pptx
 ~$*.xlsx
+
+# old local copy of the app (contains a real .env) - never commit
+TreasureRow_dev/
+TreasureRow_dev.zip
