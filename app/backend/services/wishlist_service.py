@@ -1,6 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created for Wishlist feature by Elali McNair 3/3/26
+# Created for Wishlist feature 3/3/26
 # The frontend protion of this code is not finished or implemented yet. Therfore, this code is not oporational or properly implemented yet.
 
 """

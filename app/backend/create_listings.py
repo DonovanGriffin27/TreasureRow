@@ -1,4 +1,3 @@
-# By Elali McNair - Iteration 4
 """
 create_listings.py
 

@@ -1,6 +1,5 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 3
 
 """
 services/listing_service.py
@@ -56,7 +55,6 @@ from models.listing_model import (
 
 from models.storefront_model import get_storefront_by_id
 
-# Updated by Day E - April 22nd
 # Listing state rules:
 # - ACTIVE / SOLD_OUT: seller-facing live states when storefront is active
 # - INACTIVE: manually deactivated listing or temporarily hidden listing
@@ -433,7 +431,6 @@ def add_listing_image_service(current_user, listing_id, image_url, is_primary=Fa
 
     _assert_can_manage_listing(current_user, listing)
 
-    # Updated by Day E - April 22nd
     # Keep listing image management aligned with the create flow: max 4 images total.
     existing_images = get_images_for_listing(listing_id)
     if len(existing_images) >= 4:

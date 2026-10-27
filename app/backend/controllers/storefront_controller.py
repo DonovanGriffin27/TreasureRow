@@ -1,8 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 3
-# Updated by Day Ekoi - Iteration 4 3/25/26
-# Updated by Day Ekoi - Iteration 5 - 4/20/26 - added edit storefront route, create listing route, S3 image upload endpoint, fixed session key
+# Updated - Iteration 5 - 4/20/26 - added edit storefront route, create listing route, S3 image upload endpoint, fixed session key
 
 """
 storefront_controller.py
@@ -19,6 +17,7 @@ Functions:
 """
 
 from flask import Blueprint, request, jsonify, render_template
+from utils.auth_utils import get_session_user
 
 from services.storefront_service import (
     create_storefront_service,
@@ -28,7 +27,7 @@ from services.storefront_service import (
     reactivate_storefront_service
 )
 
-from models.storefront_model import get_active_storefronts, get_storefront_by_id  # Updated by Day E 3/22/26
+from models.storefront_model import get_active_storefronts, get_storefront_by_id
 
 # API blueprint
 storefront_bp = Blueprint("storefront_bp", __name__, url_prefix="/api/storefronts")
@@ -38,26 +37,9 @@ storefront_pages_bp = Blueprint("storefront_pages_bp", __name__)
 
 
 def get_current_user():
-    """
-    Temporary user identity method (until real auth is connected):
-    Read user from headers.
-
-    Required header for protected routes:
-      X-User-Id: <int>
-
-    Optional:
-      X-User-Role: user|admin
-    """
-    user_id = request.headers.get("X-User-Id")
-    role = request.headers.get("X-User-Role", "user")
-
-    if not user_id:
-        return None
-
-    try:
-        return {"id": int(user_id), "role": role}
-    except Exception:
-        return None
+    """Signed-in user from the server-side session (never from request headers).
+    Updated by Donovan Griffin, Iteration 3 - see utils/auth_utils.get_session_user."""
+    return get_session_user()
 
 
 #_________________________________________________________
@@ -131,7 +113,7 @@ def get_storefront_by_id_route(storefront_id):
 def create_storefront_route():
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     data = request.get_json(silent=True) or {}
 
@@ -151,7 +133,7 @@ def create_storefront_route():
 def get_my_storefront_route():
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         storefront = get_my_storefront_service(current_user)
@@ -168,7 +150,7 @@ def get_my_storefront_route():
 def update_storefront_route(storefront_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     data = request.get_json(silent=True) or {}
 
@@ -190,7 +172,7 @@ def update_storefront_route(storefront_id):
 def deactivate_storefront_route(storefront_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         updated = deactivate_storefront_service(current_user, storefront_id)
@@ -204,13 +186,12 @@ def deactivate_storefront_route(storefront_id):
         return jsonify({"error": str(e)}), 400
 
 
-# Updated by Day E - April 22nd
 # PATCH /api/storefronts/<storefront_id>/reactivate
 @storefront_bp.patch("/<int:storefront_id>/reactivate")
 def reactivate_storefront_route(storefront_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         updated = reactivate_storefront_service(current_user, storefront_id)
@@ -223,7 +204,7 @@ def reactivate_storefront_route(storefront_id):
             return jsonify({"error": str(e)}), 404
         return jsonify({"error": str(e)}), 400
 
-# Added by Day E 4/9/26 - My Storefront dashboard page
+# Added 4/9/26 - My Storefront dashboard page
 @storefront_pages_bp.route("/storefronts/dashboard")
 def my_storefront_dashboard():
     from flask import session, redirect, url_for
@@ -247,10 +228,10 @@ def edit_listing_page(listing_id):
         return redirect(url_for("auth.login"))
     return render_template("edit_listing.html", listing_id=listing_id)
 
-# Added by Day E 4/16/26 - handles image uploads to S3 for storefront creation
+# Added 4/16/26 - handles image uploads to S3 for storefront creation
 @storefront_bp.post("/upload-image")
 def upload_storefront_image():
-    from utils.s3 import upload_image_to_s3
+    from utils.s3 import upload_image_to_s3, InvalidUpload
 
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
@@ -261,7 +242,10 @@ def upload_storefront_image():
     if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
         return jsonify({"error": "Invalid file type"}), 400
 
-    url = upload_image_to_s3(file, folder=folder)
+    try:
+        url = upload_image_to_s3(file, folder=folder)
+    except InvalidUpload as e:  # bad folder / not a real image / too big - Iteration 3
+        return jsonify({"error": str(e)}), 400
     if not url:
         return jsonify({"error": "Upload failed"}), 500
 

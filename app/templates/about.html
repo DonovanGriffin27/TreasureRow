@@ -6,7 +6,7 @@
     Added by Donovan Griffin - Iteration 3 - fixes the "About" storefront nav
     link that was previously commented out with no destination page.
 
-Description: Simple static info page explaining what The Vault is, reached
+Description: Simple static info page explaining what Treasure Row is, reached
 from the storefront side nav. Reuses the same header/back-button pattern as
 returns.html for visual consistency, styled with create_storefront.css.
 --->
@@ -15,7 +15,7 @@ returns.html for visual consistency, styled with create_storefront.css.
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | The Vault</title>
+    <title>About | Treasure Row</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
     <style>
         .back-row {
@@ -53,27 +53,17 @@ returns.html for visual consistency, styled with create_storefront.css.
             margin-top: 1.6rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
-    <div class="back-row">
-        <button class="back-btn" id="backBtn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-            Back
-        </button>
-    </div>
+<body class="tr-app">
 
-    <header class="create-header">
-        <div class="brand-block">
-            <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
-            <p class="brand-subtitle">Fashion Marketplace</p>
-        </div>
-        <h2 class="page-title">About</h2>
-    </header>
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "About" %}
+    {% set tr_subtitle = "What Treasure Row is and how it works." %}
+    {% include "partials/_app_header.html" %}
 
     <main class="about-body">
-        <p>The Vault is a campus marketplace built for Hampton University students. Open a storefront, list clothing you want to sell, and browse what other students on campus have up for grabs — all without leaving your Hampton email behind.</p>
+        <p>Treasure Row is a campus marketplace built for Hampton University students. Open a storefront, list clothing you want to sell, and browse what other students on campus have up for grabs — all without leaving your Hampton email behind.</p>
 
         <h3>How it works</h3>
         <p>Create an account with your Hampton email, open a personal storefront, and list items with sizes, quantities, and fulfillment details. Buyers can browse storefronts, add items to a cart, check out, and request a return if something doesn't work out.</p>
@@ -82,13 +72,7 @@ returns.html for visual consistency, styled with create_storefront.css.
         <p>Any Hampton University student looking to buy, sell, or trade clothing with people on campus instead of strangers online.</p>
 
         <h3>Questions or issues</h3>
-        <p>Reach out to a seller directly through their storefront for order questions, or email <a href="mailto:TheVaultAdmins@my.hamptonu.edu" style="color:#d4af37;">TheVaultAdmins@my.hamptonu.edu</a> for anything else.</p>
+        <p>Reach out to a seller directly through their storefront for order questions, or email <a href="mailto:TreasureRowAdmins@my.hamptonu.edu" style="color:var(--tr-blue);">TreasureRowAdmins@my.hamptonu.edu</a> for anything else.</p>
     </main>
-
-    <script>
-        document.getElementById("backBtn").addEventListener("click", () => {
-            window.location.href = "/storefronts";
-        });
-    </script>
 </body>
 </html>

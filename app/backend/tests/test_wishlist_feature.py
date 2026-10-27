@@ -1,4 +1,3 @@
-# By Elali McNair 4/19/26
 import os
 import sys
 import unittest
@@ -11,7 +10,8 @@ for path in (PROJECT_ROOT, BACKEND_ROOT):
         sys.path.append(path)
 
 from app import create_app
-from backend.config.db import get_connection
+from db import get_connection
+from helpers import create_seller, delete_users, sign_in
 
 
 class TestWishlistFeature(unittest.TestCase):
@@ -20,35 +20,30 @@ class TestWishlistFeature(unittest.TestCase):
         cls.app = create_app()
         cls.app.config["TESTING"] = True
         cls.client = cls.app.test_client()
-        cls.user_id, cls.listing_id = cls._resolve_test_ids()
+        seller = cls._seed_test_data()
+        cls.user_id, cls.listing_id = seller["user_id"], seller["listing_id"]
 
-        if cls.user_id is None or cls.listing_id is None:
-            raise unittest.SkipTest("No seeded user or listing data available for wishlist tests.")
-
-    @staticmethod
-    def _resolve_test_ids():
+    @classmethod
+    def _seed_test_data(cls):
+        # create our own seller in the TEST database instead of borrowing
+        # existing rows - updated by Donovan Griffin, Iteration 3
         conn = get_connection()
-        if conn is None:
-            return None, None
-
         cur = conn.cursor()
-        try:
-            cur.execute("SELECT id FROM users ORDER BY id LIMIT 1;")
-            user_row = cur.fetchone()
+        seller = create_seller(cur, "wishlist")
+        conn.commit()
+        cur.close()
+        conn.close()
+        cls.username = seller["username"]
+        return seller
 
-            cur.execute("SELECT id FROM listings WHERE status != 'DELETED' ORDER BY id LIMIT 1;")
-            listing_row = cur.fetchone()
-
-            return (
-                user_row[0] if user_row else None,
-                listing_row[0] if listing_row else None,
-            )
-        finally:
-            cur.close()
-            conn.close()
+    @classmethod
+    def tearDownClass(cls):
+        delete_users([cls.user_id])
 
     def setUp(self):
         self._cleanup_wishlist_item()
+        with self.client.session_transaction() as sess:
+            sess.clear()
 
     def tearDown(self):
         self._cleanup_wishlist_item()
@@ -70,7 +65,10 @@ class TestWishlistFeature(unittest.TestCase):
             conn.close()
 
     def _auth_headers(self):
-        return {"X-User-Id": str(self.user_id)}
+        # identity comes from the login session now; the API no longer trusts
+        # an X-User-Id header - updated by Donovan Griffin, Iteration 3
+        sign_in(self.client, {"username": self.username, "user_id": self.user_id})
+        return {}
 
     def test_add_get_check_and_remove_wishlist_item(self):
         add_response = self.client.post(
