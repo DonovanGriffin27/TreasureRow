@@ -211,15 +211,39 @@ Updated 4/22/26 - JS-driven, loads order data from API
         }
 
         let order, orderItems;
+        let escrows = [];  // Treasure Tokens pickup codes - Iteration 3
         try {
             const res = await fetch(`/api/orders/by-confirmation/${encodeURIComponent(conf)}`);
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Order not found.");
             order = data.order;
             orderItems = data.order_items || [];
+            escrows = data.escrows || [];
         } catch (e) {
             renderError(e.message || "Could not load order details.");
             return;
+        }
+
+
+        // Treasure Tokens: one pickup code per seller - Donovan Griffin, Iteration 3
+        function pickupSection(list) {
+            if (!list.length) return "";
+            const label = { HELD: "Waiting for pickup", RELEASED: "Picked up", REFUNDED: "Refunded", LOCKED: "Locked — contact an admin" };
+            const cards = list.map(e => `
+                <div class="pickup-card pickup-${escapeHtml(e.status.toLowerCase())}">
+                    <div class="pickup-meta">
+                        <strong>${escapeHtml(e.seller_brand || "Seller")}</strong>
+                        <span>${Number(e.amount).toFixed(2)} TT · ${escapeHtml(label[e.status] || e.status)}</span>
+                    </div>
+                    ${e.pickup_code ? `<div class="pickup-code">${escapeHtml(e.pickup_code)}</div>` : ""}
+                </div>`).join("");
+            return `
+            <div class="section">
+                <h2>Pickup Codes</h2>
+                <p class="pickup-help">Your tokens are held until pickup. At the meetup, give each seller their code &mdash;
+                   they enter it to receive the tokens. Don't share a code before you have your items.</p>
+                ${cards}
+            </div>`;
         }
 
         const createdDate = order.created_at
@@ -256,10 +280,12 @@ Updated 4/22/26 - JS-driven, loads order data from API
                     </div>
                     <div class="detail-item">
                         <strong>Order Total</strong>
-                        <span>$${parseFloat(order.total_amount).toFixed(2)}</span>
+                        <span>${parseFloat(order.total_amount).toFixed(2)} TT</span>
                     </div>
                 </div>
             </div>
+
+            ${pickupSection(escrows)}
 
             <div class="section">
                 <h2>Buyer Information</h2>

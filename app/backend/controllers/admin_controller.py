@@ -195,3 +195,68 @@ def update_return_route(return_id):
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# __________________________________________________________
+# TREASURE TOKENS (admin) - Donovan Griffin, Iteration 3
+# GET  /admin/wallets                      every user's balance
+# POST /admin/wallets/<user_id>/grant      {"amount": 50, "note": "..."}
+# GET  /admin/escrow                       held / locked pickups
+# POST /admin/escrow/<escrow_id>/refund    refund a held or locked pickup
+# __________________________________________________________
+
+def _admin_user():
+    require_admin()
+    return {"id": session.get("user_id"), "role": "admin", "username": session.get("user")}
+
+
+@admin_bp.route("/wallets", methods=["GET"])
+def admin_list_wallets():
+    require_admin()
+    from models.wallet_model import get_all_wallets
+    return jsonify(get_all_wallets())
+
+
+@admin_bp.route("/wallets/<int:user_id>/grant", methods=["POST"])
+def admin_grant_tokens(user_id):
+    from services.wallet_service import TokenError, admin_grant
+    admin = _admin_user()
+    data = request.get_json(silent=True) or {}
+    try:
+        return jsonify(admin_grant(admin, user_id, data.get("amount"), data.get("note")))
+    except TokenError as e:
+        return jsonify({"error": str(e)}), e.status
+
+
+@admin_bp.route("/escrow", methods=["GET"])
+def admin_list_escrow():
+    require_admin()
+    from db import get_connection
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT e.id, o.confirmation_number, b.username, s.username, e.amount, e.status,
+                  e.failed_attempts, e.created_at
+           FROM order_escrow e
+           JOIN orders o ON o.id = e.order_id
+           JOIN users b ON b.id = e.buyer_id
+           JOIN users s ON s.id = e.seller_id
+           WHERE e.status IN ('HELD', 'LOCKED')
+           ORDER BY e.status DESC, e.created_at;"""
+    )
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([{"escrow_id": r[0], "confirmation_number": r[1], "buyer": r[2], "seller": r[3],
+                     "amount": float(r[4]), "status": r[5], "failed_attempts": r[6],
+                     "created_at": r[7].isoformat() if r[7] else None} for r in rows])
+
+
+@admin_bp.route("/escrow/<int:escrow_id>/refund", methods=["POST"])
+def admin_refund_escrow(escrow_id):
+    from services.wallet_service import TokenError, cancel_escrow
+    admin = _admin_user()
+    data = request.get_json(silent=True) or {}
+    try:
+        return jsonify(cancel_escrow(admin, escrow_id, (data.get("reason") or "").strip()[:200] or None))
+    except TokenError as e:
+        return jsonify({"error": str(e)}), e.status

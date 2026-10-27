@@ -13,6 +13,7 @@ from controllers.admin_controller import admin_bp
 from controllers.auth_controller import auth_bp
 from controllers.return_controller import returns_bp
 from controllers.checkout_controller import checkout_bp
+from controllers.wallet_controller import wallet_bp  # Treasure Tokens - Iteration 3
 from init_db import create_vault_tables
 
 
@@ -152,6 +153,7 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(returns_bp)
     app.register_blueprint(checkout_bp, url_prefix='/api')
+    app.register_blueprint(wallet_bp)
 
     @app.get("/health")
     def health():

@@ -71,6 +71,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (totalDisplay) totalDisplay.textContent = `$${total.toFixed(2)}`;
 
+    // Treasure Tokens: show the wallet balance and block checkout if it can't cover
+    // the order (the server checks again) - Donovan Griffin, Iteration 3
+    const tokenTotal = document.getElementById("tokenTotal");
+    const walletBalance = document.getElementById("walletBalance");
+    const walletAfter = document.getElementById("walletAfter");
+    if (tokenTotal) tokenTotal.textContent = `${total.toFixed(2)} TT`;
+    try {
+        const walletRes = await fetch("/api/wallet");
+        if (walletRes.ok) {
+            const wallet = await walletRes.json();
+            const after = wallet.balance - total;
+            if (walletBalance) walletBalance.textContent = `${wallet.balance.toFixed(2)} TT`;
+            if (walletAfter) {
+                walletAfter.textContent = `${after.toFixed(2)} TT`;
+                walletAfter.classList.toggle("is-short", after < 0);
+            }
+            if (after < 0 && submitBtn) {
+                submitBtn.disabled = true;
+                showError(`Not enough Treasure Tokens: you need ${(-after).toFixed(2)} TT more.`);
+            }
+        }
+    } catch (_) { /* server re-checks the balance at checkout */ }
+
     // Handle form submission
     const form = document.getElementById("checkoutForm");
     if (!form) return;
@@ -119,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             showError(err.message || "Something went wrong. Please try again.");
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Complete Transaction";
+                submitBtn.textContent = "Pay with Treasure Tokens";
             }
         }
     });

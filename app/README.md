@@ -109,6 +109,7 @@ python3 -m pytest backend/tests
 | `test_cart_pricing.py` | prices and quantities always come from the database, not the browser |
 | `test_uploads.py` | uploads must be real images, in allowed folders, under the size limit |
 | `test_hardening.py` | CSRF protection, returns limited to your own orders, required `SECRET_KEY` |
+| `test_wallet.py` | Treasure Tokens: wallets, checkout escrow, pickup codes, refunds, admin grants |
 | `test_checkout.py`, `test_wishlist_feature.py`, `test_create_listing_feature.py`, `test_admin.py`, `test_user.py` | feature behavior |
 
 Uploads made by tests are saved under `static/uploads/` instead of S3.
@@ -132,5 +133,5 @@ Uploads made by tests are saved under `static/uploads/` instead of S3.
 ## Notes
 
 - Restricted to Hampton University email addresses (`@hamptonu.edu` / `@my.hamptonu.edu`)
-- No payment processing — checkout uses an in-person exchange model
+- No real payment processing — checkout pays with Treasure Tokens (in-app tokens held in escrow until an in-person pickup); see `../docs/payment-tokens/README.md`
 - Hosted on AWS (Elastic Beanstalk, RDS, S3)

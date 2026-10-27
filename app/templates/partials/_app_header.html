@@ -46,6 +46,9 @@
             <span class="tr-brand-name">Treasure Row<small>Hampton University Marketplace</small></span>
         </a>
         <div class="tr-hero-actions">
+            <a class="tr-token-chip" id="trTokenChip" href="{{ url_for('auth.account') }}#wallet" title="Treasure Tokens wallet" hidden>
+                <span class="tr-token-dot" aria-hidden="true"></span><span id="trTokenBalance"></span>
+            </a>
             <a class="tr-icon-btn" href="{{ url_for('auth.view_cart') }}" aria-label="View shopping bag" title="My Bag">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
             </a>
@@ -86,5 +89,13 @@
         }
         btn.addEventListener("click", function () { toggle(!pane.classList.contains("active")); });
         overlay.addEventListener("click", function () { toggle(false); });
+
+        // Treasure Tokens balance chip - Donovan Griffin, Iteration 3
+        var chip = document.getElementById("trTokenChip");
+        fetch("/api/wallet").then(function (r) { return r.ok ? r.json() : null; }).then(function (w) {
+            if (!w || !chip) return;
+            document.getElementById("trTokenBalance").textContent = Number(w.balance).toFixed(2) + " TT";
+            chip.hidden = false;
+        }).catch(function () {});
     })();
 </script>

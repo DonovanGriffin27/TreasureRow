@@ -240,3 +240,14 @@ def update_listing_size_inventory(listing_id, size, purchased_qty):
     conn.commit()
     cur.close()
     conn.close()
+
+
+def delete_order(order_id):
+    """Remove an order that could not be paid for (order_items cascade).
+    Added by Donovan Griffin, Iteration 3 - used when the token hold fails."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM orders WHERE id = %s;", (order_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
