@@ -5,26 +5,11 @@ Routes for the returns page and return request submission.
 """
 
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for, session
+from utils.auth_session import get_current_user
 
 from services.return_service import create_return_service
 
 returns_bp = Blueprint("returns_bp", __name__)
-
-
-def get_current_user():
-    header_user_id = request.headers.get("X-User-Id")
-    header_role = request.headers.get("X-User-Role", session.get("role", "user"))
-
-    if header_user_id:
-        try:
-            return {"id": int(header_user_id), "role": header_role}
-        except Exception:
-            return None
-
-    if session.get("user_id"):
-        return {"id": int(session["user_id"]), "role": session.get("role", "user")}
-
-    return None
 
 
 @returns_bp.get("/returns")

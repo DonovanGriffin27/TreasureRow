@@ -1,3 +1,7 @@
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+}
+
 /* 
 storefront.js
 // Test commit by Donovan - verifying push workflow
@@ -84,20 +88,20 @@ function createCard(store) {
     <div class="storefront-card-body">
       <div class="storefront-header">
         ${logo
-          ? `<img class="storefront-logo" src="${logo}" onerror="this.onerror=null;this.src='/static/images/logo.png';">`
+          ? `<img class="storefront-logo" src="${escapeHtml(logo)}" onerror="this.onerror=null;this.src='/static/images/logo.png';">`
           : `<div class="storefront-logo"></div>`
         }
         <div>
-          <h2 class="storefront-name">${store.name}</h2>
+          <h2 class="storefront-name">${escapeHtml(store.name)}</h2>
           <p class="storefront-meta">
-            ${metaLabel}
+            ${escapeHtml(metaLabel)}
           </p>
         </div>
       </div>
 
       <div class="carousel-shell">
         <button class="carousel-btn left">&#10094;</button>
-        ${images.length > 0 ? `<img class="carousel-image" src="${images[0]}">` : `<div class="carousel-image"></div>`}
+        ${images.length > 0 ? `<img class="carousel-image" src="${escapeHtml(images[0])}">` : `<div class="carousel-image"></div>`}
         <button class="carousel-btn right">&#10095;</button>
       </div>
 
@@ -105,7 +109,7 @@ function createCard(store) {
            Cart/size/qty actions belong on the individual listing page, not the storefront browse view.
       <form action="/auth/add_to_cart" method="POST" class="bag-form">
         <input type="hidden" name="item_id" value="${store.id}">
-        <input type="hidden" name="item_name" value="${store.name} Official Item">
+        <input type="hidden" name="item_name" value="${escapeHtml(store.name)} Official Item">
         <input type="hidden" name="price" value="45.00">
         <div class="selection-row">
           <select name="size" class="vault-select">
@@ -289,7 +293,7 @@ function filterStorefronts(query) {
     grid.innerHTML = "";
 
     if (!filtered.length) {
-        grid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column:1/-1; padding: 2rem;">No storefronts found for "${query}"</p>`;
+        grid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column:1/-1; padding: 2rem;">No storefronts found for "${escapeHtml(query)}"</p>`;
         return;
     }
 

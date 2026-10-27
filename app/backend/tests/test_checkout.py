@@ -48,6 +48,8 @@ class TestCheckoutFeature(unittest.TestCase):
             conn.close()
 
     def setUp(self):
+        with self.client.session_transaction() as sess:
+            sess.clear()
         self.created_cart_item_ids = []
         self.created_order_ids = []
 
@@ -56,7 +58,12 @@ class TestCheckoutFeature(unittest.TestCase):
         self._cleanup_cart_items()
 
     def _auth_headers(self):
-        return {"X-User-Id": str(self.user_id)}
+        with self.client.session_transaction() as sess:
+            sess.clear()
+            sess["user"] = f"test-user-{self.user_id}"
+            sess["user_id"] = self.user_id
+            sess["role"] = "user"
+        return {}
 
     def _cleanup_cart_items(self):
         if not self.created_cart_item_ids:

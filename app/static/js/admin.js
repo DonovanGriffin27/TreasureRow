@@ -1,3 +1,7 @@
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+}
+
 // File Created By David Jackson
 
 // USERS SECTION
@@ -18,10 +22,10 @@ async function loadUsers() {
         const row = `
             <tr>
                 <td>${user.id}</td>
-                <td>${user.username || ""}</td>
-                <td>${user.email}</td>
-                <td>${user.role || "user"}</td>
-                <td>${user.created_at || ""}</td>
+                <td>${escapeHtml(user.username || "")}</td>
+                <td>${escapeHtml(user.email)}</td>
+                <td>${escapeHtml(user.role || "user")}</td>
+                <td>${escapeHtml(user.created_at || "")}</td>
                 <td>
                     <!-- Delete button calls deleteUser() -->
                     <button class="delete" onclick="deleteUser(${user.id})">Delete</button>
@@ -64,12 +68,12 @@ async function loadListings() {
             <tr>
                 <td>${listing.id}</td>
                 <td>${listing.storefront_id}</td>
-                <td>${listing.title}</td>
+                <td>${escapeHtml(listing.title)}</td>
                 <td>${listing.price}</td>
                 <td>${listing.quantity_on_hand}</td>
-                <td>${listing.status || "ACTIVE"}</td>
-                <td>${listing.fulfillment_type || ""}</td>
-                <td>${listing.created_at || ""}</td>
+                <td>${escapeHtml(listing.status || "ACTIVE")}</td>
+                <td>${escapeHtml(listing.fulfillment_type || "")}</td>
+                <td>${escapeHtml(listing.created_at || "")}</td>
                 <td>
                     <button class="delete" onclick="deleteListing(${listing.id})">Delete</button>
                 </td>
@@ -110,7 +114,7 @@ async function loadStorefronts() {
         const row = `
             <tr>
                 <td>${store.id}</td>
-                <td>${store.brand_name || store.name || ""}</td>
+                <td>${escapeHtml(store.brand_name || store.name || "")}</td>
                 <td>${store.owner_id}</td>
                 <td>
                     <!-- Delete storefront button -->
@@ -149,10 +153,10 @@ async function loadReturns() {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${item.id}</td>
-            <td>${item.username || ""}<br><small>${item.email || ""}</small></td>
+            <td>${escapeHtml(item.username || "")}<br><small>${escapeHtml(item.email || "")}</small></td>
             <td>${item.order_number}</td>
             <td>${item.has_damage ? "Yes" : "No"}</td>
-            <td>${item.damage_image_url ? `<a href="${item.damage_image_url}" target="_blank">View</a>` : "—"}</td>
+            <td>${item.damage_image_url ? `<a href="${escapeHtml(item.damage_image_url)}" target="_blank">View</a>` : "—"}</td>
             <td>
                 <select data-return-id="${item.id}">
                     <option value="pending" ${item.status === "pending" ? "selected" : ""}>Pending</option>
@@ -161,7 +165,7 @@ async function loadReturns() {
                 </select>
                 <button onclick="saveReturnStatus(${item.id})">Save</button>
             </td>
-            <td>${item.reason}</td>
+            <td>${escapeHtml(item.reason)}</td>
         `;
         table.appendChild(row);
     });

@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from config.db import get_connection
-
 def get_connection():
     """
     Creates and returns a new PostgreSQL connection

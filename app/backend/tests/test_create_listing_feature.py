@@ -47,13 +47,20 @@ class TestCreateListingFeature(unittest.TestCase):
             conn.close()
 
     def setUp(self):
+        with self.client.session_transaction() as sess:
+            sess.clear()
         self.created_listing_ids = []
 
     def tearDown(self):
         self._cleanup_created_listings()
 
     def _auth_headers(self):
-        return {"X-User-Id": str(self.user_id)}
+        with self.client.session_transaction() as sess:
+            sess.clear()
+            sess["user"] = f"test-user-{self.user_id}"
+            sess["user_id"] = self.user_id
+            sess["role"] = "user"
+        return {}
 
     def _cleanup_created_listings(self):
         if not self.created_listing_ids:

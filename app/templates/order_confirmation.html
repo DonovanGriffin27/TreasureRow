@@ -184,12 +184,17 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
     </div>
 
     <script>
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+}
+
+
     (async () => {
         const card = document.getElementById("confCard");
 
         function renderError(msg) {
             card.innerHTML = `
-                <p class="error-msg">${msg}</p>
+                <p class="error-msg">${escapeHtml(msg)}</p>
                 <div class="button-row">
                     <a href="/auth/listings" class="btn btn-primary">Continue Shopping</a>
                 </div>
@@ -222,11 +227,11 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
 
         const itemRows = orderItems.map(item => `
             <tr>
-                <td>${item.item_name || "Item"}</td>
-                <td>${item.selected_size || "—"}</td>
+                <td>${escapeHtml(item.item_name || "Item")}</td>
+                <td>${escapeHtml(item.selected_size || "—")}</td>
                 <td>${item.quantity}</td>
                 <td>$${parseFloat(item.price_at_purchase).toFixed(2)}</td>
-                <td class="text-right">$${(item.quantity * parseFloat(item.price_at_purchase)).toFixed(2)}</td>
+                <td class="text-right">$${escapeHtml((item.quantity * parseFloat(item.price_at_purchase)).toFixed(2))}</td>
             </tr>
         `).join("");
 
@@ -234,7 +239,7 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
             <div class="conf-header">
                 <div class="success-badge">&#10003; Order Submitted</div>
                 <h1><span>The</span> Vault — Thank You!</h1>
-                <p class="conf-number">Confirmation: <strong>${order.confirmation_number}</strong></p>
+                <p class="conf-number">Confirmation: <strong>${escapeHtml(order.confirmation_number)}</strong></p>
             </div>
 
             <div class="section">
@@ -242,11 +247,11 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
                 <div class="detail-grid">
                     <div class="detail-item">
                         <strong>Order Date</strong>
-                        <span>${createdDate}</span>
+                        <span>${escapeHtml(createdDate)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Status</strong>
-                        <span>${order.order_status}</span>
+                        <span>${escapeHtml(order.order_status)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Order Total</strong>
@@ -260,19 +265,19 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
                 <div class="detail-grid">
                     <div class="detail-item">
                         <strong>Name</strong>
-                        <span>${order.buyer_first_name} ${order.buyer_last_name}</span>
+                        <span>${escapeHtml(order.buyer_first_name)} ${escapeHtml(order.buyer_last_name)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Email</strong>
-                        <span>${order.buyer_email}</span>
+                        <span>${escapeHtml(order.buyer_email)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Contact</strong>
-                        <span>${order.buyer_contact}</span>
+                        <span>${escapeHtml(order.buyer_contact)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Meeting Location</strong>
-                        <span>${order.buyer_meeting_location}</span>
+                        <span>${escapeHtml(order.buyer_meeting_location)}</span>
                     </div>
                 </div>
             </div>

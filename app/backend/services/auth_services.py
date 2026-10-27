@@ -2,11 +2,32 @@
 #Register user and validate login
 from utils.auth_utils import hash_password, verify_password
 
+import re
+
+_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+\-]+@(?:[A-Za-z0-9\-]+\.)*hamptonu\.edu$", re.IGNORECASE)
+
+MIN_PASSWORD_LENGTH = 8
+MAX_PASSWORD_LENGTH = 128
+
+
+def is_valid_hampton_email(email):
+    return bool(email) and len(email) <= 100 and bool(_EMAIL_RE.match(email))
+
+
 class AuthService:
     def register_user(self, username, password, email, db_conn): #Stores a user's unique ID, username, password, and email into the database
-        if not email.lower().endswith("hamptonu.edu"): #Validates Hampton Assocation, added 2/19/2026 by Ryan Grimes
-            print(f"You Must Use a Hampton University Associated Email") 
+        username = (username or "").strip()
+        password = password or ""
+        email = (email or "").strip().lower()
+
+        if not is_valid_hampton_email(email): #Validates Hampton Assocation, added 2/19/2026 by Ryan Grimes
             return False, "You Must Use a Hampton University Associated Email"
+
+        if not (3 <= len(username) <= 50):
+            return False, "Username must be between 3 and 50 characters"
+
+        if not (MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH):
+            return False, f"Password must be between {MIN_PASSWORD_LENGTH} and {MAX_PASSWORD_LENGTH} characters"
 
         hashed_pw = hash_password(password)
         try:

@@ -1,5 +1,6 @@
 import sys
 import os
+import secrets
 from flask import Flask, render_template, redirect, url_for, session
 #Cameron Ridgley edited 10/01
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend'))) # Updated 3/19/2026 by Ryan Grimes
@@ -20,9 +21,33 @@ def create_app():
                 template_folder='templates',
                 static_folder='static')
 
-    app.secret_key = os.getenv("SECRET_KEY") # pull secret key from .env
-    if not app.secret_key:
-        print("Error: SECRET_KEY not set in .env file")
+    placeholder_keys = {"", "change-me", "change_me", "changeme", "dev-secret", "secret"}
+    secret_key = (os.getenv("SECRET_KEY") or "").strip()
+    if secret_key.lower() in placeholder_keys:
+        if os.getenv("FLASK_ENV", "").lower() == "development":
+            secret_key = secrets.token_hex(32)
+            print("[security] SECRET_KEY not set - using a temporary random key (development only).")
+        else:
+            raise RuntimeError(
+                "SECRET_KEY is missing or still a placeholder. Set a long random value "
+                "(e.g. `python -c \"import secrets; print(secrets.token_hex(32))\"`) in the "
+                "environment (eb setenv SECRET_KEY=...)."
+            )
+    app.secret_key = secret_key
+
+    app.config.update(
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true",
+        MAX_CONTENT_LENGTH=20 * 1024 * 1024,
+    )
+
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        return response
 
     # Run DB migrations on every startup so new columns are always present
     try:
@@ -50,11 +75,15 @@ def create_app():
     # Route to the "Create Storefront" form - Updated 3/22/2026
     @app.route('/create-storefront')
     def create_storefront():
+        if not session.get("user"):
+            return redirect(url_for("auth.login"))
         return render_template('create_storefront.html')
 
     # Route to the "Create Listing" form - Updated 3/24/2026
     @app.route('/create-listing')
     def create_listing():
+        if not session.get("user"):
+            return redirect(url_for("auth.login"))
         return render_template('create_listing.html')
 
     #Route to the Cart screen - Updated 3/22/2026
@@ -118,4 +147,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.getenv("FLASK_DEBUG", "0") == "1")

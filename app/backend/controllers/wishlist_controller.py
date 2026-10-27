@@ -12,30 +12,11 @@ It processes requests, calls service methods, and returns JSON responses.
 """
 
 from flask import Blueprint, request, jsonify
+from utils.auth_session import get_current_user
 from services.wishlist_service import WishlistService
 
 wishlist_bp = Blueprint('wishlist', __name__, url_prefix="/api")
 wishlist_service = WishlistService()
-
-
-def get_current_user():
-    """
-    Temporary user identity method (until real auth is connected):
-    Read user from headers.
-
-    Required header for protected routes:
-      X-User-Id: <int>
-    """
-    user_id = request.headers.get("X-User-Id")
-    role = request.headers.get("X-User-Role", "user")
-
-    if not user_id:
-        return None
-
-    try:
-        return {"id": int(user_id), "role": role}
-    except Exception:
-        return None
 
 
 @wishlist_bp.route('/wishlist', methods=['POST'])
@@ -47,7 +28,7 @@ def add_to_wishlist():
     try:
         current_user = get_current_user()
         if current_user is None:
-            return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+            return jsonify({"error": "Unauthorized: please log in."}), 401
 
         data = request.get_json()
         if not data or 'listing_id' not in data:
@@ -77,7 +58,7 @@ def get_wishlist():
     try:
         current_user = get_current_user()
         if current_user is None:
-            return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+            return jsonify({"error": "Unauthorized: please log in."}), 401
 
         success, result = wishlist_service.get_user_wishlist(current_user['id'])
 
@@ -98,7 +79,7 @@ def remove_from_wishlist(listing_id):
     try:
         current_user = get_current_user()
         if current_user is None:
-            return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+            return jsonify({"error": "Unauthorized: please log in."}), 401
 
         success, result = wishlist_service.remove_item_from_wishlist(current_user['id'], listing_id)
 
@@ -119,7 +100,7 @@ def check_wishlist_status(listing_id):
     try:
         current_user = get_current_user()
         if current_user is None:
-            return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+            return jsonify({"error": "Unauthorized: please log in."}), 401
 
         success, result = wishlist_service.check_item_in_wishlist(current_user['id'], listing_id)
 
@@ -140,7 +121,7 @@ def get_wishlist_item_details(wishlist_id):
     try:
         current_user = get_current_user()
         if current_user is None:
-            return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+            return jsonify({"error": "Unauthorized: please log in."}), 401
 
         success, result = wishlist_service.get_wishlist_item_details(wishlist_id)
 
