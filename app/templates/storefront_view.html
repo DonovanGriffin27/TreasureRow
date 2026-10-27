@@ -2,9 +2,8 @@
  storefront_view.html
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4
     3/18/2026-3/22/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - Facebook-style layout, back arrow above banner, info moved below banner
+    Updated - Iteration 5 - 4/20/26 - Facebook-style layout, back arrow above banner, info moved below banner
 -->
 
 <!DOCTYPE html>
@@ -14,9 +13,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Storefront View</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront_view.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
+<body class="tr-app">
 
+<!-- Shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% include "partials/_app_header.html" %}
 <main class="storefront-view-page">
 
     <!-- back arrow sits above the banner, always visible -->
@@ -66,6 +68,7 @@
 
 </main>
 
-<script src="{{ url_for('static', filename='js/storefront_view.js') }}"></script>
+<script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/storefront_view.js') }}"></script>
 </body>
 </html>

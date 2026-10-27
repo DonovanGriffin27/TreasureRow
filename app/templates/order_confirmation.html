@@ -1,6 +1,5 @@
 <!--
-Created by Kaila Roberts 4/18/26
-Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
+Updated 4/22/26 - JS-driven, loads order data from API
 -->
 
 <!DOCTYPE html>
@@ -8,7 +7,7 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed | The Vault</title>
+    <title>Order Confirmed | Treasure Row</title>
     <style>
         :root { --gold: #B8860B; --gold-light: #d4af37; }
 
@@ -56,6 +55,7 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
         }
 
         .conf-header h1 {
+            font-family: 'Cinzel', Arial, Helvetica, sans-serif;
             margin: 0 0 8px;
             font-size: 1.9rem;
             letter-spacing: 2px;
@@ -175,21 +175,27 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
             .conf-card { padding: 22px; }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
+<body class="tr-app">
+    <!-- Shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Order Confirmation" %}
+    {% set tr_subtitle = "Thanks for shopping on Treasure Row." %}
+    {% include "partials/_app_header.html" %}
     <div class="page-wrapper">
         <div class="conf-card" id="confCard">
             <p class="loading-msg" id="loadingMsg">Loading your order confirmation...</p>
         </div>
     </div>
 
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
     <script>
     (async () => {
         const card = document.getElementById("confCard");
 
         function renderError(msg) {
             card.innerHTML = `
-                <p class="error-msg">${msg}</p>
+                <p class="error-msg">${escapeHtml(msg)}</p>
                 <div class="button-row">
                     <a href="/auth/listings" class="btn btn-primary">Continue Shopping</a>
                 </div>
@@ -222,9 +228,9 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
 
         const itemRows = orderItems.map(item => `
             <tr>
-                <td>${item.item_name || "Item"}</td>
-                <td>${item.selected_size || "—"}</td>
-                <td>${item.quantity}</td>
+                <td>${escapeHtml(item.item_name || "Item")}</td>
+                <td>${escapeHtml(item.selected_size || "—")}</td>
+                <td>${escapeHtml(item.quantity)}</td>
                 <td>$${parseFloat(item.price_at_purchase).toFixed(2)}</td>
                 <td class="text-right">$${(item.quantity * parseFloat(item.price_at_purchase)).toFixed(2)}</td>
             </tr>
@@ -233,8 +239,8 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
         card.innerHTML = `
             <div class="conf-header">
                 <div class="success-badge">&#10003; Order Submitted</div>
-                <h1><span>The</span> Vault — Thank You!</h1>
-                <p class="conf-number">Confirmation: <strong>${order.confirmation_number}</strong></p>
+                <h1><span>Treasure</span> Row — Thank You!</h1>
+                <p class="conf-number">Confirmation: <strong>${escapeHtml(order.confirmation_number)}</strong></p>
             </div>
 
             <div class="section">
@@ -242,11 +248,11 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
                 <div class="detail-grid">
                     <div class="detail-item">
                         <strong>Order Date</strong>
-                        <span>${createdDate}</span>
+                        <span>${escapeHtml(createdDate)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Status</strong>
-                        <span>${order.order_status}</span>
+                        <span>${escapeHtml(order.order_status)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Order Total</strong>
@@ -260,19 +266,19 @@ Updated by Day Ekoi 4/22/26 - JS-driven, loads order data from API
                 <div class="detail-grid">
                     <div class="detail-item">
                         <strong>Name</strong>
-                        <span>${order.buyer_first_name} ${order.buyer_last_name}</span>
+                        <span>${escapeHtml(order.buyer_first_name)} ${escapeHtml(order.buyer_last_name)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Email</strong>
-                        <span>${order.buyer_email}</span>
+                        <span>${escapeHtml(order.buyer_email)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Contact</strong>
-                        <span>${order.buyer_contact}</span>
+                        <span>${escapeHtml(order.buyer_contact)}</span>
                     </div>
                     <div class="detail-item">
                         <strong>Meeting Location</strong>
-                        <span>${order.buyer_meeting_location}</span>
+                        <span>${escapeHtml(order.buyer_meeting_location)}</span>
                     </div>
                 </div>
             </div>

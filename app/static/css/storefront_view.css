@@ -2,8 +2,7 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4 - 3/22/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - styling updates to storefront view page, including back button, profile info row, and listing cards
+    Updated - Iteration 5 - 4/20/26 - styling updates to storefront view page, including back button, profile info row, and listing cards
 
 
 Description:
@@ -43,7 +42,7 @@ body {
     padding: 0.25rem 0 3rem;
 }
 
-/* back arrow row above banner - Updated by Day Ekoi 4/20/26 */
+/* back arrow row above banner - Updated 4/20/26 */
 .back-row {
     margin-bottom: 0.6rem;
 }
@@ -97,7 +96,7 @@ body {
     background-position: center;
 }
 
-/* Profile info row - tightened by Day Ekoi 4/20/26 */
+/* Profile info row - tightened 4/20/26 */
 .profile-info-row {
     display: flex;
     align-items: flex-start;
@@ -188,7 +187,7 @@ body {
     transform: translateY(-3px);
 }
 
-/* Updated by Day E - April 22nd: support multi-image cards, carousel controls, and distortion-safe image rendering */
+/* Updated - April 22nd: support multi-image cards, carousel controls, and distortion-safe image rendering */
 .listing-image-shell {
     width: 100%;
     min-height: 270px;

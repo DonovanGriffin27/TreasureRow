@@ -3,8 +3,7 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4 - 3/22/2026
-    Fully Integrated and Updated by Day Ekoi - Iteration 5 - 4/9/2026
+    Fully Integrated and Updated - Iteration 5 - 4/9/2026
 
 
 Description:
@@ -25,7 +24,7 @@ Works with:
 }
 
 
-/* page base - Updated by Day Ekoi 4/20/26 - vault background to match other pages */
+/* page base - Updated 4/20/26 - vault background to match other pages */
 body {
     background:
         linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)),
@@ -46,7 +45,7 @@ body {
 }
 
 
-/* back button - Added by Day Ekoi 4/20/26 */
+/* back button - Added 4/20/26 */
 .back-row {
     margin-bottom: 0.6rem;
 }
@@ -73,7 +72,7 @@ body {
     color: #f0cc55;
 }
 
-/* banner section - Updated by Day Ekoi 4/20/26 - Facebook/Twitter profile layout */
+/* banner section - Updated 4/20/26 - Facebook/Twitter profile layout */
 .banner-section {
     position: relative;
     margin-bottom: 2.5rem;
@@ -131,7 +130,7 @@ body {
 }
 
 
-/* Profile info section - Updated by Day Ekoi 4/20/26
+/* Profile info section - Updated 4/20/26
    Offset left to clear the overlapping logo */
 .store-info-row {
     padding-left: calc(160px + 3rem);
@@ -147,7 +146,7 @@ body {
     line-height: 1.45;
 }
 
-/* Updated by Day Ekoi - Iteration 5 - 4/20/26: two-column layout keeps description left and management buttons on the right */
+/* Updated - Iteration 5 - 4/20/26: two-column layout keeps description left and management buttons on the right */
 .store-info-layout {
     display: grid;
     grid-template-columns: minmax(320px, 1fr) auto;
@@ -171,7 +170,7 @@ body {
     width: auto;
 }
 
-/* Removed by Day Ekoi - Iteration 5 - 4/20/26: inline brand name no longer used under banner.
+/* Removed - Iteration 5 - 4/20/26: inline brand name no longer used under banner.
 .brand-name {
     font-size: 2rem;
     font-style: italic;
@@ -207,7 +206,7 @@ body {
 }
 
 
-/* shared action button styling - Updated by Day Ekoi 4/20/26 - matches back button pill */
+/* shared action button styling - Updated 4/20/26 - matches back button pill */
 .action-btn {
     display: inline-flex;
     align-items: center;
