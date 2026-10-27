@@ -1,6 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - 4/22/26 - API-only blueprint
+# Updated - 4/22/26 - API-only blueprint
 
 from flask import Blueprint, request, jsonify, session
 

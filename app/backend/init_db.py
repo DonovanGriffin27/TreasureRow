@@ -13,7 +13,7 @@ Run this file manually when:
 
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - Iteration 5 - 4/20/26 - added contact_info, preview_image_1-4, categories columns to storefronts; added ALTER TABLE migrations
+# Updated - Iteration 5 - 4/20/26 - added contact_info, preview_image_1-4, categories columns to storefronts; added ALTER TABLE migrations
 
 import psycopg2
 import os
@@ -21,15 +21,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from db import get_connection
+
 
 def create_vault_tables():
     try:
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            database=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD")
-        )
+        # shared connection settings (SSL + timeout) - Donovan Griffin, Iteration 3
+        conn = get_connection()
 
         cur = conn.cursor()
 
@@ -50,8 +48,7 @@ def create_vault_tables():
 
         # ________________________________________________________
         # STOREFRONTS TABLE (One storefront per user)
-        # Added by Day Ekoi 2/26/26
-        # Updated by Day Ekoi 4/20/26 - added contact_info, preview_image_1-4 columns
+        # Updated 4/20/26 - added contact_info, preview_image_1-4 columns
         # ________________________________________________________
         create_storefronts_table = """
             CREATE TABLE IF NOT EXISTS storefronts (
@@ -79,7 +76,7 @@ def create_vault_tables():
         """
         cur.execute(create_storefronts_table)
 
-        # Migrations for existing databases - Added by Day Ekoi 4/20/26
+        # Migrations for existing databases - Added 4/20/26
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS contact_info TEXT;")
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS preview_image_1 TEXT;")
         cur.execute("ALTER TABLE storefronts ADD COLUMN IF NOT EXISTS preview_image_2 TEXT;")
@@ -92,7 +89,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTINGS TABLE (Each listing belongs to a storefront)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listings_table = """
             CREATE TABLE IF NOT EXISTS listings (
@@ -133,7 +129,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTING IMAGES TABLE (Multiple images per listing)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listing_images_table = """
             CREATE TABLE IF NOT EXISTS listing_images (
@@ -153,7 +148,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # LISTING SIZES TABLE (Inventory per size)
-        # Added by Day Ekoi 2/26/26
         # ________________________________________________________
         create_listing_sizes_table = """
             CREATE TABLE IF NOT EXISTS listing_sizes (
@@ -176,7 +170,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # PURCHASES TABLE (Purchase history for users)
-        # Added by Elali McNair 3/3/26
         # The frontend protion of this code is not finished or implemented yet. Therfore, this code is not oporational or properly implemented yet.
         # ________________________________________________________
         create_purchases_table = """
@@ -203,7 +196,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # WISHLIST TABLE (User wishlists)
-        # Added by Elali McNair 3/3/26
         # The frontend protion of this code is not finished or implemented yet. Therfore, this code is not oporational or properly implemented yet.
         # ________________________________________________________
         create_wishlist_table = """
@@ -261,7 +253,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # CART ITEMS TABLE (Persistent Bag)
-        # Added by Ryan Grimes 4/12/26
         # ________________________________________________________
         create_cart_items_table = """
             CREATE TABLE IF NOT EXISTS cart_items (
@@ -284,7 +275,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # ORDERS TABLE (Checkout orders)
-        # Added by Day Ekoi 4/22/26
         # ________________________________________________________
         create_orders_table = """
             CREATE TABLE IF NOT EXISTS orders (
@@ -310,7 +300,6 @@ def create_vault_tables():
 
         # ________________________________________________________
         # ORDER ITEMS TABLE (Items per order)
-        # Added by Day Ekoi 4/22/26
         # ________________________________________________________
         create_order_items_table = """
             CREATE TABLE IF NOT EXISTS order_items (

@@ -1,6 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - 4/22/26 - rewrote to match orders/order_items schema
+# Updated - 4/22/26 - rewrote to match orders/order_items schema
 
 from db import get_connection
 
