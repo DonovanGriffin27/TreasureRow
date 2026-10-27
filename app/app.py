@@ -21,6 +21,7 @@ def create_app():
                 template_folder='templates',
                 static_folder='static')
 
+    # Chase Jones
     placeholder_keys = {"", "change-me", "change_me", "changeme", "dev-secret", "secret"}
     secret_key = (os.getenv("SECRET_KEY") or "").strip()
     if secret_key.lower() in placeholder_keys:
@@ -42,6 +43,7 @@ def create_app():
         MAX_CONTENT_LENGTH=20 * 1024 * 1024,
     )
 
+    # Chase Jones
     @app.after_request
     def add_security_headers(response):
         response.headers.setdefault("X-Content-Type-Options", "nosniff")

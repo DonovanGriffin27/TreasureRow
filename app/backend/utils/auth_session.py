@@ -1,3 +1,4 @@
+# Chase Jones
 from flask import session
 
 def get_current_user():
