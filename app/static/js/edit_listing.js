@@ -3,11 +3,10 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Updated by Day Ekoi - Iteration 5 4/22/26
     - One Size mode: loads correctly from existing data
     - Per-size quantity inputs
     - Made-to-Order toggle
-    Updated by Day E - April 22nd - multi-image edit management using existing S3 and listing image routes
+    Updated - April 22nd - multi-image edit management using existing S3 and listing image routes
 */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -207,7 +206,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.className = "existing-image-card";
             card.innerHTML = `
                 <p class="image-slot-label">${image.is_primary ? "Primary Image" : `Image ${index + 1}`}</p>
-                <img src="${image.image_url}" alt="Listing image ${index + 1}">
+                <img src="${safeUrl(image.image_url)}" alt="Listing image ${index + 1}">
                 <div class="existing-image-actions">
                     <button type="button" class="mini-btn ${image.is_primary ? "is-active" : ""}" data-action="primary" ${image.is_primary || image.is_legacy ? "disabled" : ""}>${image.is_primary ? "Primary" : "Set Primary"}</button>
                     <button type="button" class="mini-btn is-danger" data-action="remove" ${existingImages.length <= 1 || image.is_legacy ? "disabled" : ""}>Remove</button>

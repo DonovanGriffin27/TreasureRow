@@ -1,6 +1,5 @@
 <!--
-Created by Kaila Roberts 3/23/26
-Updated by Day Ekoi 4/22/26 - wired to checkout.js, added field IDs, error display
+Updated 4/22/26 - wired to checkout.js, added field IDs, error display
 -->
 
 <!DOCTYPE html>
@@ -8,22 +7,16 @@ Updated by Day Ekoi 4/22/26 - wired to checkout.js, added field IDs, error displ
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | The Vault</title>
+    <title>Checkout | Treasure Row</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
-    <header class="storefront-top">
-        <div class="storefront-banner">
-           <a href="{{ url_for('auth.view_cart') }}" style="text-decoration: none;">
-                <button class="secondary-btn">&larr; BACK TO CART</button>
-            </a>
-
-            <div class="brand-block">
-                <h1 class="brand-title"><span class="gold">The</span> Vault</h1>
-                <p class="brand-subtitle">Finalize Purchase</p>
-            </div>
-        </div>
-    </header>
+<body class="tr-app">
+    <!-- Shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Checkout" %}
+    {% set tr_subtitle = "Confirm your details and a campus meeting spot." %}
+    {% include "partials/_app_header.html" %}
+    <div class="back-row"><a href="{{ url_for('auth.view_cart') }}" class="back-btn" style="text-decoration:none;">← Back to bag</a></div>
 
     <main class="checkout-layout-wrapper">
         <section class="checkout-form-container form-card">
@@ -62,10 +55,18 @@ Updated by Day Ekoi 4/22/26 - wired to checkout.js, added field IDs, error displ
                 <span class="gold">Total: </span>
                 <span class="total-amount">$0.00</span>
             </div>
-            <button type="submit" id="submitCheckoutBtn" form="checkoutForm" class="primary-btn">Complete Transaction</button>
+            <!-- Treasure Tokens - Donovan Griffin, Iteration 3 -->
+            <div class="token-summary" id="tokenSummary">
+                <div><span>You pay</span><strong id="tokenTotal">0.00 TT</strong></div>
+                <div><span>Your wallet</span><strong id="walletBalance">…</strong></div>
+                <div><span>After this order</span><strong id="walletAfter">…</strong></div>
+                <p class="token-note">Tokens are held safely until you pick up your items. Give each seller your pickup code at the meetup.</p>
+            </div>
+            <button type="submit" id="submitCheckoutBtn" form="checkoutForm" class="primary-btn">Pay with Treasure Tokens</button>
         </aside>
     </main>
 
-    <script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
 </body>
 </html>
