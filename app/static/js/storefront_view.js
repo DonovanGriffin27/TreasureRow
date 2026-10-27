@@ -29,6 +29,7 @@ const storefrontLogo = document.getElementById("storefrontLogo");
 const logoFallback = document.getElementById("logoFallback");
 const listingGrid = document.getElementById("listingGrid");
 const lightbox = document.getElementById("listingLightbox");
+let storefrontOwnerId = null; // seller's user id, used for Message Seller - Jonah Goodwine
 const lightboxImage = document.getElementById("lightboxImage");
 const lightboxDots = document.getElementById("lightboxDots");
 const lightboxClose = document.getElementById("lightboxClose");
@@ -427,6 +428,7 @@ async function createListingCard(item, wishlistIds, currentUserId) {
                 <span class="item-name">${escapeHtml(title)}</span>
                 <span class="item-price">${escapeHtml(price)}</span>
                 ${madeToOrderBadge}
+                ${currentUserId && storefrontOwnerId && Number(currentUserId) !== storefrontOwnerId ? `<a class="message-seller-link" href="/messages?to=${storefrontOwnerId}&listing=${listingId}" style="font-size:0.85rem;font-weight:600;color:#0f5e3a;">Message Seller</a>` : ""}
             </div>
             <div class="listing-actions">
                 <button class="wishlist-lock-btn ${isWishlisted ? "active" : ""}" type="button" aria-label="${isWishlisted ? "Remove from wishlist" : "Add to wishlist"}" title="${isWishlisted ? "Remove from wishlist" : "Add to wishlist"}">
@@ -590,7 +592,7 @@ async function loadStorefrontView() {
         renderEmpty("Could not load listings.");
         return;
     }
-
+    storefrontOwnerId = Number(storefront.owner_id); // for "Message Seller" links - Jonah Goodwine
     if (pageTitle) pageTitle.textContent = storefront.brand_name || "Unnamed Storefront";
     storeDescription.textContent = storefront.bio || storefront.description || "No description provided.";
     contactInfo.textContent = storefront.contact_info || "";
