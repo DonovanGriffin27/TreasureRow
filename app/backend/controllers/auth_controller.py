@@ -99,6 +99,7 @@ def view_cart():
         session['cart'] = []
     return render_template('cart.html')
 
+# Chase Jones
 @auth_bp.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     if 'user_id' not in session:
@@ -195,6 +196,7 @@ def get_cart_json():
     return jsonify(session.get('cart', []))
 
 
+# Chase Jones
 # Admin login route - added by David Jackson 4/19/26
 @auth_bp.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
