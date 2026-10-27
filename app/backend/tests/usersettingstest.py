@@ -1,4 +1,3 @@
-# Madison Boyd
 #Iteration 3
 #CSC 405
 #3/2/2025
@@ -36,7 +35,7 @@ class TestUserSettings(unittest.TestCase):
         result = update_wishlist("New Gadget")
         self.assertFalse(result)
     
-    # Madison Boyd Iteration 5 contirbuttions 4/18/26
+    # Iteration 5 contirbuttions 4/18/26
 
     def test_account_button_click(self):
         """Test if the user can successfully click on the account button icon."""
