@@ -4,10 +4,9 @@ storefront.js
 
   The Vault Campus Marketplace
   CSC 405 Sp 26
-  Created by Day Ekoi - Iteration 4
   Date: 3/18/2026 - 3/22/2026
-  Updated by Day Ekoi - Iteration 5 - 4/20/26 - fetchStorefronts now maps preview_image_1-4 to card carousel; falls back to banner_url if no previews set
-  Updated by Day Ekoi - Iteration 5 - 4/20/26 - removed add-to-cart form from storefront cards (size, qty, add to bag); kept version history via comments
+  Updated - Iteration 5 - 4/20/26 - fetchStorefronts now maps preview_image_1-4 to card carousel; falls back to banner_url if no previews set
+  Updated - Iteration 5 - 4/20/26 - removed add-to-cart form from storefront cards (size, qty, add to bag); kept version history via comments
 
 Description: This file is responsible for the behavior of the storefront homepage. As of now, it stores sample storefront data, creates storefront cards using that data, 
 inserts the cards into the storefront grid in storefront.html, and handles the image carousel functionality for each storefront cards. 
@@ -80,32 +79,33 @@ function createCard(store) {
     ? `${itemLabel} | ${categories.join(" • ")}`
     : itemLabel;
 
+  // user-written values are escaped (escapeHtml/safeUrl from safe_html.js) - Donovan Griffin, Iteration 3
   card.innerHTML = `
     <div class="storefront-card-body">
       <div class="storefront-header">
         ${logo
-          ? `<img class="storefront-logo" src="${logo}" onerror="this.onerror=null;this.src='/static/images/logo.png';">`
+          ? `<img class="storefront-logo" src="${safeUrl(logo)}" onerror="this.onerror=null;this.src='/static/images/logo.png';">`
           : `<div class="storefront-logo"></div>`
         }
         <div>
-          <h2 class="storefront-name">${store.name}</h2>
+          <h2 class="storefront-name">${escapeHtml(store.name)}</h2>
           <p class="storefront-meta">
-            ${metaLabel}
+            ${escapeHtml(metaLabel)}
           </p>
         </div>
       </div>
 
       <div class="carousel-shell">
         <button class="carousel-btn left">&#10094;</button>
-        ${images.length > 0 ? `<img class="carousel-image" src="${images[0]}">` : `<div class="carousel-image"></div>`}
+        ${images.length > 0 ? `<img class="carousel-image" src="${safeUrl(images[0])}">` : `<div class="carousel-image"></div>`}
         <button class="carousel-btn right">&#10095;</button>
       </div>
 
-      <!-- Removed by Day Ekoi - Iteration 5 - 4/20/26: add-to-cart form removed from storefront cards.
+      <!-- Removed - Iteration 5 - 4/20/26: add-to-cart form removed from storefront cards.
            Cart/size/qty actions belong on the individual listing page, not the storefront browse view.
       <form action="/auth/add_to_cart" method="POST" class="bag-form">
-        <input type="hidden" name="item_id" value="${store.id}">
-        <input type="hidden" name="item_name" value="${store.name} Official Item">
+        <input type="hidden" name="item_id" value="${escapeHtml(store.id)}">
+        <input type="hidden" name="item_name" value="${escapeHtml(store.name)} Official Item">
         <input type="hidden" name="price" value="45.00">
         <div class="selection-row">
           <select name="size" class="vault-select">
@@ -164,7 +164,7 @@ function createCard(store) {
     window.location.href = `/storefronts/${store.id}`;
   };
 
-  // Lightbox: click carousel image to see full preview - Added by Day Ekoi 4/20/26
+  // Lightbox: click carousel image to see full preview - Added 4/20/26
   if (img && img.tagName === "IMG") {
     img.addEventListener("click", () => {
       const overlay = document.getElementById("lightboxOverlay");
@@ -178,7 +178,7 @@ function createCard(store) {
 }
 
 
-// Close lightbox when clicking the overlay - Added by Day Ekoi 4/20/26
+// Close lightbox when clicking the overlay - Added 4/20/26
 document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("lightboxOverlay");
   if (overlay) {
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 this function loops through all storefrotn objects in the storefronts array, creates a card for each, and then inserts the cards into the storefront grid 
 */
 function renderStorefronts() {
-  if (!grid) return; // Updated by Day E 3/22/26
+  if (!grid) return;
   grid.innerHTML = ""; // this clears the gird. Useful for if there needs to be re-rendering 
   storefronts.forEach(store => { // loops through each store object in the storefronts array
     const card = createCard(store); //creates a card for the current store object
@@ -219,7 +219,7 @@ async function fetchStorefronts() {
 
     const data = await response.json();
 
-    const storefrontArray = Array.isArray(data) ? data : [data]; // Updated by Day E 3/22/26
+    const storefrontArray = Array.isArray(data) ? data : [data];
 
     storefronts = storefrontArray.map(store => { //updated 4/20/2026
       const previewImages = [
@@ -258,7 +258,7 @@ const navPane = document.getElementById("navPane");
 const navOverlay = document.getElementById("navOverlay");
 
 // open menu
-if (menuBtn) { // Updated by Day E 3/22/26
+if (menuBtn) {
   menuBtn.addEventListener("click", () => {
     navPane.classList.toggle("active");
     navOverlay.classList.toggle("active");
@@ -266,7 +266,7 @@ if (menuBtn) { // Updated by Day E 3/22/26
 }
 
 // close when clicking overlay
-if (navOverlay) { // Updated by Day E 3/22/26
+if (navOverlay) {
   navOverlay.addEventListener("click", () => {
     navPane.classList.remove("active");
     navOverlay.classList.remove("active");
@@ -274,7 +274,6 @@ if (navOverlay) { // Updated by Day E 3/22/26
 }
 
 // SEARCH BAR FUNCTIONALITY
-// Added by Day E 4/9/26
 // filters storefront cards in real time as the user types in the search bar
 
 const searchInput = document.getElementById("searchInput");
@@ -289,7 +288,7 @@ function filterStorefronts(query) {
     grid.innerHTML = "";
 
     if (!filtered.length) {
-        grid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column:1/-1; padding: 2rem;">No storefronts found for "${query}"</p>`;
+        grid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column:1/-1; padding: 2rem;">No storefronts found for "${escapeHtml(query)}"</p>`;
         return;
     }
 
@@ -312,6 +311,6 @@ if (searchInput) {
 }
 
 /* Initial render of the storefront cards. This will display the storefronts on the page when it is first loaded. */
-fetchStorefronts(); // Updated by Day E 4/9/26 - this will now fetch real storefront data from the Flask API and then render the storefronts. If the API route is not ready or fails, it will fallback to rendering the placeholder storefronts. */
+fetchStorefronts(); // Updated 4/9/26 - this will now fetch real storefront data from the Flask API and then render the storefronts. If the API route is not ready or fails, it will fallback to rendering the placeholder storefronts. */
 
-/* renderStorefronts(); // Updated by Day E 3/22/26 */
+/* renderStorefronts(); // Updated 3/22/26 */
