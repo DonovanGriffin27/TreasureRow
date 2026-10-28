@@ -1,6 +1,6 @@
 {#
     _app_header.html - Created by Donovan Griffin, Iteration 3
-    Edited by Cameron Ridgley - 10/27/26 - Shop and Sell are dropdowns; More lists the Discover pages
+    Edited by Cameron Ridgley - 10/27/26 - Shop, Sell, and More are dropdowns; More lists the Discover pages
 
     Shared header for logged-in pages: campus banner, tab bar, and the
     slide-out menu. Styled by static/css/theme.css.
@@ -16,12 +16,14 @@
 <div class="tr-nav-overlay" id="trNavOverlay"></div>
 <aside class="tr-nav-pane" id="trNavPane" aria-label="Main menu">
     <div class="tr-nav-pane-head">Treasure Row</div>
-    {# Shop and Sell are dropdowns: they open on hover, keyboard focus, or a
-       tap/click, and stay open on one of their own pages.
-       More is always expanded and holds the Discover pages.
+    {# Shop, Sell, and More are dropdowns: they open on hover, keyboard focus,
+       or a tap/click, and stay open on one of their own pages. More holds the
+       Discover pages. My Account, About, Sitemap, and Log Out stay visible
+       below the dropdowns.
        Updated by Cameron Ridgley 10/27/26 #}
     {% set tr_shop_open = p in ['/storefronts', '/storefront', '/cart', '/auth/cart', '/checkout', '/order-confirmation', '/returns'] or (p.startswith('/storefronts/') and p.split('/')[2].isdigit() and not p.endswith('/edit')) %}
     {% set tr_sell_open = p in ['/my-storefront', '/storefronts/dashboard', '/create-storefront', '/storefronts/create', '/create-listing', '/listings/create'] or p.endswith('/edit') %}
+    {% set tr_more_open = p in ['/explore-brands', '/categories', '/new-drops', '/hot'] %}
     <div class="tr-nav-group tr-nav-dropdown {{ 'open' if tr_shop_open }}">
         <button type="button" class="tr-nav-toggle" aria-expanded="{{ 'true' if tr_shop_open else 'false' }}" aria-controls="trNavShop">
             Shop <span class="tr-nav-caret" aria-hidden="true"></span>
@@ -42,16 +44,21 @@
             <a class="tr-nav-link" href="{{ url_for('create_listing') }}">Create Listing</a>
         </div></div>
     </div>
+    <div class="tr-nav-group tr-nav-dropdown {{ 'open' if tr_more_open }}">
+        <button type="button" class="tr-nav-toggle" aria-expanded="{{ 'true' if tr_more_open else 'false' }}" aria-controls="trNavMore">
+            More <span class="tr-nav-caret" aria-hidden="true"></span>
+        </button>
+        <div class="tr-nav-sub" id="trNavMore"><div class="tr-nav-sub-inner">
+            <a class="tr-nav-link {{ 'current' if p == '/explore-brands' }}" href="{{ url_for('browse_pages_bp.explore_brands_page') }}">Explore Brands</a>
+            <a class="tr-nav-link {{ 'current' if p == '/categories' }}" href="{{ url_for('browse_pages_bp.categories_page') }}">All Categories</a>
+            <a class="tr-nav-link {{ 'current' if p == '/new-drops' }}" href="{{ url_for('browse_pages_bp.new_drops_page') }}">New Drops</a>
+            <a class="tr-nav-link {{ 'current' if p == '/hot' }}" href="{{ url_for('browse_pages_bp.hot_page') }}">Hot!</a>
+        </div></div>
+    </div>
     <div class="tr-nav-group">
-        <p>More</p>
-        <a class="tr-nav-link {{ 'current' if p == '/explore-brands' }}" href="{{ url_for('browse_pages_bp.explore_brands_page') }}">Explore Brands <span aria-hidden="true">&rarr;</span></a>
-        <a class="tr-nav-link {{ 'current' if p == '/categories' }}" href="{{ url_for('browse_pages_bp.categories_page') }}">All Categories <span aria-hidden="true">&rarr;</span></a>
-        <a class="tr-nav-link {{ 'current' if p == '/new-drops' }}" href="{{ url_for('browse_pages_bp.new_drops_page') }}">New Drops <span aria-hidden="true">&rarr;</span></a>
-        <a class="tr-nav-link {{ 'current' if p == '/hot' }}" href="{{ url_for('browse_pages_bp.hot_page') }}">Hot! <span aria-hidden="true">&rarr;</span></a>
-        <div class="tr-nav-divider" role="separator"></div>
-        <a class="tr-nav-link" href="{{ url_for('auth.account') }}">My Account</a>
-        <a class="tr-nav-link" href="/about">About</a>
-        <a class="tr-nav-link" href="/sitemap">Sitemap</a>
+        <a class="tr-nav-link {{ 'current' if p == '/auth/account' }}" href="{{ url_for('auth.account') }}">My Account</a>
+        <a class="tr-nav-link {{ 'current' if p == '/about' }}" href="/about">About</a>
+        <a class="tr-nav-link {{ 'current' if p == '/sitemap' }}" href="/sitemap">Sitemap</a>
         <a class="tr-nav-link danger" href="{{ url_for('auth.logout') }}">Log Out</a>
     </div>
 </aside>
@@ -110,7 +117,7 @@
         btn.addEventListener("click", function () { toggle(!pane.classList.contains("active")); });
         overlay.addEventListener("click", function () { toggle(false); });
 
-        // Shop / Sell dropdowns: a tap or click pins a group open or closed
+        // Shop / Sell / More dropdowns: a tap or click pins a group open or closed
         // (hover and keyboard focus open them through CSS) - Cameron Ridgley 10/27/26
         pane.querySelectorAll(".tr-nav-toggle").forEach(function (toggleBtn) {
             toggleBtn.addEventListener("click", function () {

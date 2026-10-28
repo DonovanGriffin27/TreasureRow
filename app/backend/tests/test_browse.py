@@ -74,7 +74,7 @@ def test_pages_render_for_signed_in_user(client, path, title):
 def test_menu_has_dropdowns_and_discover_links(client):
     sign_in(client, FAKE_USER)
     html = client.get("/new-drops").get_data(as_text=True)
-    assert html.count('class="tr-nav-toggle"') == 2          # Shop and Sell
+    assert html.count('class="tr-nav-toggle"') == 3          # Shop, Sell, and More
     for path in PAGES:
         assert f'href="{path}"' in html
     assert 'class="tr-nav-link current" href="/new-drops"' in html
@@ -85,6 +85,32 @@ def test_shop_dropdown_starts_open_on_shop_pages(client):
     html = client.get("/returns").get_data(as_text=True)
     assert 'tr-nav-dropdown open' in html
     assert 'aria-controls="trNavShop"' in html
+
+
+@pytest.mark.parametrize("path", PAGES)
+def test_more_dropdown_starts_open_on_more_pages(client, path):
+    sign_in(client, FAKE_USER)
+    html = client.get(path).get_data(as_text=True)
+    more = html.split('aria-controls="trNavMore"')[0].rsplit("<div", 1)[1]
+    assert "tr-nav-dropdown open" in more
+
+
+@pytest.mark.parametrize("path", ["/returns", "/about", "/sitemap"])
+def test_more_dropdown_starts_closed_elsewhere(client, path):
+    sign_in(client, FAKE_USER)
+    html = client.get(path).get_data(as_text=True)
+    more = html.split('aria-controls="trNavMore"')[0].rsplit("<div", 1)[1]
+    assert "tr-nav-dropdown open" not in more
+
+
+def test_account_about_sitemap_and_log_out_sit_outside_more(client):
+    sign_in(client, FAKE_USER)
+    html = client.get("/returns").get_data(as_text=True)
+    more_links = html.split('id="trNavMore"')[1].split("</div></div>")[0]
+    after_more = html.split('id="trNavMore"')[1].split("</div></div>", 1)[1].split("</aside>")[0]
+    for label in ("My Account", "About", "Sitemap", "Log Out"):
+        assert label not in more_links
+        assert label in after_more
 
 
 def test_sitemap_lists_discover_pages(client):
