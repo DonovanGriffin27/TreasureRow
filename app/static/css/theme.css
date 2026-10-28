@@ -4,7 +4,7 @@
     Treasure Row Campus Marketplace
     CSC 404 Fa 26'
     Created by Donovan Griffin - Iteration 3
-    Edited by Cameron Ridgley - 10/27/26 - Shop/Sell dropdowns and Discover links in the slide-out menu
+    Edited by Cameron Ridgley - 10/27/26 - Shop/Sell/More dropdowns and Discover links in the slide-out menu
 
 Description:
 Shared design system for every Treasure Row page. Replaces The Vault's
@@ -313,7 +313,7 @@ body.tr-app {
 
 .tr-nav-link.danger { color: var(--tr-red) !important; }
 
-/* Shop / Sell dropdowns and the Discover links under More - Cameron Ridgley 10/27/26
+/* Shop / Sell / More dropdowns and the Discover links under More - Cameron Ridgley 10/27/26
    A dropdown opens while the pointer is over it, while a link inside has
    keyboard focus, or when .open is set (a tap/click, or being on one of its pages). */
 
@@ -367,18 +367,12 @@ body.tr-app {
 
 .tr-nav-sub .tr-nav-link { padding-left: 32px; }
 
-.tr-nav-link span { float: right; color: var(--tr-muted); }
-
-.tr-nav-link:hover span { color: var(--tr-blue); }
-
 .tr-nav-link.current {
     background: var(--tr-blue-50);
     color: var(--tr-blue) !important;
     font-weight: 700;
     box-shadow: inset 3px 0 0 var(--tr-blue);
 }
-
-.tr-nav-divider { height: 1px; margin: 8px 20px; background: var(--tr-divider); }
 
 @media (prefers-reduced-motion: reduce) {
     .tr-nav-sub, .tr-nav-caret { transition: none; }
