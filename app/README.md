@@ -1,21 +1,20 @@
-# The Vault — Campus Marketplace
+# Treasure Row — Campus Marketplace
 
 **A cloud-based fashion marketplace for Hampton University students**
 
-Designed & Built by David Jackson, Elali McNair, Day Ekoi, Ryan Grimes, Kaila Roberts, and Madison Boyd
-CSC 405 — Spring 26'
+CSC 404 — Fall 26'. Built on The Vault (CSC 405, Spring 2026).
 
 ---
 
 ## Live Deployment
 
-**http://the-vault-env.eba-a7vun5tm.us-east-2.elasticbeanstalk.com**
+Being redeployed to AWS Elastic Beanstalk in Iteration 3 — the URL will be added here.
 
 ---
 
-## What is The Vault?
+## What is Treasure Row?
 
-The Vault is a web-based campus marketplace exclusively for Hampton University students. It allows student brand owners to create storefronts, publish clothing listings, and manage inventory, while other students can browse, wishlist, and purchase items.
+Treasure Row is a web-based campus marketplace exclusively for Hampton University students. It allows student brand owners to create storefronts, publish clothing listings, and manage inventory, while other students can browse, wishlist, and purchase items.
 
 ---
 
@@ -37,14 +36,14 @@ The Vault is a web-based campus marketplace exclusively for Hampton University s
 
 ### Prerequisites
 - Python 3.12+
-- AWS RDS credentials
-- AWS credentials (for S3 access)
+- AWS RDS credentials (or a local PostgreSQL database)
+- AWS credentials for S3 (optional — without them, uploads are saved under `static/uploads/`)
 
 ### Installation
 
 ```bash
-git clone https://github.com/DavidJ46/TheVaultProject.git
-cd TheVaultProject
+git clone git@github.com:DonovanGriffin27/TreasureRow.git
+cd TreasureRow/app
 
 python3 -m venv venv
 source venv/bin/activate        # macOS/Linux
@@ -55,19 +54,15 @@ pip install -r requirements.txt
 
 ### Environment Configuration
 
-Create a `.env` file in the root directory:
+Copy `.env.example` to `.env` in this folder and fill in real values (never commit `.env`).
+The app will not start without `SECRET_KEY`. Generate one with:
 
-DB_HOST=your-aws-rds-endpoint
-DB_NAME=your-database-name
-DB_USER=your-db-username
-DB_PASSWORD=your-db-password
-DB_PORT=5432
-DB_SSLMODE=require
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_S3_BUCKET=your-s3-bucket-name
-AWS_REGION=us-east-2
-SECRET_KEY=your-secret-key
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+On Elastic Beanstalk, set the same variables as **environment properties** instead of a `.env` file.
+Set `SESSION_COOKIE_SECURE=1` once the site is served over HTTPS.
 
 ### Initialize the Database
 
@@ -78,18 +73,46 @@ python3 backend/init_db.py
 ### Run the App
 
 ```bash
-python3 app.py
+flask --app app run --debug --port 5001
 ```
 
-Visit `http://127.0.0.1:5000` in your browser.
+Visit `http://127.0.0.1:5001` in your browser. (Port 5001, not 5000: on macOS,
+AirPlay Receiver already uses port 5000 and answers with a blank page.)
+
+Everything except the landing page, Sign In, Create Account, and Admin sign-in
+requires a signed-in user.
 
 ---
 
 ## Running Tests
 
+The tests create and delete real users, storefronts, listings, and orders, so they
+run against a **separate local test database** - never the team's AWS database
+(`backend/tests/conftest.py` refuses to run if `DB_HOST` is an AWS address).
+
+One-time setup:
+
 ```bash
-python3 backend/tests/test_file_name
+createdb treasurerow_test
+cp .env.test.example .env.test   # then set DB_USER / DB_PASSWORD for your machine
 ```
+
+Run the whole suite from `app/app`:
+
+```bash
+python3 -m pytest backend/tests
+```
+
+| Test file | Covers |
+|---|---|
+| `test_ownership.py` | account ownership bug: account switching, direct API calls, spoofed identity headers |
+| `test_cart_pricing.py` | prices and quantities always come from the database, not the browser |
+| `test_uploads.py` | uploads must be real images, in allowed folders, under the size limit |
+| `test_hardening.py` | CSRF protection, returns limited to your own orders, required `SECRET_KEY` |
+| `test_wallet.py` | Treasure Tokens: wallets, checkout escrow, pickup codes, refunds, admin grants |
+| `test_checkout.py`, `test_wishlist_feature.py`, `test_create_listing_feature.py`, `test_admin.py`, `test_user.py` | feature behavior |
+
+Uploads made by tests are saved under `static/uploads/` instead of S3.
 
 ---
 
@@ -97,17 +120,18 @@ python3 backend/tests/test_file_name
 
 | Name | Role |
 |---|---|
-| David Jackson | Project Manager, Admin backend & frontend |
-| Elali McNair | Co-PM, Wishlist & Purchase backend, Create Listing frontend |
-| Ryan Grimes | Systems & Security Lead, Auth backend, Login/Signup/Cart frontend |
-| Day Ekoi | Cloud Deployment Lead, Storefront & Listings backend & frontend, Returns system, AWS deployment |
-| Madison Boyd | Documentation Lead, User & Account Settings backend & frontend |
-| Kaila Roberts | Database & App Support, Checkout backend and frontend |
+| Donovan Griffin | Project Manager, Testing & QA |
+| Jonah Goodwine | Co-PM, Dev Team |
+| Cameron Ridgley | Dev Team, Jira board |
+| Chase Jones | Docs Team (Requirements) |
+| Ricki Davis | Docs Team (Functional Spec) |
+| Chi Martin | Docs Team (Design Spec) |
+| Noah Higgs | Docs Team (Security & Deployment) |
 
 ---
 
 ## Notes
 
 - Restricted to Hampton University email addresses (`@hamptonu.edu` / `@my.hamptonu.edu`)
-- No payment processing — checkout uses an in-person exchange model
-- Deployed on AWS Free Tier
+- No real payment processing — checkout pays with Treasure Tokens (in-app tokens held in escrow until an in-person pickup); see `../docs/payment-tokens/README.md`
+- Hosted on AWS (Elastic Beanstalk, RDS, S3)
