@@ -3,8 +3,7 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 5 4/16/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - drag-drop zones, image preview thumbnails, preview_image_1-4 upload + pre-fill, existing preview image display
+    Updated - Iteration 5 - 4/20/26 - drag-drop zones, image preview thumbnails, preview_image_1-4 upload + pre-fill, existing preview image display
 
 Handles the Edit Storefront page:
 - Loads current storefront data and pre-fills the form
@@ -219,7 +218,7 @@ async function loadStorefront(userId, userRole) {
         document.getElementById("logoCurrentPreview").style.display = "block";
     }
 
-    // pre-check saved categories - Added by Day Ekoi 4/20/26
+    // pre-check saved categories - Added 4/20/26
     if (sf.categories) {
         const saved = sf.categories.split(",").map(c => c.trim());
         saved.forEach(val => {
@@ -229,7 +228,7 @@ async function loadStorefront(userId, userRole) {
         validateCategoryLimit();
     }
 
-    // show existing preview images in individual slots - Updated by Day Ekoi 4/20/26
+    // show existing preview images in individual slots - Updated 4/20/26
     const existingPreviews = [sf.preview_image_1, sf.preview_image_2, sf.preview_image_3, sf.preview_image_4];
     existingPreviews.forEach((url, i) => {
         if (url) {
@@ -257,7 +256,7 @@ async function init() {
         const currentStorefront = await loadStorefront(user.id, user.role);
         if (!currentStorefront) return;
 
-        // set up drop zones - Updated by Day Ekoi 4/20/26 - 4 individual preview slots
+        // set up drop zones - Updated 4/20/26 - 4 individual preview slots
         setupDropZone("bannerZone", "bannerUpload", "bannerPreview", 1);
         setupDropZone("logoZone", "logoUpload", "logoPreview", 1);
         setupDropZone("previewZone1", "previewImage1", "previewPreview1", 1);
@@ -286,7 +285,7 @@ async function init() {
                 catch (err) { alert("Failed to upload banner. Please try again."); return; }
             }
 
-            // upload each preview slot independently, keep existing if no new file - Updated by Day Ekoi 4/20/26
+            // upload each preview slot independently, keep existing if no new file - Updated 4/20/26
             const existingPreviewUrls = [
                 currentStorefront.preview_image_1,
                 currentStorefront.preview_image_2,

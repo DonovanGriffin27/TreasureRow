@@ -1,5 +1,4 @@
 # backend/tests/test_admin.py
-# Created by David Jackson
 
 
 import os
@@ -44,8 +43,11 @@ def set_user_session(client):
 
 # Tests that logged-out users cannot access the admin dashboard
 def test_admin_dashboard_blocks_logged_out_users(client):
+    # signed-out visitors are now sent to the sign-in page (app-wide login
+    # gate) instead of getting a bare 401 - updated by Donovan Griffin, Iteration 3
     response = client.get("/admin")
-    assert response.status_code == 401
+    assert response.status_code == 302
+    assert "/auth/login" in response.headers["Location"]
 
 
 # Tests that non-admin users cannot access the admin dashboard
