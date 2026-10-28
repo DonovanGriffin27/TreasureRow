@@ -3,10 +3,9 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4 - 3/18/2026-3/22/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - added lightbox overlay styles for storefront card image previews
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - restyled enter/page buttons to pill style; increased carousel image height; commented out bag-form styles
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - aligned storefront CTA and pagination buttons with back-button styling; expanded image area on cards
+    Updated - Iteration 5 - 4/20/26 - added lightbox overlay styles for storefront card image previews
+    Updated - Iteration 5 - 4/20/26 - restyled enter/page buttons to pill style; increased carousel image height; commented out bag-form styles
+    Updated - Iteration 5 - 4/20/26 - aligned storefront CTA and pagination buttons with back-button styling; expanded image area on cards
 
 Description: 
 The purpose of this file is to control the style and layout of the storefront homepage.
@@ -72,12 +71,12 @@ body {
     left: -320px;
     width: 300px;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.92); /* Updated by Day E 3/22/26 */
+    background: rgba(0, 0, 0, 0.92);
     border-right: 1px solid #B8860B;
-    padding: 30px 22px 24px 22px; /* Updated by Day E 3/22/26 */
+    padding: 30px 22px 24px 22px;
     z-index: 30;
     transition: left 0.3s ease;
-    overflow-y: auto; /* Updated by Day E 3/22/26 */
+    overflow-y: auto;
 }
 
 .nav-pane.active {
@@ -113,8 +112,8 @@ body {
     transform: translateY(-2px);
 } */
 
-/* Removed by Day Ekoi - Iteration 5 - 4/20/26: old metallic gradient style replaced with pill style below.
-   Updated by Day E 4/9/26 - separated create-btn from enter/page btns, added white border and transparent bg
+/* Removed - Iteration 5 - 4/20/26: old metallic gradient style replaced with pill style below.
+   Updated 4/9/26 - separated create-btn from enter/page btns, added white border and transparent bg
 .enter-btn,
 .page-btn {
     background: linear-gradient(145deg, #B8860B, #8B6508);
@@ -135,7 +134,7 @@ body {
 }
 */
 
-/* Removed by Day Ekoi - Iteration 5 - 4/20/26: earlier storefront pill style replaced below with the exact shared back-button treatment.
+/* Removed - Iteration 5 - 4/20/26: earlier storefront pill style replaced below with the exact shared back-button treatment.
 .enter-btn,
 .page-btn {
     display: inline-flex;
@@ -163,7 +162,7 @@ body {
 }
 */
 
-/* Updated by Day Ekoi - Iteration 5 - 4/20/26: exact back-button styling reused for storefront CTA and pagination */
+/* Updated - Iteration 5 - 4/20/26: exact back-button styling reused for storefront CTA and pagination */
 .enter-btn,
 .page-btn {
     display: inline-flex;
@@ -225,7 +224,7 @@ body {
     background: rgba(212, 175, 55, 0.15);
 }
 
-nav-divider { /* updated by Day E 4/9/2026 */
+nav-divider {
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.25);
     margin: 18px 0;
@@ -243,10 +242,11 @@ nav-divider { /* updated by Day E 4/9/2026 */
     color: white;
     font-size: 1.05rem;
     cursor: pointer;
-    display: flex; /* Updated by Day E 3/22/26 */
-    justify-content: space-between; /* Updated by Day E 3/22/26 */
-    align-items: center; /* Updated by Day E 3/22/26 */
-    padding: 4px 0; /* Updated by Day E 3/22/26 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    text-decoration: none; /* Added by Donovan Griffin, Iteration 3 - nav-item is now a real <a> link */
 }
 
 .nav-item:hover {
@@ -254,21 +254,21 @@ nav-divider { /* updated by Day E 4/9/2026 */
 }
 
 .nav-heading {
-    color: rgba(204, 178, 128, 0.75); /* Updated by Day E 3/22/26 */
-    font-size: 0.95rem; /* Updated by Day E 3/22/26 */
-    margin-bottom: 12px; /* Updated by Day E 3/22/26 */
+    color: rgba(204, 178, 128, 0.75);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
 }
 
 .nav-subitem {
-    color: white; /* Updated by Day E 3/22/26 */
-    margin-bottom: 10px; /* Updated by Day E 3/22/26 */
-    cursor: pointer; /* Updated by Day E 3/22/26 */
+    color: white;
+    margin-bottom: 10px;
+    cursor: pointer;
     text-decoration: none;
     display: block;
 }
 
 .nav-subitem:hover {
-    color: #B8860B; /* Updated by Day E 3/22/26 */
+    color: #B8860B;
 }
 
 
@@ -278,13 +278,13 @@ nav-divider { /* updated by Day E 4/9/2026 */
     justify-content: space-between;
     align-items: center;
     margin-bottom: 42px;
-    padding: 6px 4px; /* Updated by Day E 3/22/26 */
+    padding: 6px 4px;
 }
 
 .topbar-actions {
-    display: flex; /* Updated by Day E 3/22/26 */
-    align-items: center; /* Updated by Day E 3/22/26 */
-    gap: 18px; /* Updated by Day E 3/22/26 */
+    display: flex;
+    align-items: center;
+    gap: 18px;
 }
 
 
@@ -292,38 +292,38 @@ nav-divider { /* updated by Day E 4/9/2026 */
 .menu-btn {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Updated by Day E 3/22/26 */
+    justify-content: center;
     gap: 6px;
-    width: 46px; /* Updated by Day E 3/22/26 */
-    height: 46px; /* Updated by Day E 3/22/26 */
-    background: transparent; /* Updated by Day E 3/22/26 */
-    border: none; /* Updated by Day E 3/22/26 */
-    cursor: pointer; /* Updated by Day E 3/22/26 */
+    width: 46px;
+    height: 46px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .menu-line {
-    width: 30px; /* Updated by Day E 3/22/26 */
-    height: 3px; /* Updated by Day E 3/22/26 */
+    width: 30px;
+    height: 3px;
     background: white;
-    border-radius: 2px; /* Updated by Day E 3/22/26 */
+    border-radius: 2px;
 }
 
 
 /* Bag icon */
 .bag-btn {
-    width: 42px; /* Updated by Day E 3/22/26 */
-    height: 42px; /* Updated by Day E 3/22/26 */
-    display: flex; /* Updated by Day E 3/22/26 */
+    width: 42px;
+    height: 42px;
+    display: flex;
     color: white;
-    align-items: center; /* Updated by Day E 3/22/26 */
-    justify-content: center; /* Updated by Day E 3/22/26 */
-    background: transparent; /* Updated by Day E 3/22/26 */
-    border: none; /* Updated by Day E 3/22/26 */
-    cursor: pointer; /* Updated by Day E 3/22/26 */
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
-/* Removed by Day Ekoi - Iteration 5 - 4/20/26: bag form removed from storefront cards.
-   Originally added by Ryan 3/25/26. Kept as version history.
+/* Removed - Iteration 5 - 4/20/26: bag form removed from storefront cards.
+   Originally added 3/25/26. Kept as version history.
 .bag-form {
     margin-top: 10px;
     padding: 10px;
@@ -367,9 +367,9 @@ nav-divider { /* updated by Day E 4/9/2026 */
 */
 
 .topbar-svg {
-    width: 48px; /* Updated by Day E 3/22/26 */
-    height: 48px; /* Updated by Day E 3/22/26 */
-    stroke: white; /* Updated by Day E 3/22/26 */
+    width: 48px;
+    height: 48px;
+    stroke: white;
     fill: white;
     color: white;
 }
@@ -377,9 +377,9 @@ nav-divider { /* updated by Day E 4/9/2026 */
 
 /* Profile button */
 .profile-btn {
-    background: transparent; /* Updated by Day E 3/22/26 */
-    border: none; /* Updated by Day E 3/22/26 */
-    cursor: pointer; /* Updated by Day E 3/22/26 */
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .profile-avatar {
@@ -388,15 +388,15 @@ nav-divider { /* updated by Day E 4/9/2026 */
     border-radius: 50%;
     border: 2px solid #D4AF37;
     background: white;
-    display: flex; /* Updated by Day E 3/22/26 */
-    align-items: center; /* Updated by Day E 3/22/26 */
-    justify-content: center; /* Updated by Day E 3/22/26 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .profile-svg {
-    width: 28px; /* Updated by Day E 3/22/26 */
-    height: 28px; /* Updated by Day E 3/22/26 */
-    stroke: #4d4d4d; /* Updated by Day E 3/22/26 */
+    width: 28px;
+    height: 28px;
+    stroke: #4d4d4d;
 }
 
 
@@ -406,7 +406,14 @@ nav-divider { /* updated by Day E 4/9/2026 */
     margin-bottom: 40px;
 }
 
+.brand-logo {
+    height: 90px;
+    width: auto;
+    margin-bottom: 8px;
+}
+
 .brand-title {
+    font-family: 'Cinzel', Arial, Helvetica, sans-serif;
     font-size: 4rem;
     font-weight: 800;
 }
@@ -442,7 +449,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
 /* Storefront card grid */
 .storefront-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Updated by Day E 3/22/26 */
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     max-width: 1020px;
     margin: 0 auto;
@@ -455,7 +462,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
     border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 26px;
     padding: 22px;
-    /* min-height: 520px; — Updated by Day Ekoi - Iteration 5 - 4/20/26: removed fixed min-height, card height now driven by image */
+    /* min-height: 520px; — Updated - Iteration 5 - 4/20/26: removed fixed min-height, card height now driven by image */
     transition: transform 0.22s ease;
     display: flex;
     flex-direction: column;
@@ -503,7 +510,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
     padding: 12px 0;
 }
 
-/* Updated by Day Ekoi - Iteration 5 - 4/20/26: height increased again so the image fills space freed by the removed extra controls */
+/* Updated - Iteration 5 - 4/20/26: height increased again so the image fills space freed by the removed extra controls */
 .carousel-image {
     width: 100%;
     height: 380px;
@@ -534,7 +541,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
     margin-top: 10px;
 }
 
-/* Removed by Day Ekoi - Iteration 5 - 4/20/26: padding/radius override no longer needed, handled by pill style above.
+/* Removed - Iteration 5 - 4/20/26: padding/radius override no longer needed, handled by pill style above.
 .enter-btn {
     padding: 14px 30px;
     border-radius: 2px;
@@ -558,7 +565,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
 }
 
 
-/* Lightbox overlay - Added by Day Ekoi 4/20/26 */
+/* Lightbox overlay - Added 4/20/26 */
 .lightbox-overlay {
     position: fixed;
     inset: 0;
@@ -596,7 +603,7 @@ nav-divider { /* updated by Day E 4/9/2026 */
 /* Responsive */
 @media (max-width: 768px) {
     .storefront-grid {
-        grid-template-columns: 1fr; /* Updated by Day E 3/22/26 */
+        grid-template-columns: 1fr;
     }
 
     .carousel-image {

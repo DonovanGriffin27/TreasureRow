@@ -1,7 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 3
-# Updated by Day Ekoi - Iteration 5 - 4/10/26 -4/20/26 - added preview_image_1-4 to all queries, added item_count via JOIN, fixed contact_info column
+# Updated - Iteration 5 - 4/10/26 -4/20/26 - added preview_image_1-4 to all queries, added item_count via JOIN, fixed contact_info column
 
 """
 models/storefront_model.py
