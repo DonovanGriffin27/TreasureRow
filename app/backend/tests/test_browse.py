@@ -108,7 +108,7 @@ def test_account_about_sitemap_and_log_out_sit_outside_more(client):
     html = client.get("/returns").get_data(as_text=True)
     more_links = html.split('id="trNavMore"')[1].split("</div></div>")[0]
     after_more = html.split('id="trNavMore"')[1].split("</div></div>", 1)[1].split("</aside>")[0]
-    for label in ("My Account", "About", "Sitemap", "Log Out"):
+    for label in ("My Account", "Messages", "About", "Sitemap", "Log Out"):
         assert label not in more_links
         assert label in after_more
 

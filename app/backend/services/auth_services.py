@@ -12,6 +12,13 @@ class AuthService:
             print(f"You Must Use a Hampton University Associated Email") 
             return False, "You Must Use a Hampton University Associated Email"
 
+        # Noah Higgs
+        # length rules
+        if not (3 <= len(username or "") <= 50):
+            return False, "Username must be between 3 and 50 characters"
+        if not (8 <= len(password or "") <= 128):
+            return False, "Password must be between 8 and 128 characters"
+
         hashed_pw = hash_password(password)
         try:
             cur = db_conn.cursor() #Creates a point for data to be entered into database
