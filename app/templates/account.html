@@ -1,4 +1,5 @@
 <!--Made by Madison Boyd on  3/23/2026-->
+<!--Updated by Donovan Griffin - 10/1/2026 - fixed account ownership bug: getCurrentUserId() now always fetches /auth/api/auth/me instead of trusting cached localStorage/sessionStorage, which let a second account inherit the first account's cached id after switching logins in the same browser; added clearCachedIdentity() on logout as a safety net-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -149,7 +150,7 @@
             <span class="role-badge">{{ session['role'] if 'role' in session else 'USER' }}</span>
         </div>
         <div class="logout-section">
-            <a href="{{ url_for('auth.logout')}}" style="color: #ff4444; text-decoration: none;">LOGOUT</a>
+            <a href="{{ url_for('auth.logout')}}" onclick="clearCachedIdentity()" style="color: #ff4444; text-decoration: none;">LOGOUT</a>
         </div>
     </div>
 
@@ -186,9 +187,14 @@
 
 <script>
     async function getCurrentUserId() {
-        const storedUserId = localStorage.getItem("vaultUserId") || sessionStorage.getItem("vaultUserId");
-        if (storedUserId) return storedUserId;
-
+        // Bug fix (Iteration 2): this used to check localStorage/sessionStorage
+        // FIRST and only hit /auth/api/auth/me if nothing was cached. Since
+        // localStorage is never cleared on logout, a second account logging in
+        // on the same browser kept inheriting the first account's cached id,
+        // which is how one user could see and delete another user's listings.
+        // The live session is the only source of truth for who's logged in,
+        // so always fetch fresh here; the cache below is write-through only,
+        // never read back.
         try {
             const response = await fetch("/auth/api/auth/me");
             if (!response.ok) return null;
@@ -204,6 +210,19 @@
         }
 
         return null;
+    }
+
+    // Defense in depth: clear the cached identity on logout so no stale id
+    // can ever linger in this browser for the next person to log in.
+    function clearCachedIdentity() {
+        try {
+            localStorage.removeItem("vaultUserId");
+            sessionStorage.removeItem("vaultUserId");
+            localStorage.removeItem("vaultWishlistLocalItems");
+            localStorage.removeItem("vaultWishlistListingIds");
+        } catch (error) {
+            console.error("Unable to clear cached identity on logout:", error);
+        }
     }
 
     function openTab(evt, tabName) {
