@@ -1,0 +1,241 @@
+<!---
+    Author: Jonah Goodwine
+    Created: 10/15/26
+    CSC404
+    messages.html -- buyers and sellers send and read messages about a listing
+
+    Opened from the nav menu, or from "Message Seller" on a listing
+    (/messages?to=<seller id>&listing=<listing id>).
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Treasure Row</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        /* two column layout: conversations on the left, open chat on the right */
+        .msg-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 760px) {
+            .msg-layout { grid-template-columns: 1fr; }
+        }
+        .convo-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            border-top: 1px solid var(--tr-divider);
+            padding: 12px 18px;
+            cursor: pointer;
+            font: inherit;
+        }
+        .convo-item:hover, .convo-item.active { background: var(--tr-blue-50); }
+        .convo-name { font-weight: 700; }
+        .convo-listing { font-size: 0.8rem; color: var(--tr-gold-text); }
+        .convo-preview { font-size: 0.85rem; color: var(--tr-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-badge {
+            float: right;
+            background: var(--tr-red);
+            color: #fff;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            padding: 1px 8px;
+        }
+        .thread {
+            height: 380px;
+            overflow-y: auto;
+            padding: 12px 18px;
+            border-top: 1px solid var(--tr-divider);
+        }
+        .bubble {
+            max-width: 75%;
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: var(--tr-bg);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .bubble.mine { margin-left: auto; background: var(--tr-blue-50); }
+        .bubble-time { display: block; font-size: 0.72rem; color: var(--tr-muted); margin-top: 4px; }
+        .send-row { display: flex; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--tr-divider); }
+        .send-row textarea { flex: 1; resize: vertical; min-height: 44px; padding: 10px; font: inherit; }
+        .empty-note { padding: 12px 18px; color: var(--tr-muted); font-style: italic; }
+        .error-note { padding: 0 18px 12px; color: var(--tr-red); }
+    </style>
+</head>
+<body class="tr-app">
+
+    {% set tr_title = "Messages" %}
+    {% set tr_subtitle = "Talk with buyers and sellers about a listing." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="tr-main">
+        <div class="msg-layout">
+
+            <!-- conversation list -->
+            <section class="tr-card">
+                <h2 class="tr-card-title">Conversations</h2>
+                <div id="convoList"><p class="empty-note">Loading...</p></div>
+            </section>
+
+            <!-- open conversation -->
+            <section class="tr-card">
+                <h2 class="tr-card-title" id="threadTitle">Select a conversation</h2>
+                <div class="thread" id="thread"></div>
+                <form class="send-row" id="sendForm" hidden>
+                    <textarea id="msgBody" maxlength="1000" placeholder="Write a message..." required></textarea>
+                    <button type="submit" class="tr-btn">Send</button>
+                </form>
+                <p class="error-note" id="sendError"></p>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+    <script>
+        // the conversation that's open right now
+        var openOtherId = null;
+        var openListingId = null;
+
+        // builds the ?listing= part of the url when there is a listing
+        function listingQuery(listingId) {
+            if (listingId === null || listingId === undefined) {
+                return "";
+            }
+            return "?listing=" + encodeURIComponent(listingId);
+        }
+
+        // load the conversation list on the left
+        function loadConversations() {
+            fetch("/api/messages").then(function (res) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            }).then(function (result) {
+                var list = document.getElementById("convoList");
+
+                if (!result.ok) {
+                    list.innerHTML = '<p class="empty-note">' + escapeHtml(result.data.error) + '</p>';
+                    return;
+                }
+                if (result.data.length === 0) {
+                    list.innerHTML = '<p class="empty-note">No messages yet. Use "Message Seller" on a listing to start one.</p>';
+                    return;
+                }
+
+                var html = "";
+                for (var i = 0; i < result.data.length; i++) {
+                    var c = result.data[i];
+                    var active = (c.other_id === openOtherId && c.listing_id === openListingId) ? " active" : "";
+                    var badge = c.unread > 0 ? '<span class="unread-badge">' + c.unread + '</span>' : "";
+                    var listingLine = c.listing_title ? '<div class="convo-listing">Re: ' + escapeHtml(c.listing_title) + '</div>' : "";
+
+                    html += '<button type="button" class="convo-item' + active + '" data-other="' + c.other_id +
+                            '" data-listing="' + (c.listing_id === null ? "" : c.listing_id) + '">' +
+                            badge + '<div class="convo-name">' + escapeHtml(c.other_name) + '</div>' +
+                            listingLine + '<div class="convo-preview">' + escapeHtml(c.last_message) + '</div></button>';
+                }
+                list.innerHTML = html;
+
+                // clicking a conversation opens it
+                var items = list.querySelectorAll(".convo-item");
+                for (var j = 0; j < items.length; j++) {
+                    items[j].addEventListener("click", function () {
+                        var listing = this.getAttribute("data-listing");
+                        openThread(Number(this.getAttribute("data-other")), listing === "" ? null : Number(listing));
+                    });
+                }
+            }).catch(function () {
+                document.getElementById("convoList").innerHTML = '<p class="empty-note">Could not load messages.</p>';
+            });
+        }
+
+        // open one conversation on the right
+        function openThread(otherId, listingId) {
+            openOtherId = otherId;
+            openListingId = listingId;
+
+            fetch("/api/messages/" + otherId + listingQuery(listingId)).then(function (res) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            }).then(function (result) {
+                var thread = document.getElementById("thread");
+                var title = document.getElementById("threadTitle");
+
+                if (!result.ok) {
+                    title.textContent = "Messages";
+                    thread.innerHTML = '<p class="empty-note">' + escapeHtml(result.data.error) + '</p>';
+                    document.getElementById("sendForm").hidden = true;
+                    return;
+                }
+
+                var d = result.data;
+                title.textContent = d.other_name + (d.listing_title ? " - " + d.listing_title : "");
+
+                var html = "";
+                for (var i = 0; i < d.messages.length; i++) {
+                    var m = d.messages[i];
+                    var time = new Date(m.created_at).toLocaleString();
+                    html += '<div class="bubble' + (m.mine ? " mine" : "") + '">' + escapeHtml(m.body) +
+                            '<span class="bubble-time">' + escapeHtml(m.mine ? "You" : m.sender_name) + ' - ' + escapeHtml(time) + '</span></div>';
+                }
+                if (html === "") {
+                    html = '<p class="empty-note">No messages yet. Say hi!</p>';
+                }
+                thread.innerHTML = html;
+                thread.scrollTop = thread.scrollHeight;
+
+                document.getElementById("sendForm").hidden = false;
+                loadConversations(); // refresh unread counts
+            });
+        }
+
+        // send the typed message
+        document.getElementById("sendForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            var box = document.getElementById("msgBody");
+            var errorNote = document.getElementById("sendError");
+            errorNote.textContent = "";
+
+            fetch("/api/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ receiver_id: openOtherId, listing_id: openListingId, body: box.value })
+            }).then(function (res) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            }).then(function (result) {
+                if (!result.ok) {
+                    errorNote.textContent = result.data.error;
+                    return;
+                }
+                box.value = "";
+                openThread(openOtherId, openListingId);
+            }).catch(function () {
+                errorNote.textContent = "Could not send. Try again.";
+            });
+        });
+
+        // on page load: open a conversation if the url says who to message
+        var params = new URLSearchParams(window.location.search);
+        if (params.get("to")) {
+            openThread(Number(params.get("to")), params.get("listing") ? Number(params.get("listing")) : null);
+        } else {
+            loadConversations();
+        }
+
+        // check for new messages every 10 seconds
+        setInterval(function () {
+            if (openOtherId !== null) {
+                openThread(openOtherId, openListingId);
+            } else {
+                loadConversations();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
