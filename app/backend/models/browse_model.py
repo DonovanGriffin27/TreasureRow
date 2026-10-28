@@ -14,10 +14,16 @@ It will:
   (primary image first, otherwise the oldest image)
 - Include popularity counts: units sold (from order_items) and how many
   users have it wishlisted
+- Score popularity as units sold x SOLD_WEIGHT + wishlist saves x SAVE_WEIGHT
 """
 
 from db import get_connection
 
+
+# Popularity weights for Hot!: a sale counts more than a wishlist save.
+# Example: 1 sold + 1 save = 3 + 2 = 5.
+SOLD_WEIGHT = 3
+SAVE_WEIGHT = 2
 
 # Sort orders the service layer is allowed to ask for. Values are fixed SQL,
 # never user input.
@@ -39,7 +45,8 @@ def get_public_listings(sort="new", limit=60):
     conn = get_connection()
     cur = conn.cursor()
 
-    # popularity: each unit sold counts 3, each wishlist save counts 1
+    # popularity: units sold x SOLD_WEIGHT + wishlist saves x SAVE_WEIGHT
+    # (weights are fixed integers above, never user input)
     query = f"""
         SELECT l.id, l.storefront_id, s.brand_name, s.logo_url,
                l.title, l.price, l.fulfillment_type, l.quantity_on_hand,
@@ -51,7 +58,8 @@ def get_public_listings(sort="new", limit=60):
                  LIMIT 1) AS image_url,
                COALESCE(sold.units, 0) AS units_sold,
                COALESCE(saved.saves, 0) AS wishlist_count,
-               COALESCE(sold.units, 0) * 3 + COALESCE(saved.saves, 0) AS popularity
+               COALESCE(sold.units, 0) * {int(SOLD_WEIGHT)}
+                 + COALESCE(saved.saves, 0) * {int(SAVE_WEIGHT)} AS popularity
           FROM listings l
           JOIN storefronts s ON s.id = l.storefront_id
           LEFT JOIN (SELECT listing_id, SUM(quantity) AS units

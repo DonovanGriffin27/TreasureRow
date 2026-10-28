@@ -4,12 +4,7 @@
     Treasure Row Campus Marketplace
     Added by Cameron Ridgley - 10/27/26
 
-Description: What's popular right now, reached from "More" in the slide-out
-menu. Ranks listings by popularity (each unit sold counts 3, each wishlist
-save counts 1), shows the top brands by sales, and falls back to the newest
-drops while there isn't enough activity to rank.
-Data: GET /api/browse/listings?sort=hot (and ?sort=new for the fallback).
-Script: static/js/hot.js.
+
 --->
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +26,7 @@ Script: static/js/hot.js.
         <section class="br-section" aria-labelledby="trendingHeading">
             <div class="br-section-head">
                 <h2 id="trendingHeading">Trending now</h2>
-                <p>Ranked by orders and wishlist saves.</p>
+                
             </div>
             <div class="br-grid" id="trendingGrid" aria-live="polite">
                 <p class="br-status">Loading what's hot...</p>
@@ -49,7 +44,7 @@ Script: static/js/hot.js.
         <section class="br-section" id="freshSection" aria-labelledby="freshHeading" hidden>
             <div class="br-section-head">
                 <h2 id="freshHeading">Fresh picks</h2>
-                <p>The newest drops while the rankings fill up.</p>
+                
             </div>
             <div class="br-grid" id="freshGrid"></div>
         </section>
