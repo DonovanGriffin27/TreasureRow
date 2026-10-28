@@ -6,7 +6,7 @@
 
     Hot! page (hot.html):
     - "Trending now": listings with any sales or wishlist saves, ranked by
-      popularity (the server sorts: each unit sold counts 3, each save 1)
+      popularity (the server sorts: each unit sold counts 3, each save 2)
     - "Top brands": brands ranked by units sold across their trending items
     - "Fresh picks": newest drops, shown when fewer than MIN_TRENDING items
       are trending so the page never looks empty

@@ -131,6 +131,13 @@ def test_listings_api_rejects_bad_input(client, stub_listings, query):
     assert stub_listings == []
 
 
+def test_popularity_weights_sold_3_saves_2():
+    from models.browse_model import SAVE_WEIGHT, SOLD_WEIGHT
+
+    assert (SOLD_WEIGHT, SAVE_WEIGHT) == (3, 2)
+    assert 1 * SOLD_WEIGHT + 1 * SAVE_WEIGHT == 5
+
+
 # ---------- SQL query (TEST database) ----------
 
 @pytest.fixture
@@ -145,7 +152,7 @@ def db_people():
     hidden = create_seller(cur, "bhide")
     buyer = create_user(cur, "bbuyer")
 
-    # popular: 2 units sold (score 6); saved: 1 wishlist save (score 1)
+    # popular: 2 units sold (score 6); saved: 1 wishlist save (score 2)
     cur.execute(
         """INSERT INTO orders (user_id, confirmation_number, buyer_first_name, buyer_last_name,
                                buyer_email, buyer_contact, buyer_meeting_location, total_amount)
@@ -179,7 +186,7 @@ def test_public_listings_query_ranks_and_filters(db_people):
     hot = [row for row in get_public_listings("hot", 100) if row["id"] in ours]
     assert [row["id"] for row in hot] == [popular["listing_id"], saved["listing_id"]]
     assert hot[0]["units_sold"] == 2 and hot[0]["popularity"] == 6
-    assert hot[1]["wishlist_count"] == 1 and hot[1]["popularity"] == 1
+    assert hot[1]["wishlist_count"] == 1 and hot[1]["popularity"] == 2
     assert hot[0]["brand_name"].startswith("Brand ")
 
     new = [row["id"] for row in get_public_listings("new", 100) if row["id"] in ours]
