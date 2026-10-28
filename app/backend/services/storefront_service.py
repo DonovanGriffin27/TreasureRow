@@ -1,7 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 3
-# Updated by Day Ekoi - Iteration 5 - 4/10/26 - 4/20/26  - added preview_image_1-4 passthrough in create and update services
+# Updated - Iteration 5 - 4/10/26 - 4/20/26 - added preview_image_1-4 passthrough in create and update services
 
 """
 storefront_service.py
@@ -31,7 +30,6 @@ from services.listing_service import (
 
 MAX_STOREFRONT_CATEGORIES = 3
 
-# Updated by Day E - April 22nd
 # Storefront state rules:
 # - is_active = TRUE: storefront is public
 # - is_active = FALSE: storefront is owner/admin accessible but hidden from public users

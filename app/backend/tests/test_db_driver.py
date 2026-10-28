@@ -1,4 +1,3 @@
-# Created by Ryan Grimes on 4/12/2026
 # Purpose: Simple integration test to verify connectivity to AWS RDS database.
 
 import sys

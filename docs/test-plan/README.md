@@ -1,6 +1,7 @@
 # Test Plan
 
-Owner: Pilar
+Owner: Donovan (test case authoring), Pilar (executes the QA pass)
 
-Placeholder for Iteration 2. Add the working document here (.docx or
-.md), and keep this folder as the single source of truth for it.
+See `Test_Plan_TreasureRow.docx` — regression test cases for existing
+features plus new test cases for this iteration's fixes (ownership bug,
+image upload, dead nav links, hardcoded credentials).

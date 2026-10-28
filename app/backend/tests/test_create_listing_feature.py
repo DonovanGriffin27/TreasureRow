@@ -1,4 +1,3 @@
-# By Elali McNair 4/19/26
 import io
 import os
 import sys
@@ -13,7 +12,8 @@ for path in (PROJECT_ROOT, BACKEND_ROOT):
         sys.path.append(path)
 
 from app import create_app
-from backend.config.db import get_connection
+from db import get_connection
+from helpers import create_seller, delete_users, png_bytes, sign_in
 
 
 class TestCreateListingFeature(unittest.TestCase):
@@ -22,38 +22,39 @@ class TestCreateListingFeature(unittest.TestCase):
         cls.app = create_app()
         cls.app.config["TESTING"] = True
         cls.client = cls.app.test_client()
-        cls.storefront_id, cls.user_id = cls._resolve_storefront_owner()
+        seller = cls._seed_test_data()
+        cls.storefront_id, cls.user_id = seller["storefront_id"], seller["user_id"]
 
-        if cls.storefront_id is None or cls.user_id is None:
-            raise unittest.SkipTest("No storefront owner data available for create listing tests.")
-
-    @staticmethod
-    def _resolve_storefront_owner():
+    @classmethod
+    def _seed_test_data(cls):
+        # create our own seller in the TEST database instead of borrowing
+        # existing rows - updated by Donovan Griffin, Iteration 3
         conn = get_connection()
-        if conn is None:
-            return None, None
-
         cur = conn.cursor()
-        try:
-            cur.execute(
-                "SELECT id, owner_id FROM storefronts WHERE is_active = TRUE ORDER BY id LIMIT 1;"
-            )
-            row = cur.fetchone()
-            if not row:
-                return None, None
-            return row[0], row[1]
-        finally:
-            cur.close()
-            conn.close()
+        seller = create_seller(cur, "listing")
+        conn.commit()
+        cur.close()
+        conn.close()
+        cls.username = seller["username"]
+        return seller
+
+    @classmethod
+    def tearDownClass(cls):
+        delete_users([cls.user_id])
 
     def setUp(self):
         self.created_listing_ids = []
+        with self.client.session_transaction() as sess:
+            sess.clear()
 
     def tearDown(self):
         self._cleanup_created_listings()
 
     def _auth_headers(self):
-        return {"X-User-Id": str(self.user_id)}
+        # identity comes from the login session now; the API no longer trusts
+        # an X-User-Id header - updated by Donovan Griffin, Iteration 3
+        sign_in(self.client, {"username": self.username, "user_id": self.user_id})
+        return {}
 
     def _cleanup_created_listings(self):
         if not self.created_listing_ids:
@@ -86,7 +87,7 @@ class TestCreateListingFeature(unittest.TestCase):
                 "fulfillment_type": "IN_STOCK",
                 "status": "ACTIVE",
                 "sizes_available": '["M", "L"]',
-                "listing_image": (io.BytesIO(b"fake image bytes"), "test_listing.png"),
+                "listing_image": (io.BytesIO(png_bytes()), "test_listing.png")  # real PNG: uploads are content-checked (Iteration 3),
             },
             headers=self._auth_headers(),
             content_type="multipart/form-data",
@@ -128,7 +129,7 @@ class TestCreateListingFeature(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 400, response.get_data(as_text=True))
-        self.assertIn("listing_image is required", response.get_data(as_text=True))
+        self.assertIn("listing image is required", response.get_data(as_text=True))
 
     def test_create_listing_requires_authentication(self):
         response = self.client.post(
@@ -142,7 +143,7 @@ class TestCreateListingFeature(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 401, response.get_data(as_text=True))
-        self.assertIn("Unauthorized", response.get_data(as_text=True))
+        self.assertIn("sign in", response.get_data(as_text=True).lower())
 
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
 # utils/s3.py
 # The Vault Campus Marketplace
-# Created by Day Ekoi - Iteration 5 4/10/26
 # Handles all S3 image upload functionality
+# Updated by Donovan Griffin - 9/8/2026 - added a local-storage fallback for
+# local development: when AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or
+# AWS_S3_BUCKET aren't set, uploads save to static/uploads/ instead of S3;
+# behavior is unchanged when real AWS credentials are present
 
 import boto3
 import os
@@ -33,9 +36,64 @@ LOCAL_UPLOAD_DIR = os.path.abspath(
 )
 
 
-def _save_locally(file, folder):
+# ---------------------------------------------------------------------------
+# Upload validation - added by Donovan Griffin, Iteration 3.
+# Before: the folder came straight from the request (../../ wrote files outside
+# static/uploads), only the filename extension was checked (a web page renamed
+# photo.png was accepted), S3 stored whatever Content-Type the browser sent,
+# and there was no size limit.
+# ---------------------------------------------------------------------------
+
+class InvalidUpload(ValueError):
+    """The uploaded file is not an allowed image (callers return HTTP 400)."""
+
+
+ALLOWED_FOLDERS = {
+    "uploads",
+    "listings",
+    "returns/damage",
+    "storefronts",
+    "storefronts/logos",
+    "storefronts/banners",
+    "storefronts/previews",
+}
+MAX_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB per image
+
+
+def _detect_image_type(head):
+    """Identify an image from its first bytes; returns (extension, content type) or None."""
+    if head.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png", "image/png"
+    if head.startswith(b"\xff\xd8\xff"):
+        return "jpg", "image/jpeg"
+    if head.startswith((b"GIF87a", b"GIF89a")):
+        return "gif", "image/gif"
+    if head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return "webp", "image/webp"
+    return None
+
+
+def validate_image(file, folder):
+    """Check the folder and the real file contents; returns (extension, content type)."""
+    if folder not in ALLOWED_FOLDERS:
+        raise InvalidUpload("Invalid upload folder.")
+
+    stream = file.stream
+    stream.seek(0, os.SEEK_END)
+    size = stream.tell()
+    stream.seek(0)
+    if size > MAX_IMAGE_BYTES:
+        raise InvalidUpload("Images must be 5 MB or smaller.")
+
+    detected = _detect_image_type(stream.read(16))
+    stream.seek(0)
+    if detected is None:
+        raise InvalidUpload("File must be a PNG, JPG, GIF, or WebP image.")
+    return detected
+
+
+def _save_locally(file, folder, ext):
     """Save an uploaded file under static/uploads/<folder>/ and return its URL path."""
-    ext = file.filename.rsplit(".", 1)[-1].lower()
     filename = f"{uuid.uuid4().hex}.{ext}"
     dest_dir = os.path.join(LOCAL_UPLOAD_DIR, folder)
     os.makedirs(dest_dir, exist_ok=True)
@@ -54,25 +112,31 @@ def upload_image_to_s3(file, folder="uploads"):
     Returns:
         Public URL string (S3 URL, or /static/uploads/... in local-dev mode),
         or None if the upload fails
+
+    Raises:
+        InvalidUpload if the folder isn't allowed or the file isn't a real image
     """
+    # raises InvalidUpload (-> HTTP 400) for bad folders, non-images, oversize files
+    ext, content_type = validate_image(file, folder)
+
     if USE_LOCAL_STORAGE:
         try:
-            return _save_locally(file, folder)
+            return _save_locally(file, folder, ext)
         except Exception as e:
             print(f"Local upload error: {e}")
             return None
 
     try:
-        # generate unique filename
-        ext = file.filename.rsplit(".", 1)[-1].lower()
+        # generate unique filename (extension from the real file type, not the name)
         filename = f"{folder}/{uuid.uuid4().hex}.{ext}"
 
         # upload to S3 - bucket policy handles public read access
+        # Content-Type is set by the server from the detected type, never by the browser
         s3_client.upload_fileobj(
             file,
             BUCKET_NAME,
             filename,
-            ExtraArgs={"ContentType": file.content_type}
+            ExtraArgs={"ContentType": content_type}
         )
 
         # return public URL
