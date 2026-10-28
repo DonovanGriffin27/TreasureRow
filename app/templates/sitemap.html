@@ -1,0 +1,114 @@
+<!---
+    sitemap.html
+
+    The Vault Campus Marketplace
+    CSC 404 - Treasure Row
+    Added by Donovan Griffin - Iteration 3 - fixes the "Sitemap" storefront
+    nav link that was previously commented out with no destination page.
+
+Description: Real index of the app's existing pages, reached from the
+storefront side nav. Reuses the same header/back-button pattern as
+returns.html for visual consistency, styled with create_storefront.css.
+Links only to routes that actually exist in app.py / storefront_controller.py.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap | Treasure Row</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
+    <style>
+        .back-row {
+            width: min(1200px, 92%);
+            margin: 0 auto 0.8rem;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 999px;
+            color: #d4af37;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(212,175,55,0.15);
+            color: #f0cc55;
+        }
+        .sitemap-body {
+            width: min(800px, 92%);
+            margin: 1.5rem auto 3rem;
+            color: #ddd;
+        }
+        .sitemap-body h3 {
+            color: #d4af37;
+            margin-top: 1.6rem;
+            margin-bottom: 0.4rem;
+        }
+        .sitemap-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sitemap-body li {
+            padding: 0.35rem 0;
+        }
+        .sitemap-body a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        .sitemap-body a:hover {
+            color: #d4af37;
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body class="tr-app">
+
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Sitemap" %}
+    {% set tr_subtitle = "Every page on Treasure Row." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="sitemap-body">
+        <h3>Browse</h3>
+        <ul>
+            <li><a href="/storefronts">All Storefronts</a></li>
+        </ul>
+
+        <h3>Selling</h3>
+        <ul>
+            <li><a href="{{ url_for('storefront_pages_bp.create_storefront_page') }}">Create Storefront</a></li>
+            <li><a href="{{ url_for('create_listing') }}">Create Listing</a></li>
+            <li><a href="/my-storefront">My Storefront</a></li>
+        </ul>
+
+        <h3>Buying</h3>
+        <ul>
+            <li><a href="/cart">Cart</a></li>
+            <li><a href="/checkout">Checkout</a></li>
+            <li><a href="/returns">Returns</a></li>
+        </ul>
+
+        <h3>Account</h3>
+        <ul>
+            <li><a href="/auth/login">Log In</a></li>
+            <li><a href="/auth/signup">Sign Up</a></li>
+        </ul>
+
+        <h3>More</h3>
+        <ul>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </main>
+</body>
+</html>

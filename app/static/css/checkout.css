@@ -1,6 +1,5 @@
 /* checkout.css
     The Vault Campus Marketplace
-    Created by Kaila Roberts - Iteration 4
     
     This file pulls the theme from storefront.css to ensure 
     consistent branding across the purchase flow.
@@ -131,6 +130,6 @@ input, textarea {
     padding-top: 16px;
 }
 
-.brand-title { font-size: 1.8rem; margin: 0; letter-spacing: 2px; }
+.brand-title { font-family: 'Cinzel', Arial, Helvetica, sans-serif; font-size: 1.8rem; margin: 0; letter-spacing: 2px; }
 .brand-subtitle { color: #888; margin: 4px 0 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
 .brand-block { text-align: right; }

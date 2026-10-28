@@ -1,12 +1,23 @@
-#By Ryan Grimes 2/27/2026
 #Register user and validate login
 from utils.auth_utils import hash_password, verify_password
 
 class AuthService:
     def register_user(self, username, password, email, db_conn): #Stores a user's unique ID, username, password, and email into the database
-        if not email.lower().endswith("hamptonu.edu"): #Validates Hampton Assocation, added 2/19/2026 by Ryan Grimes
+        # Validates Hampton Assocation, added 2/19/2026
+        # Updated by Donovan Griffin, Iteration 3: check the real email domain
+        # (hamptonu.edu or a subdomain like my.hamptonu.edu) so look-alikes such
+        # as someone@fakehamptonu.edu are rejected
+        domain = email.strip().lower().rsplit("@", 1)[-1] if "@" in email else ""
+        if not (domain == "hamptonu.edu" or domain.endswith(".hamptonu.edu")):
             print(f"You Must Use a Hampton University Associated Email") 
             return False, "You Must Use a Hampton University Associated Email"
+
+        # Noah Higgs
+        # length rules
+        if not (3 <= len(username or "") <= 50):
+            return False, "Username must be between 3 and 50 characters"
+        if not (8 <= len(password or "") <= 128):
+            return False, "Password must be between 8 and 128 characters"
 
         hashed_pw = hash_password(password)
         try:

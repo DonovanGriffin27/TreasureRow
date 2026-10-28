@@ -1,8 +1,7 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 3 
 # Dates: 2/25-2/26
-# Updated by Day Ekoi - Iteration 5 4/10/26 - S3 image upload integration
+# Updated - Iteration 5 4/10/26 - S3 image upload integration
 
 """
 controllers/listing_controller.py
@@ -20,6 +19,7 @@ All system rules + permission checks happen in services/listing_service.py.
 """
 
 from flask import Blueprint, request, jsonify
+from utils.auth_utils import get_session_user
 
 from services.listing_service import (
     create_listing_service,
@@ -47,24 +47,9 @@ listing_bp = Blueprint("listing_bp", __name__, url_prefix="/api")
 
 
 def get_current_user():
-    """
-    Temporary user identity method (until real auth is connected):
-    Read user from headers.
-
-    Required header for protected routes:
-      X-User-Id: <int>
-
-    """
-    user_id = request.headers.get("X-User-Id")
-    role = request.headers.get("X-User-Role", "user")
-
-    if not user_id:
-        return None
-
-    try:
-        return {"id": int(user_id), "role": role}
-    except Exception:
-        return None
+    """Signed-in user from the server-side session (never from request headers).
+    Updated by Donovan Griffin, Iteration 3 - see utils/auth_utils.get_session_user."""
+    return get_session_user()
 
 
 # __________________________________________________________
@@ -91,7 +76,7 @@ def create_listing_from_form():
 
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         # Get user's storefront to validate ownership
@@ -152,13 +137,24 @@ def create_listing_from_form():
 
         image_urls = []
         try:
-            from utils.s3 import upload_image_to_s3
+            from utils.s3 import upload_image_to_s3, InvalidUpload, validate_image
+
+            # check every image before uploading any, so a bad 3rd photo
+            # doesn't leave the first two orphaned - Iteration 3
+            for file in upload_files:
+                try:
+                    validate_image(file, "listings")
+                except InvalidUpload as e:
+                    return jsonify({"error": str(e)}), 400
 
             for file in upload_files:
                 if not file.filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
                     return jsonify({"error": "Image must be PNG, JPG, JPEG, GIF, or WebP."}), 400
 
-                image_url = upload_image_to_s3(file, folder="listings")
+                try:
+                    image_url = upload_image_to_s3(file, folder="listings")
+                except InvalidUpload as e:  # not a real image / too big - Iteration 3
+                    return jsonify({"error": str(e)}), 400
                 if not image_url:
                     return jsonify({"error": "Failed to upload image to S3."}), 500
                 image_urls.append(image_url)
@@ -224,7 +220,7 @@ def create_listing_from_form():
 def create_listing_route(storefront_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     data = request.get_json(silent=True) or {}
 
@@ -263,7 +259,7 @@ def get_storefront_listings_route(storefront_id):
 def get_my_listings_route():
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         user_storefront = get_my_storefront_service(current_user)
@@ -306,7 +302,7 @@ def get_listing_route(listing_id):
 def update_listing_route(listing_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     data = request.get_json(silent=True) or {}
 
@@ -331,7 +327,7 @@ def update_listing_route(listing_id):
 def delete_listing_route(listing_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         deleted = delete_listing_service(current_user, listing_id)
@@ -345,13 +341,12 @@ def delete_listing_route(listing_id):
         return jsonify({"error": str(e)}), 400
 
 
-# Updated by Day E - April 22nd
 # PATCH /api/listings/<listing_id>/deactivate
 @listing_bp.patch("/listings/<int:listing_id>/deactivate")
 def deactivate_listing_route(listing_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         updated = deactivate_listing_service(current_user, listing_id)
@@ -365,13 +360,12 @@ def deactivate_listing_route(listing_id):
         return jsonify({"error": str(e)}), 400
 
 
-# Updated by Day E - April 22nd
 # PATCH /api/listings/<listing_id>/reactivate
 @listing_bp.patch("/listings/<int:listing_id>/reactivate")
 def reactivate_listing_route(listing_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         updated = reactivate_listing_service(current_user, listing_id)
@@ -385,13 +379,12 @@ def reactivate_listing_route(listing_id):
         return jsonify({"error": str(e)}), 400
 
 
-# Updated by Day E - April 22nd
 # PATCH /api/listings/<listing_id>/restore
 @listing_bp.patch("/listings/<int:listing_id>/restore")
 def restore_deleted_listing_route(listing_id):
     current_user = get_current_user()
     if current_user is None:
-        return jsonify({"error": "Unauthorized: missing/invalid X-User-Id"}), 401
+        return jsonify({"error": "Please sign in."}), 401
 
     try:
         updated = restore_deleted_listing_service(current_user, listing_id)

@@ -1,11 +1,11 @@
-<!--Made by Madison Boyd on  3/23/2026-->
+<!--Updated by Donovan Griffin - 10/1/2026 - fixed account ownership bug: getCurrentUserId() now always fetches /auth/api/auth/me instead of trusting cached localStorage/sessionStorage, which let a second account inherit the first account's cached id after switching logins in the same browser; added clearCachedIdentity() on logout as a safety net-->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Vault | Account Console</title>
+    <title>Treasure Row | Account Console</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
     <style>
         :root { --gold: #B8860B; --dark-bg: #121212; }
@@ -137,11 +137,16 @@
 
         .back-btn { color: var(--gold); text-decoration: none; font-size: 0.9rem; }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
+<body class="tr-app">
 
+<!-- Shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "My Account" %}
+    {% set tr_subtitle = "Your listings, wishlist, and purchases." %}
+    {% include "partials/_app_header.html" %}
+<main class="tr-main">
 <div class="account-container">
-    <a href="{{ url_for('storefront_pages_bp.my_storefront_page') }}" class="back-btn">← BACK TO STOREFRONT</a>
     
     <div class="profile-header">
         <div class="user-meta">
@@ -149,7 +154,7 @@
             <span class="role-badge">{{ session['role'] if 'role' in session else 'USER' }}</span>
         </div>
         <div class="logout-section">
-            <a href="{{ url_for('auth.logout')}}" style="color: #ff4444; text-decoration: none;">LOGOUT</a>
+            <a href="{{ url_for('auth.logout')}}" onclick="clearCachedIdentity()" class="logout-link" style="text-decoration: none;">Log Out</a>
         </div>
     </div>
 
@@ -158,6 +163,7 @@
         <button class="tab-link" onclick="openTab(event, 'wishlist')">Wishlist</button>
         <button class="tab-link" onclick="openTab(event, 'purchases')">Purchases</button>
         <button class="tab-link" onclick="openTab(event, 'sales')">Sales History</button>
+        <button class="tab-link" onclick="openTab(event, 'wallet')">Wallet</button>
     </div>
 
     <div id="listings" class="tab-content active">
@@ -178,17 +184,41 @@
         <div id="purchasesContainer" class="purchase-items"></div>
     </div>
 
+    <!-- Sales + Wallet tabs use the Treasure Tokens API - Donovan Griffin, Iteration 3 -->
     <div id="sales" class="tab-content">
         <h3>SALES HISTORY</h3>
-        <p class="empty-state">No items sold yet.</p>
+        <p class="token-help">When you meet a buyer, ask for their pickup code and enter it here to receive the tokens.</p>
+        <p id="salesEmptyState" class="empty-state">Loading your sales...</p>
+        <div id="salesContainer" class="token-rows"></div>
+    </div>
+
+    <div id="wallet" class="tab-content">
+        <h3>TREASURE TOKENS</h3>
+        <div class="wallet-balance">
+            <span>Balance</span>
+            <strong id="walletBalanceAmount">…</strong>
+        </div>
+        <h4 class="token-subhead">Waiting for pickup</h4>
+        <p class="token-help">Give the seller your code only after you have your items.</p>
+        <p id="walletPendingEmpty" class="empty-state">Nothing waiting for pickup.</p>
+        <div id="walletPending" class="token-rows"></div>
+        <h4 class="token-subhead">History</h4>
+        <div id="walletLedger" class="token-ledger"></div>
     </div>
 </div>
 
+<!-- escapeHtml / safeUrl for user-written text - Donovan Griffin, Iteration 3 -->
+<script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
 <script>
     async function getCurrentUserId() {
-        const storedUserId = localStorage.getItem("vaultUserId") || sessionStorage.getItem("vaultUserId");
-        if (storedUserId) return storedUserId;
-
+        // Bug fix (Iteration 2): this used to check localStorage/sessionStorage
+        // FIRST and only hit /auth/api/auth/me if nothing was cached. Since
+        // localStorage is never cleared on logout, a second account logging in
+        // on the same browser kept inheriting the first account's cached id,
+        // which is how one user could see and delete another user's listings.
+        // The live session is the only source of truth for who's logged in,
+        // so always fetch fresh here; the cache below is write-through only,
+        // never read back.
         try {
             const response = await fetch("/auth/api/auth/me");
             if (!response.ok) return null;
@@ -206,6 +236,19 @@
         return null;
     }
 
+    // Defense in depth: clear the cached identity on logout so no stale id
+    // can ever linger in this browser for the next person to log in.
+    function clearCachedIdentity() {
+        try {
+            localStorage.removeItem("vaultUserId");
+            sessionStorage.removeItem("vaultUserId");
+            localStorage.removeItem("vaultWishlistLocalItems");
+            localStorage.removeItem("vaultWishlistListingIds");
+        } catch (error) {
+            console.error("Unable to clear cached identity on logout:", error);
+        }
+    }
+
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tab-content");
@@ -217,6 +260,7 @@
 
         if (tabName === "wishlist") loadWishlist();
         if (tabName === "purchases") loadPurchases();
+        if (tabName === "sales" || tabName === "wallet") loadWallet();
     }
 
     function getLocalWishlistItems() {
@@ -274,12 +318,12 @@
             row.className = "wishlist-row";
             row.innerHTML = `
                 <div class="wishlist-left">
-                    <img class="wishlist-thumb" src="${item.image_url || "/static/images/logo.png"}"
-                         alt="${item.title || "Wishlist item"}"
+                    <img class="wishlist-thumb" src="${safeUrl(item.image_url) || "/static/images/logo.png"}"
+                         alt="${escapeHtml(item.title || "Wishlist item")}"
                          onerror="this.src='/static/images/logo.png'">
                     <div>
-                        <div class="wishlist-title">${item.title || "Untitled Listing"}</div>
-                        <div class="wishlist-meta">${item.storefront_name || "Storefront"} | ${formatWishlistPrice(item.price)}</div>
+                        <div class="wishlist-title">${escapeHtml(item.title || "Untitled Listing")}</div>
+                        <div class="wishlist-meta">${escapeHtml(item.storefront_name || "Storefront")} | ${escapeHtml(formatWishlistPrice(item.price))}</div>
                     </div>
                 </div>
                 <div style="display:flex; gap:6px; align-items:center;">
@@ -424,8 +468,8 @@
                 <div class="listing-main">
                     <button class="delete-listing-btn" type="button" aria-label="Delete listing" title="Delete listing">x</button>
                     <div>
-                        <div class="listing-title">${item.title || "Untitled Listing"}</div>
-                        <div class="listing-meta">Qty: ${qty} | Status: ${item.status || "ACTIVE"}</div>
+                        <div class="listing-title">${escapeHtml(item.title || "Untitled Listing")}</div>
+                        <div class="listing-meta">Qty: ${qty} | Status: ${escapeHtml(item.status || "ACTIVE")}</div>
                     </div>
                 </div>
                 <div class="listing-price">$${price}</div>
@@ -519,13 +563,13 @@
                 const row = document.createElement("div");
                 row.className = "purchase-row";
                 row.innerHTML = `
-                    <div class="purchase-conf">${order.confirmation_number}</div>
+                    <div class="purchase-conf">${escapeHtml(order.confirmation_number)}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                        <div class="purchase-meta">${date} &nbsp;|&nbsp; ${order.order_status}</div>
+                        <div class="purchase-meta">${escapeHtml(date)} &nbsp;|&nbsp; ${escapeHtml(order.order_status)}</div>
                         <span class="purchase-total">$${parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
                     <div class="purchase-meta" style="margin-top:6px;">
-                        ${order.buyer_first_name} ${order.buyer_last_name}
+                        ${escapeHtml(order.buyer_first_name)} ${escapeHtml(order.buyer_last_name)}
                         &nbsp;&mdash;&nbsp;
                         <a href="/order-confirmation?conf=${encodeURIComponent(order.confirmation_number)}"
                            style="color:var(--gold); font-size:0.8rem;">View Details</a>
@@ -538,6 +582,134 @@
             if (emptyState) emptyState.textContent = "Unable to load orders right now.";
         }
     }
+
+
+    // ---------------- Treasure Tokens (Sales History + Wallet tabs) ----------------
+    // Added by Donovan Griffin, Iteration 3
+    const TOKEN_TYPE_LABELS = {
+        STARTING_BALANCE: "Welcome tokens",
+        ADMIN_GRANT: "Added by admin",
+        ESCROW_HOLD: "Paid into escrow",
+        ESCROW_RELEASE: "Sale completed",
+        ESCROW_REFUND: "Refund",
+    };
+    const ESCROW_STATUS_LABELS = {
+        HELD: "Waiting for pickup", RELEASED: "Picked up", REFUNDED: "Refunded", LOCKED: "Locked — admin review",
+    };
+
+    function tokens(n) { return `${Number(n).toFixed(2)} TT`; }
+
+    async function postEscrow(url, body) {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body || {}),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Something went wrong.");
+        return data;
+    }
+
+    async function loadWallet() {
+        let wallet;
+        try {
+            const res = await fetch("/api/wallet");
+            wallet = await res.json();
+            if (!res.ok) throw new Error(wallet.error || "Could not load your wallet.");
+        } catch (e) {
+            document.getElementById("salesEmptyState").textContent = e.message;
+            document.getElementById("walletPendingEmpty").textContent = e.message;
+            return;
+        }
+        renderWallet(wallet);
+        renderSales(wallet.sales);
+    }
+
+    function renderWallet(wallet) {
+        document.getElementById("walletBalanceAmount").textContent = tokens(wallet.balance);
+
+        const pending = wallet.purchases.filter(p => p.status === "HELD" || p.status === "LOCKED");
+        const pendingBox = document.getElementById("walletPending");
+        pendingBox.innerHTML = "";
+        document.getElementById("walletPendingEmpty").style.display = pending.length ? "none" : "block";
+        pending.forEach(p => {
+            const row = document.createElement("div");
+            row.className = "token-row";
+            row.innerHTML = `
+                <div class="token-row-main">
+                    <strong>${escapeHtml(p.seller_brand || "Seller")}</strong>
+                    <span>${escapeHtml(p.confirmation_number)} · ${tokens(p.amount)} · ${escapeHtml(ESCROW_STATUS_LABELS[p.status] || p.status)}</span>
+                </div>
+                ${p.pickup_code ? `<div class="pickup-code small">${escapeHtml(p.pickup_code)}</div>` : ""}
+                <button type="button" class="wishlist-remove-btn">Cancel order</button>`;
+            row.querySelector("button").addEventListener("click", async () => {
+                if (!confirm(`Cancel this order from ${p.seller_brand || "this seller"}? ${tokens(p.amount)} will be refunded.`)) return;
+                try { await postEscrow(`/api/escrow/${p.escrow_id}/cancel`, { reason: "Cancelled by buyer" }); loadWallet(); }
+                catch (e) { alert(e.message); }
+            });
+            pendingBox.appendChild(row);
+        });
+
+        const ledger = document.getElementById("walletLedger");
+        ledger.innerHTML = wallet.ledger.length ? "" : `<p class="empty-state">No token activity yet.</p>`;
+        wallet.ledger.forEach(entry => {
+            const row = document.createElement("div");
+            row.className = "token-ledger-row";
+            const date = entry.created_at ? new Date(entry.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+            row.innerHTML = `
+                <span>${escapeHtml(date)}</span>
+                <span>${escapeHtml(TOKEN_TYPE_LABELS[entry.type] || entry.type)}${entry.confirmation_number ? ` · ${escapeHtml(entry.confirmation_number)}` : ""}${entry.note ? `<small>${escapeHtml(entry.note)}</small>` : ""}</span>
+                <strong class="${entry.amount < 0 ? "is-debit" : "is-credit"}">${entry.amount > 0 ? "+" : ""}${tokens(entry.amount)}</strong>`;
+            ledger.appendChild(row);
+        });
+    }
+
+    function renderSales(sales) {
+        const box = document.getElementById("salesContainer");
+        const empty = document.getElementById("salesEmptyState");
+        box.innerHTML = "";
+        empty.textContent = "No items sold yet.";
+        empty.style.display = sales.length ? "none" : "block";
+        sales.forEach(sale => {
+            const row = document.createElement("div");
+            row.className = "token-row";
+            const open = sale.status === "HELD";
+            row.innerHTML = `
+                <div class="token-row-main">
+                    <strong>${escapeHtml(sale.buyer_name || "Buyer")} · ${tokens(sale.amount)}</strong>
+                    <span>${escapeHtml(sale.confirmation_number)} · Meet at: ${escapeHtml(sale.meeting_location || "—")}</span>
+                    <span>${escapeHtml(ESCROW_STATUS_LABELS[sale.status] || sale.status)}</span>
+                </div>
+                ${open ? `
+                <form class="pickup-form">
+                    <input type="text" placeholder="Buyer's code" maxlength="12" autocomplete="off" aria-label="Pickup code" required>
+                    <button type="submit" class="wishlist-cart-btn">Confirm pickup</button>
+                    <button type="button" class="wishlist-remove-btn">Cancel</button>
+                </form>` : ""}`;
+            if (open) {
+                const form = row.querySelector("form");
+                form.addEventListener("submit", async (ev) => {
+                    ev.preventDefault();
+                    const code = form.querySelector("input").value;
+                    try { await postEscrow(`/api/escrow/${sale.escrow_id}/release`, { code }); loadWallet(); }
+                    catch (e) { alert(e.message); }
+                });
+                form.querySelector(".wishlist-remove-btn").addEventListener("click", async () => {
+                    if (!confirm(`Cancel this sale? The buyer gets ${tokens(sale.amount)} back.`)) return;
+                    try { await postEscrow(`/api/escrow/${sale.escrow_id}/cancel`, { reason: "Cancelled by seller" }); loadWallet(); }
+                    catch (e) { alert(e.message); }
+                });
+            }
+            box.appendChild(row);
+        });
+    }
+
+    // open a tab from the address bar, e.g. /auth/account#sales
+    document.addEventListener("DOMContentLoaded", () => {
+        const tab = (location.hash || "").slice(1);
+        const button = document.querySelector(`.tab-link[onclick*="'${tab}'"]`);
+        if (tab && button && document.getElementById(tab)) button.click();
+    });
 
     document.addEventListener("DOMContentLoaded", loadMyListings);
     document.addEventListener("DOMContentLoaded", loadWishlist);
