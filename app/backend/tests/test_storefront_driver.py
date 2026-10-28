@@ -1,6 +1,5 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Created by Day Ekoi - Iteration 5 - 4/21/26
 # Purpose: Integration test driver for all storefront features.
 #          Covers model layer (direct DB), schema constraints, service layer (rules, validation, permissions),
 #          and API routes (HTTP via Flask test client). Tests real database on AWS RDS.
@@ -902,7 +901,7 @@ def run_api_tests(owner_id, storefront_id):
 def run_all_storefront_tests():
     print("\n" + "=" * 60)
     print("  THE VAULT — STOREFRONT TEST DRIVER")
-    print("  Created by Day Ekoi | Iteration 5 | 4/20/26")
+    print(" Created | Iteration 5 | 4/20/26")
     print("  Testing: Model Layer, Schema Constraints,")
     print("           Service Layer, API Routes")
     print("=" * 60)

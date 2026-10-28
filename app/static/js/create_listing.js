@@ -3,9 +3,7 @@ create_listing.js
 
 The Vault Campus Marketplace
 CSC 405 Sp 26
-Created by Elali McNair - Iteration 4
-Updated by Day Ekoi - Iteration 5 4/9/26
-Updated by Day Ekoi - Iteration 5 4/22/26 - One Size mode, per-size quantities, Made-to-Order
+Updated - Iteration 5 4/22/26 - One Size mode, per-size quantities, Made-to-Order
 
 Purpose:
 Handles form submission for Create Listing page. Supports:
@@ -351,8 +349,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
           }
           const messageDiv = document.createElement("div");
-          messageDiv.style.cssText = "color: #d4af37; margin-top: 10px; font-weight: bold; text-align:center;";
-          messageDiv.innerHTML = `You must create a storefront before creating listings. <a href="/storefronts/create" style="color:#fff; text-decoration:underline;">Create one here</a>`;
+          messageDiv.style.cssText = "color: #9b1b30; margin-top: 10px; font-weight: bold; text-align:center;";
+          messageDiv.innerHTML = `You must create a storefront before creating listings. <a href="/storefronts/create" style="color:#0f5e3a; text-decoration:underline;">Create one here</a>`;
           storefrontSelect.parentNode.appendChild(messageDiv);
         }
       } else if (response.status === 404) {
@@ -363,8 +361,8 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         }
         const messageDiv = document.createElement("div");
-        messageDiv.style.cssText = "color: #d4af37; margin-top: 10px; font-weight: bold; text-align:center;";
-        messageDiv.innerHTML = `You must create a storefront before creating listings. <a href="/storefronts/create" style="color:#fff; text-decoration:underline;">Create one here</a>`;
+        messageDiv.style.cssText = "color: #9b1b30; margin-top: 10px; font-weight: bold; text-align:center;";
+        messageDiv.innerHTML = `You must create a storefront before creating listings. <a href="/storefronts/create" style="color:#0f5e3a; text-decoration:underline;">Create one here</a>`;
         storefrontSelect.parentNode.appendChild(messageDiv);
       } else {
         console.error("Failed to load storefronts");
