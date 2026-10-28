@@ -260,9 +260,18 @@ Updated 4/22/26 - JS-driven, loads order data from API
             </tr>
         `).join("");
 
+        // The badge follows the real order status instead of always saying "Submitted".
+        const statusBadgeLabels = {
+            SUBMITTED: "Order Submitted",
+            PARTIALLY_COMPLETED: "Partially Completed",
+            COMPLETED: "Order Completed",
+            CANCELLED: "Order Cancelled",
+        };
+        const statusBadgeLabel = statusBadgeLabels[order.order_status] || order.order_status;
+
         card.innerHTML = `
             <div class="conf-header">
-                <div class="success-badge">&#10003; Order Submitted</div>
+                <div class="success-badge">&#10003; ${escapeHtml(statusBadgeLabel)}</div>
                 <h1><span>Treasure</span> Row — Thank You!</h1>
                 <p class="conf-number">Confirmation: <strong>${escapeHtml(order.confirmation_number)}</strong></p>
             </div>
