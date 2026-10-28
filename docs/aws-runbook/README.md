@@ -128,3 +128,12 @@ Single-instance environments **can't be paused** — the server runs (and uses c
 - Never stop RDS while the live site needs to work.
 - When the site isn't needed, follow Runbook 5.
 - Delete inbound rules for people or networks that no longer need access.
+
+---
+
+## Related documentation
+
+- Design Specification 3.7.2 (Elastic Beanstalk deployment and database network access) and 5.0 (single-instance hosting)
+- Requirements 4.2.2 to 4.2.4 (network access, live site, deployment configuration)
+- Risk Assessment: AWS Database Access Blocked
+- Test Plan TC-49 and TC-50
