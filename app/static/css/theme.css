@@ -4,6 +4,7 @@
     Treasure Row Campus Marketplace
     CSC 404 Fa 26'
     Created by Donovan Griffin - Iteration 3
+    Edited by Cameron Ridgley - 10/27/26 - Shop/Sell dropdowns and Discover links in the slide-out menu
 
 Description:
 Shared design system for every Treasure Row page. Replaces The Vault's
@@ -311,6 +312,77 @@ body.tr-app {
 .tr-nav-link:hover { background: var(--tr-blue-50); color: var(--tr-blue) !important; }
 
 .tr-nav-link.danger { color: var(--tr-red) !important; }
+
+/* Shop / Sell dropdowns and the Discover links under More - Cameron Ridgley 10/27/26
+   A dropdown opens while the pointer is over it, while a link inside has
+   keyboard focus, or when .open is set (a tap/click, or being on one of its pages). */
+
+.tr-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 6px 20px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: 700 0.72rem var(--tr-font);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--tr-muted);
+    text-align: left;
+}
+
+.tr-nav-toggle:hover,
+.tr-nav-dropdown.open .tr-nav-toggle { color: var(--tr-blue); }
+
+.tr-nav-toggle:focus-visible { outline: 2px solid var(--tr-blue); outline-offset: -2px; }
+
+.tr-nav-caret {
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    margin: -3px 2px 0 0;
+    transition: transform 0.2s ease;
+}
+
+.tr-nav-sub {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.22s ease;
+}
+
+.tr-nav-sub-inner { min-height: 0; overflow: hidden; }
+
+.tr-nav-dropdown:hover .tr-nav-sub,
+.tr-nav-dropdown:focus-within .tr-nav-sub,
+.tr-nav-dropdown.open .tr-nav-sub { grid-template-rows: 1fr; }
+
+.tr-nav-dropdown:hover .tr-nav-caret,
+.tr-nav-dropdown:focus-within .tr-nav-caret,
+.tr-nav-dropdown.open .tr-nav-caret { transform: rotate(-135deg); margin-top: 3px; }
+
+.tr-nav-sub .tr-nav-link { padding-left: 32px; }
+
+.tr-nav-link span { float: right; color: var(--tr-muted); }
+
+.tr-nav-link:hover span { color: var(--tr-blue); }
+
+.tr-nav-link.current {
+    background: var(--tr-blue-50);
+    color: var(--tr-blue) !important;
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--tr-blue);
+}
+
+.tr-nav-divider { height: 1px; margin: 8px 20px; background: var(--tr-divider); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tr-nav-sub, .tr-nav-caret { transition: none; }
+}
 
 
 /* ===================== Shared building blocks ===================== */

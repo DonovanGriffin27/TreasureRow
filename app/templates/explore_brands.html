@@ -1,0 +1,57 @@
+<!---
+    explore_brands.html
+
+    Treasure Row Campus Marketplace
+    Added by Cameron Ridgley - 10/27/26
+
+Description: Directory of every active student brand, reached from "More" in
+the slide-out menu. Shows a featured brand spotlight, then a searchable,
+sortable grid of brand cards that link to each storefront.
+Data: GET /api/storefronts. Script: static/js/explore_brands.js.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Row | Explore Brands</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+</head>
+<body class="tr-app">
+
+    {% set tr_title = "Explore Brands" %}
+    {% set tr_subtitle = "Meet Hampton's student designers and shop their brands." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="tr-main">
+
+        <!-- Featured brand: the brand with the most items for sale -->
+        <section class="br-section" id="featuredSection" aria-label="Featured brand" hidden>
+            <div id="featuredBrand"></div>
+        </section>
+
+        <section class="br-section" aria-labelledby="allBrandsHeading">
+            <div class="tr-toolbar">
+                <h2 id="allBrandsHeading">All Brands <span class="br-meta-text" id="brandCount"></span></h2>
+                <div class="br-controls">
+                    <input type="search" id="brandSearch" class="tr-search" placeholder="Search brands" aria-label="Search brands">
+                    <select id="brandSort" class="br-select" aria-label="Sort brands">
+                        <option value="az">A to Z</option>
+                        <option value="newest">Newest brands</option>
+                        <option value="items">Most items</option>
+                    </select>
+                </div>
+            </div>
+            <div class="br-grid" id="brandGrid" aria-live="polite">
+                <p class="br-status">Loading brands...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/browse_common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/explore_brands.js') }}"></script>
+</body>
+</html>

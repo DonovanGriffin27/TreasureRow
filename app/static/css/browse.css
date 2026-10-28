@@ -1,0 +1,398 @@
+/*
+    browse.css
+
+    Treasure Row Campus Marketplace
+    Added by Cameron Ridgley - 10/27/26
+
+    Shared styles for the Discover pages under "More" in the slide-out menu:
+    Explore Brands, All Categories, New Drops, and Hot!.
+    Loaded after theme.css and uses its --tr-* color and spacing tokens.
+*/
+
+/* ===================== Sections and toolbars ===================== */
+
+.br-section { margin-bottom: 36px; }
+
+.br-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: 14px;
+}
+
+.br-section-head h2 { margin: 0; font-size: 1.15rem; font-weight: 700; }
+
+.br-section-head p { margin: 0; color: var(--tr-muted); font-size: 0.9rem; }
+
+.br-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.br-select {
+    padding: 9px 34px 9px 12px;
+    border: 1px solid var(--tr-border);
+    border-radius: 999px;
+    background: var(--tr-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center / 14px;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--tr-text);
+    appearance: none;
+    cursor: pointer;
+}
+
+.br-select:focus { outline: none; border-color: var(--tr-blue); box-shadow: 0 0 0 3px var(--tr-blue-100); }
+
+.br-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px;
+}
+
+.br-status {
+    grid-column: 1 / -1;
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--tr-muted);
+    font-style: italic;
+}
+
+.br-note {
+    border-left: 4px solid var(--tr-gold);
+    background: var(--tr-gold-50);
+    color: var(--tr-gold-text);
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 0.92rem;
+}
+
+/* ===================== Brand cards ===================== */
+
+.br-brand-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--tr-surface);
+    border-radius: var(--tr-radius);
+    box-shadow: var(--tr-shadow);
+    overflow: hidden;
+    color: var(--tr-text) !important;
+    text-decoration: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.br-brand-card:hover { box-shadow: var(--tr-shadow-hover); transform: translateY(-2px); }
+
+.br-brand-card:focus-visible { outline: 3px solid var(--tr-blue); outline-offset: 2px; }
+
+.br-brand-banner {
+    height: 120px;
+    background: var(--tr-blue-50) center / cover no-repeat;
+}
+
+.br-brand-body { position: relative; padding: 34px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+
+.br-brand-logo {
+    position: absolute;
+    top: -28px;
+    left: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid var(--tr-surface);
+    background: var(--tr-blue-100);
+    object-fit: cover;
+    box-shadow: var(--tr-shadow);
+}
+
+.br-brand-name { margin: 0 0 4px; font-size: 1.05rem; font-weight: 700; }
+
+.br-brand-count { margin: 0 0 8px; font-size: 0.82rem; color: var(--tr-muted); }
+
+.br-brand-bio {
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    color: var(--tr-muted);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.br-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+
+.br-tag {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--tr-blue-50);
+    color: var(--tr-blue-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Brands without a banner show a faded Treasure Row logo */
+.br-brand-banner.is-empty,
+.br-feature-media.is-empty {
+    background: var(--tr-blue-50) url("/static/images/logo.png") center / auto 60% no-repeat;
+    background-blend-mode: multiply;
+    opacity: 0.6;
+}
+
+/* Featured brand spotlight (Explore Brands) */
+
+.br-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    background: var(--tr-surface);
+    border-radius: var(--tr-radius);
+    box-shadow: var(--tr-shadow);
+    overflow: hidden;
+    border-top: 6px solid var(--tr-gold);
+}
+
+.br-feature-media { min-height: 240px; background: var(--tr-blue-50) center / cover no-repeat; }
+
+.br-feature-body { padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+
+.br-kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--tr-gold-text);
+}
+
+.br-feature-title { display: flex; align-items: center; gap: 12px; }
+
+.br-feature-title img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--tr-blue-100);
+}
+
+.br-feature-title h3 { margin: 0; font-size: 1.4rem; }
+
+.br-feature-body p { margin: 0; color: var(--tr-muted); line-height: 1.55; }
+
+.br-feature-body .tr-btn { align-self: flex-start; margin-top: auto; }
+
+/* ===================== Category tiles ===================== */
+
+.br-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.br-category-tile {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 150px;
+    padding: 16px;
+    border: 0;
+    border-radius: var(--tr-radius);
+    background: var(--tr-navy) center / cover no-repeat;
+    box-shadow: var(--tr-shadow);
+    color: var(--tr-white);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.br-category-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(8, 50, 31, 0.92), rgba(8, 50, 31, 0.25));
+    z-index: -1;
+}
+
+.br-category-tile:hover { box-shadow: var(--tr-shadow-hover); transform: translateY(-2px); }
+
+.br-category-tile:focus-visible { outline: 3px solid var(--tr-gold); outline-offset: 2px; }
+
+.br-category-tile.active { box-shadow: 0 0 0 3px var(--tr-gold), var(--tr-shadow-hover); }
+
+.br-category-tile strong { display: block; font-size: 1.2rem; }
+
+.br-category-tile span { font-size: 0.85rem; opacity: 0.9; }
+
+/* ===================== Listing cards ===================== */
+
+.br-listing-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--tr-surface);
+    border-radius: var(--tr-radius);
+    box-shadow: var(--tr-shadow);
+    overflow: hidden;
+    color: var(--tr-text) !important;
+    text-decoration: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.br-listing-card:hover { box-shadow: var(--tr-shadow-hover); transform: translateY(-2px); }
+
+.br-listing-card:focus-visible { outline: 3px solid var(--tr-blue); outline-offset: 2px; }
+
+.br-listing-media { position: relative; aspect-ratio: 1 / 1; background: var(--tr-blue-50); }
+
+/* absolute so tall photos are cropped instead of stretching the square frame */
+.br-listing-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.br-listing-card.is-sold-out .br-listing-media img { filter: grayscale(0.7); opacity: 0.6; }
+
+.br-badges {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.br-badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: var(--tr-surface);
+    color: var(--tr-text);
+    box-shadow: var(--tr-shadow);
+}
+
+.br-badge--new { background: var(--tr-blue); color: var(--tr-white); }
+
+.br-badge--gold { background: var(--tr-gold-50); color: var(--tr-gold-text); border: 1px solid var(--tr-gold); }
+
+.br-badge--hot { background: var(--tr-red); color: var(--tr-white); }
+
+.br-badge--sold { background: var(--tr-red-50); color: var(--tr-red); }
+
+.br-rank {
+    position: absolute;
+    bottom: -18px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--tr-gold);
+    color: #1f1a0a;
+    font-weight: 800;
+    font-size: 1rem;
+    border: 3px solid var(--tr-surface);
+    box-shadow: var(--tr-shadow);
+}
+
+.br-listing-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+
+.br-listing-title {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 36px;
+}
+
+.br-listing-brand { margin: 0; font-size: 0.85rem; color: var(--tr-blue); font-weight: 600; }
+
+.br-listing-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.br-price { font-weight: 800; font-size: 1.05rem; }
+
+.br-meta-text { font-size: 0.8rem; color: var(--tr-muted); }
+
+/* Horizontal "This week" row (New Drops) */
+
+.br-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 260px);
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 4px 14px;
+    scroll-snap-type: x mandatory;
+}
+
+.br-row > * { scroll-snap-align: start; }
+
+/* ===================== Top brands (Hot!) ===================== */
+
+.br-top-brands {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    counter-reset: brand-rank;
+}
+
+.br-top-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--tr-surface);
+    border-radius: var(--tr-radius);
+    box-shadow: var(--tr-shadow);
+    color: var(--tr-text) !important;
+    text-decoration: none;
+}
+
+.br-top-brand:hover { box-shadow: var(--tr-shadow-hover); }
+
+.br-top-brand::before {
+    counter-increment: brand-rank;
+    content: counter(brand-rank);
+    font-weight: 800;
+    color: var(--tr-gold-text);
+    width: 1.2em;
+}
+
+.br-top-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--tr-blue-100);
+}
+
+.br-top-brand strong { display: block; font-size: 0.95rem; }
+
+.br-top-brand span { font-size: 0.8rem; color: var(--tr-muted); }
+
+/* ===================== Small screens ===================== */
+
+@media (max-width: 760px) {
+    .br-feature { grid-template-columns: 1fr; }
+    .br-feature-media { min-height: 170px; }
+    .br-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .br-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .br-category-tile { min-height: 110px; }
+    .br-controls { width: 100%; }
+    .br-controls .tr-search { max-width: none; flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .br-brand-card, .br-listing-card, .br-category-tile { transition: none; }
+    .br-brand-card:hover, .br-listing-card:hover, .br-category-tile:hover { transform: none; }
+}
