@@ -4,7 +4,7 @@ return_service.py
 Business rules and validation for return requests.
 """
 
-from models.return_model import create_return_record, get_all_returns, update_return_status
+from models.return_model import create_return_record, get_all_returns, get_return_for_order, update_return_status
 from models.checkout_model import get_order_by_confirmation
 
 VALID_RETURN_STATUSES = {"pending", "reviewed", "resolved"}
@@ -30,6 +30,12 @@ def assert_order_belongs_to_user(current_user, order_number):
         raise Exception("We couldn't find that order on your account. Check the confirmation number.")
 
 
+def assert_no_existing_return(current_user, order_number):
+    """One return per order: a second request for the same confirmation number is refused."""
+    if get_return_for_order(current_user["id"], str(order_number or "").strip()):
+        raise Exception("A return has already been requested for this order.")
+
+
 def create_return_service(current_user, data, damage_image_url=None):
     if not current_user or not current_user.get("id"):
         raise Exception("Unauthorized.")
@@ -47,6 +53,7 @@ def create_return_service(current_user, data, damage_image_url=None):
 
     has_damage = _normalize_has_damage(raw_has_damage)
     assert_order_belongs_to_user(current_user, order_number)
+    assert_no_existing_return(current_user, order_number)
 
     return create_return_record(
         user_id=current_user["id"],
