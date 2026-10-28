@@ -1,4 +1,3 @@
-# File created by David Jackson
 # models/admin_model.py
 
 """
@@ -151,7 +150,6 @@ def update_admin_return_status(return_id, status):
     return update_return_status(return_id, status)
 
 
-# Added by David Jackson 4/23/2026
 def delete_storefront(store_id):
     conn = get_connection()
     cur = conn.cursor()

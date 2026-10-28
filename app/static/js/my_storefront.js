@@ -3,10 +3,9 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4 - 3/22/2026
-    Implemented & Updated by Day Ekoi - Iteration 5 - 4/9/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - added deactivate storefront button handler
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - guarded optional dashboard buttons after layout cleanup
+    Implemented & Updated - Iteration 5 - 4/9/2026
+    Updated - Iteration 5 - 4/20/26 - added deactivate storefront button handler
+    Updated - Iteration 5 - 4/20/26 - guarded optional dashboard buttons after layout cleanup
 
 Description:
 Fetches the current user's storefront from the API and renders
@@ -36,7 +35,7 @@ let currentUser = null;
 
 // renders empty state in listing grid
 function renderEmpty(message) {
-    listingGrid.innerHTML = `<p style="color:#888; font-style:italic; grid-column:1/-1; text-align:center;">${message}</p>`;
+    listingGrid.innerHTML = `<p style="color:#888; font-style:italic; grid-column:1/-1; text-align:center;">${escapeHtml(message)}</p>`;
 }
 
 
@@ -67,12 +66,13 @@ function createListingCard(item) {
         ? "Restore Listing"
         : (status === "INACTIVE" ? "Reactivate Listing" : "Deactivate Listing");
 
+    // user-written values are escaped (safe_html.js) - Donovan Griffin, Iteration 3
     card.innerHTML = `
-        ${imageUrl ? `<img class="listing-card-image" src="${imageUrl}" alt="${title}">` : `<div class="listing-card-image listing-card-image--empty"></div>`}
+        ${imageUrl ? `<img class="listing-card-image" src="${safeUrl(imageUrl)}" alt="${escapeHtml(title)}">` : `<div class="listing-card-image listing-card-image--empty"></div>`}
         <div class="listing-card-body">
-            <p class="listing-card-title">${title}</p>
+            <p class="listing-card-title">${escapeHtml(title)}</p>
             <p class="listing-card-price">${price}</p>
-            <p class="listing-card-meta">Status: ${status}</p>
+            <p class="listing-card-meta">Status: ${escapeHtml(status)}</p>
             <div class="listing-menu-wrap">
                 <button type="button" class="listing-menu-trigger" aria-label="Open listing actions">...</button>
                 <div class="listing-menu-dropdown">
@@ -188,7 +188,7 @@ async function loadMyStorefront() {
             }
         });
 
-        if (!sfRes.ok) { // updated by Day E 4/9/26 - if user has no storefront, show empty state instead of redirecting to create page
+        if (!sfRes.ok) { // updated 4/9/26 - if user has no storefront, show empty state instead of redirecting to create page
             if (pageTitle) pageTitle.textContent = "No Storefront Found";
             renderEmpty(`
                 <div style="text-align:center; padding:2rem;">
@@ -206,7 +206,7 @@ async function loadMyStorefront() {
         storefrontId = storefront.id;
         const storefrontIsActive = storefront.is_active !== false;
 
-        // populate brand name, bio, contact info - Updated by Day Ekoi 4/20/26
+        // populate brand name, bio, contact info - Updated 4/20/26
         if (pageTitle) pageTitle.textContent = storefront.brand_name || "My Storefront";
         if (storefront.contact_info) contactInfo.textContent = storefront.contact_info;
         if (storefront.bio) storeDescription.textContent = storefront.bio;
@@ -216,7 +216,7 @@ async function loadMyStorefront() {
 
         // populate banner
         if (storefront.banner_url) {
-            bannerBox.style.backgroundImage = `url('${storefront.banner_url}')`;
+            bannerBox.style.backgroundImage = cssUrl(storefront.banner_url);
             bannerBox.style.backgroundSize = "cover";
             bannerBox.style.backgroundPosition = "center";
             bannerFallback.style.display = "none";
@@ -319,3 +319,18 @@ loadMyStorefront();
 document.addEventListener("click", () => {
     closeListingMenus();
 });
+
+
+// Treasure Tokens: show how many sales are waiting for the buyer's pickup code
+// - Donovan Griffin, Iteration 3
+(async function showPendingPickups() {
+    const btn = document.getElementById("pickupsBtn");
+    if (!btn) return;
+    try {
+        const res = await fetch("/api/wallet");
+        if (!res.ok) return;
+        const wallet = await res.json();
+        const waiting = wallet.sales.filter((s) => s.status === "HELD").length;
+        btn.textContent = waiting ? `Pickups to confirm (${waiting})` : "Pickups to confirm";
+    } catch (_) { /* button still links to the Sales tab */ }
+})();
