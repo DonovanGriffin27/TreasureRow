@@ -3,7 +3,6 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 5
     3/22/2026
 
 
@@ -59,8 +58,9 @@ body {
 }
 
 
-/* main vault title styling */
+/* main brand title styling */
 .brand-title {
+    font-family: 'Cinzel', Arial, Helvetica, sans-serif;
     font-size: 3.6rem;
     font-weight: 800;
     line-height: 1;

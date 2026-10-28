@@ -3,11 +3,9 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4
     3/22/2026
-    Updated by Day Ekoi - Iteration 5 4/9/26
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - fixed wishlistIds undefined crash and isWishlisted undefined in createListingCard
-    Updated by Day E - April 22nd - multi-image listing display, lightbox preview, and contain-based image handling
+    Updated - Iteration 5 - 4/20/26 - fixed wishlistIds undefined crash and isWishlisted undefined in createListingCard
+    Updated - April 22nd - multi-image listing display, lightbox preview, and contain-based image handling
 
 Description:
 This file handles the functionality for the public storefront view page.
@@ -31,6 +29,7 @@ const storefrontLogo = document.getElementById("storefrontLogo");
 const logoFallback = document.getElementById("logoFallback");
 const listingGrid = document.getElementById("listingGrid");
 const lightbox = document.getElementById("listingLightbox");
+let storefrontOwnerId = null; // seller's user id, used for Message Seller - Jonah Goodwine
 const lightboxImage = document.getElementById("lightboxImage");
 const lightboxDots = document.getElementById("lightboxDots");
 const lightboxClose = document.getElementById("lightboxClose");
@@ -246,7 +245,7 @@ async function getWishlistIdSet(userId) {
 }
 
 function renderEmpty(message) {
-    listingGrid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column: 1/-1;">${message}</p>`;
+    listingGrid.innerHTML = `<p style="color:#c9c9c9; font-style:italic; text-align:center; grid-column: 1/-1;">${escapeHtml(message)}</p>`;
 }
 
 function updateDots(container, images, activeIndex, dotClassName, onSelect) {
@@ -395,11 +394,11 @@ async function createListingCard(item, wishlistIds, currentUserId) {
     if (isOneSizeItem) {
         sizeFieldMarkup = `
             <label class="field-label">Size</label>
-            <span class="one-size-label" style="color:#d4af37;font-weight:600;padding:0.2rem 0;">One Size</span>
+            <span class="one-size-label" style="color:#0f5e3a;font-weight:600;padding:0.2rem 0;">One Size</span>
         `;
     } else if (hasSizes) {
         const sizeOptionsMarkup = sizeOptions
-            .map((size, index) => `<option value="${size}" ${index === 0 ? "selected" : ""}>${size}</option>`)
+            .map((size, index) => `<option value="${escapeHtml(size)}" ${index === 0 ? "selected" : ""}>${escapeHtml(size)}</option>`)
             .join("");
         sizeFieldMarkup = `
             <label class="field-label" for="sizeSelect-${listingId}">Size</label>
@@ -413,21 +412,23 @@ async function createListingCard(item, wishlistIds, currentUserId) {
     }
 
     const madeToOrderBadge = isMadeToOrder
-        ? `<span class="made-to-order-badge" style="display:inline-block;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.5);color:#d4af37;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;padding:0.15rem 0.45rem;border-radius:999px;text-transform:uppercase;margin-top:2px;">Made to Order</span>`
+        ? `<span class="made-to-order-badge" style="display:inline-block;background:#fbf3dc;border:1px solid #d4a017;color:#8a6508;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;padding:0.15rem 0.45rem;border-radius:999px;text-transform:uppercase;margin-top:2px;">Made to Order</span>`
         : "";
 
     const descriptionMarkup = item.description
-        ? `<p class="listing-description">${item.description}</p>`
+        ? `<p class="listing-description">${escapeHtml(item.description)}</p>`
         : "";
 
     const carousel = createListingImageCarousel(images, title);
 
+    // user-written values are escaped (safe_html.js) - Donovan Griffin, Iteration 3
     card.innerHTML = `
         <div class="listing-info">
             <div class="listing-copy">
-                <span class="item-name">${title}</span>
-                <span class="item-price">${price}</span>
+                <span class="item-name">${escapeHtml(title)}</span>
+                <span class="item-price">${escapeHtml(price)}</span>
                 ${madeToOrderBadge}
+                ${currentUserId && storefrontOwnerId && Number(currentUserId) !== storefrontOwnerId ? `<a class="message-seller-link" href="/messages?to=${storefrontOwnerId}&listing=${listingId}" style="font-size:0.85rem;font-weight:600;color:#0f5e3a;">Message Seller</a>` : ""}
             </div>
             <div class="listing-actions">
                 <button class="wishlist-lock-btn ${isWishlisted ? "active" : ""}" type="button" aria-label="${isWishlisted ? "Remove from wishlist" : "Add to wishlist"}" title="${isWishlisted ? "Remove from wishlist" : "Add to wishlist"}">
@@ -447,7 +448,7 @@ async function createListingCard(item, wishlistIds, currentUserId) {
                 <input id="countInput-${listingId}" class="count-input" type="number" min="1" max="${maxQuantity}" step="1" value="1" inputmode="numeric">
             </div>
             ${isSoldOut
-                ? `<span class="sold-out-label" style="display:block;width:100%;padding:0.6rem 1rem;background:#3a3a3a;color:#888888;font-size:0.85rem;font-weight:600;text-align:center;border-radius:6px;cursor:not-allowed;letter-spacing:0.5px;box-sizing:border-box;">Sold Out</span>`
+                ? `<span class="sold-out-label" style="display:block;width:100%;padding:0.6rem 1rem;background:#fbecee;color:#9b1b30;font-size:0.85rem;font-weight:600;text-align:center;border-radius:6px;cursor:not-allowed;letter-spacing:0.5px;box-sizing:border-box;">Sold Out</span>`
                 : `<button type="button" class="add-to-cart-btn" ${hasSizes ? "" : "disabled"}>Add to Cart</button>`
             }
         </div>
@@ -591,7 +592,7 @@ async function loadStorefrontView() {
         renderEmpty("Could not load listings.");
         return;
     }
-
+    storefrontOwnerId = Number(storefront.owner_id); // for "Message Seller" links - Jonah Goodwine
     if (pageTitle) pageTitle.textContent = storefront.brand_name || "Unnamed Storefront";
     storeDescription.textContent = storefront.bio || storefront.description || "No description provided.";
     contactInfo.textContent = storefront.contact_info || "";
@@ -603,7 +604,7 @@ async function loadStorefrontView() {
     }
 
     if (storefront.banner_url) {
-        document.getElementById("storefrontBanner").style.backgroundImage = `url('${storefront.banner_url}')`;
+        document.getElementById("storefrontBanner").style.backgroundImage = cssUrl(storefront.banner_url);
         document.getElementById("storefrontBanner").style.backgroundSize = "cover";
         document.getElementById("storefrontBanner").style.backgroundPosition = "center";
     }
