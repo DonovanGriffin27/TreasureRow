@@ -5,26 +5,17 @@ Routes for the returns page and return request submission.
 """
 
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for, session
+from utils.auth_utils import get_session_user
 
-from services.return_service import create_return_service
+from services.return_service import create_return_service, assert_order_belongs_to_user
 
 returns_bp = Blueprint("returns_bp", __name__)
 
 
 def get_current_user():
-    header_user_id = request.headers.get("X-User-Id")
-    header_role = request.headers.get("X-User-Role", session.get("role", "user"))
-
-    if header_user_id:
-        try:
-            return {"id": int(header_user_id), "role": header_role}
-        except Exception:
-            return None
-
-    if session.get("user_id"):
-        return {"id": int(session["user_id"]), "role": session.get("role", "user")}
-
-    return None
+    """Signed-in user from the server-side session (never from request headers).
+    Updated by Donovan Griffin, Iteration 3 - see utils/auth_utils.get_session_user."""
+    return get_session_user()
 
 
 @returns_bp.get("/returns")
@@ -43,14 +34,24 @@ def submit_return():
     data = request.form.to_dict() if request.form else (request.get_json(silent=True) or {})
     damage_image_url = None
 
+    # check the order before uploading any damage photo, so a bad order
+    # number doesn't leave an orphaned upload - Iteration 3
+    try:
+        assert_order_belongs_to_user(current_user, data.get("order_number"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
     if "damage_image" in request.files and request.files["damage_image"].filename:
-        from utils.s3 import upload_image_to_s3
+        from utils.s3 import upload_image_to_s3, InvalidUpload
 
         file = request.files["damage_image"]
         if not file.filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
             return jsonify({"error": "Damage image must be PNG, JPG, JPEG, GIF, or WebP."}), 400
 
-        damage_image_url = upload_image_to_s3(file, folder="returns/damage")
+        try:
+            damage_image_url = upload_image_to_s3(file, folder="returns/damage")
+        except InvalidUpload as e:  # not a real image / too big - Iteration 3
+            return jsonify({"error": str(e)}), 400
         if not damage_image_url:
             return jsonify({"error": "Damage image upload failed."}), 500
 

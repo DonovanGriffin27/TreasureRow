@@ -3,10 +3,8 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4 - 3/22/2026
-    Updated by Day Ekoi - Iteration 5 4/9/26
-    Updated by Day Ekoi - Iteration 5 4/16/26 - S3 image upload integration
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - drag-drop zones, image preview thumbnails, preview_image_1-4 upload support
+    Updated - Iteration 5 4/16/26 - S3 image upload integration
+    Updated - Iteration 5 - 4/20/26 - drag-drop zones, image preview thumbnails, preview_image_1-4 upload support
 */
 
 const form = document.getElementById("storefrontForm");
@@ -56,7 +54,7 @@ function setupCategoryLimitGuard() {
 }
 
 
-// Guard: redirect away if user already has a storefront - Added by Day Ekoi 4/20/26
+// Guard: redirect away if user already has a storefront - Added 4/20/26
 (async () => {
     try {
         const userRes = await fetch("/auth/api/auth/me");
@@ -130,7 +128,7 @@ function setupDropZone(zoneId, inputId, previewId, max = 1) {
 }
 
 
-// set up drop zones - Updated by Day Ekoi 4/20/26 - 4 individual preview slots
+// set up drop zones - Updated 4/20/26 - 4 individual preview slots
 setupDropZone("bannerZone", "bannerUpload", "bannerPreview", 1);
 setupDropZone("logoZone", "logoUpload", "logoPreview", 1);
 setupDropZone("previewZone1", "previewImage1", "previewPreview1", 1);
@@ -188,7 +186,7 @@ form.addEventListener("submit", async (event) => {
             catch (err) { alert("Failed to upload banner image. Please try again."); return; }
         }
 
-        // upload 4 individual preview images - Updated by Day Ekoi 4/20/26
+        // upload 4 individual preview images - Updated 4/20/26
         const previewUrls = [null, null, null, null];
         for (let i = 0; i < 4; i++) {
             const file = document.getElementById(`previewImage${i + 1}`).files[0];

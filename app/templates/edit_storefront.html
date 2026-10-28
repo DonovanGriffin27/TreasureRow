@@ -3,7 +3,6 @@
 
     The Vault Campus Marketplace
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 5 4/16/2026
 
 Edit Storefront page — pre-fills current storefront data and allows the owner to update
 brand name, contact info, description, logo, and banner.
@@ -16,7 +15,7 @@ brand name, contact info, description, logo, and banner.
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Storefront</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
-    <!-- Drag-drop zone styles - Added by Day Ekoi 4/20/26 -->
+    <!-- Drag-drop zone styles - Added 4/20/26 -->
     <style>
         .drop-zone {
             border: 2px dashed #d4af37;
@@ -69,23 +68,19 @@ brand name, contact info, description, logo, and banner.
         .preview-slot { display: flex; flex-direction: column; gap: 6px; }
         .slot-label { font-size: 0.8rem; color: #d4af37; font-weight: 700; margin: 0; }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
-<body>
-    <header class="create-header">
-        <div class="brand-block">
-            <h1 class="brand-title">
-                <span class="gold">The</span> Vault
-            </h1>
-            <p class="brand-subtitle">Fashion Marketplace</p>
-        </div>
-        <h2 class="page-title">Edit Storefront</h2>
-    </header>
+<body class="tr-app">
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Edit Storefront" %}
+    {% set tr_subtitle = "Update your storefront's look and details." %}
+    {% include "partials/_app_header.html" %}
 
     <main class="create-page">
         <form class="storefront-form" id="storefrontForm" enctype="multipart/form-data">
 
-            <!-- banner - Updated by Day Ekoi 4/20/26 - replaced plain input with drag-drop zone + current image preview -->
+            <!-- banner - Updated 4/20/26 - replaced plain input with drag-drop zone + current image preview -->
             <section class="form-card banner-card">
                 <label class="section-label">Store Banner Image</label>
                 <div id="bannerCurrentPreview" style="display:none; margin-bottom:0.75rem;">
@@ -159,7 +154,7 @@ brand name, contact info, description, logo, and banner.
                 ></textarea>
             </section>
 
-            <!-- preview images - Updated by Day Ekoi 4/20/26 - 4 individual slots with existing image display -->
+            <!-- preview images - Updated 4/20/26 - 4 individual slots with existing image display -->
             <section class="bottom-row">
                 <div class="form-card preview-card">
                     <label class="section-label">Storefront Preview Images (up to 4)</label>

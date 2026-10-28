@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Vault | Your Bag</title>
+    <title>Treasure Row | Your Bag</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
     <style>
         :root { --gold: #B8860B; --dark-bg: #121212; }
@@ -51,19 +51,25 @@
         
         .back-link { color: var(--gold); text-decoration: none; font-size: 0.9rem; margin-top: 20px; display: inline-block; }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
-<body>
+<body class="tr-app">
 
+<!-- Shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "My Bag" %}
+    {% set tr_subtitle = "Review your items before checkout." %}
+    {% include "partials/_app_header.html" %}
+<main class="tr-main">
 <div class="cart-container">
     <div class="cart-header">
-        <h1>Secured Bag</h1>
-        <a href="{{ url_for('auth.listings') }}" class="back-link">← CONTINUE SHOPPING</a>
+        <h1>Items in your bag</h1>
+        <a href="{{ url_for('auth.listings') }}" class="back-link">← Continue shopping</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div style="color: var(--gold); margin-bottom: 15px; font-size: 0.9rem;">{{ message }}</div>
+          <div class="tr-flash">{{ message }}</div>
         {% endfor %}
       {% endif %}
     {% endwith %}
@@ -72,7 +78,7 @@
         <table class="cart-table">
             <thead>
                 <tr>
-                    <th>Designation (Item)</th>
+                    <th>Item</th>
                     <th>Size</th>
                     <th>Qty</th>
                     <th>Price</th>
@@ -93,7 +99,7 @@
                         <td class="price-col">${{ "%.2f"|format(item.price|float) }}</td>
                         <td>
                             <form action="{{ url_for('auth.remove_from_cart', index=loop.index0) }}" method="POST">
-                                <button type="submit" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size: 1.2rem;" title="Remove Item">×</button>
+                                <button type="submit" class="remove-btn" style="background:none; border:none; cursor:pointer; font-size: 1.2rem;" title="Remove Item">×</button>
                             </form>
                         </td>
                     </tr>
@@ -113,12 +119,12 @@
                 </span>
             </div>
            <a href="{{ url_for('checkout') }}" style="text-decoration: none;">
-    <button class="checkout-btn">Initialize Checkout</button>
+    <button class="checkout-btn">Proceed to Checkout</button>
 </a>
         </div>
     {% else %}
         <div class="empty-msg">
-            <p>Your vault bag is currently empty.</p>
+            <p>Your bag is empty.</p>
             <a href="{{ url_for('auth.listings') }}" class="back-link">Browse Storefronts</a>
         </div>
     {% endif %}
