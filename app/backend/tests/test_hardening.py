@@ -137,3 +137,13 @@ def test_app_refuses_to_start_without_secret_key(monkeypatch):
     monkeypatch.delenv("SECRET_KEY", raising=False)
     with pytest.raises(RuntimeError, match="SECRET_KEY"):
         create_app()
+
+
+def test_second_return_for_same_order_is_rejected(client, people):
+    """One return per order: filing it twice is refused (Ricki Davis, Iteration 3)."""
+    seller, buyer, _ = people
+    confirmation = _place_order(client, seller, buyer)
+    assert _file_return(client, confirmation).status_code == 201
+    response = _file_return(client, confirmation)
+    assert response.status_code == 400
+    assert "already" in response.get_json()["error"].lower()

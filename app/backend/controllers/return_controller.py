@@ -7,7 +7,7 @@ Routes for the returns page and return request submission.
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for, session
 from utils.auth_utils import get_session_user
 
-from services.return_service import create_return_service, assert_order_belongs_to_user
+from services.return_service import create_return_service, assert_order_belongs_to_user, assert_no_existing_return
 
 returns_bp = Blueprint("returns_bp", __name__)
 
@@ -38,6 +38,7 @@ def submit_return():
     # number doesn't leave an orphaned upload - Iteration 3
     try:
         assert_order_belongs_to_user(current_user, data.get("order_number"))
+        assert_no_existing_return(current_user, data.get("order_number"))
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
