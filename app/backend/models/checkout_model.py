@@ -1,6 +1,6 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
-# Updated by Day Ekoi - 4/22/26 - rewrote to match orders/order_items schema
+# Updated - 4/22/26 - rewrote to match orders/order_items schema
 
 from db import get_connection
 
@@ -237,6 +237,17 @@ def update_listing_size_inventory(listing_id, size, purchased_qty):
             updated_at = CURRENT_TIMESTAMP
         WHERE id = %s AND (is_made_to_order = FALSE OR is_made_to_order IS NULL);
     """, (total_qty, new_status, total_qty, listing_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def delete_order(order_id):
+    """Remove an order that could not be paid for (order_items cascade).
+    Added by Donovan Griffin, Iteration 3 - used when the token hold fails."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM orders WHERE id = %s;", (order_id,))
     conn.commit()
     cur.close()
     conn.close()

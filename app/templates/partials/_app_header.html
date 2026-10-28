@@ -1,0 +1,101 @@
+{#
+    _app_header.html - Created by Donovan Griffin, Iteration 3
+
+    Shared header for logged-in pages: campus banner, tab bar, and the
+    slide-out menu. Styled by static/css/theme.css.
+
+    Optional variables a page can {% set %} before including this file:
+      tr_title     - page title shown in the white banner card
+      tr_subtitle  - one line under the title
+      tr_hide_tabs - true to hide the tab bar (admin dashboard)
+#}
+{% set p = request.path %}
+{% set tr_user = session.get('user') or '' %}
+
+<div class="tr-nav-overlay" id="trNavOverlay"></div>
+<aside class="tr-nav-pane" id="trNavPane" aria-label="Main menu">
+    <div class="tr-nav-pane-head">Treasure Row</div>
+    <div class="tr-nav-group">
+        <p>Shop</p>
+        <a class="tr-nav-link" href="/storefronts">All Storefronts</a>
+        <a class="tr-nav-link" href="{{ url_for('auth.view_cart') }}">My Bag</a>
+        <a class="tr-nav-link" href="/returns">Returns</a>
+    </div>
+    <div class="tr-nav-group">
+        <p>Sell</p>
+        <a class="tr-nav-link" href="/my-storefront">My Storefront</a>
+        <a class="tr-nav-link" href="{{ url_for('storefront_pages_bp.create_storefront_page') }}">Create Storefront</a>
+        <a class="tr-nav-link" href="{{ url_for('create_listing') }}">Create Listing</a>
+    </div>
+    <div class="tr-nav-group">
+        <p>More</p>
+        <a class="tr-nav-link" href="{{ url_for('auth.account') }}">My Account</a>
+        <a class="tr-nav-link" href="/about">About</a>
+        <a class="tr-nav-link" href="/sitemap">Sitemap</a>
+        <a class="tr-nav-link danger" href="{{ url_for('auth.logout') }}">Log Out</a>
+    </div>
+</aside>
+
+<header class="tr-hero">
+    <div class="tr-hero-bar">
+        <button type="button" class="tr-icon-btn" id="trMenuBtn" aria-label="Open navigation menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <a class="tr-brand" href="/storefronts">
+            <img src="/static/images/logo.png" alt="Treasure Row logo">
+            <span class="tr-brand-name">Treasure Row<small>Hampton University Marketplace</small></span>
+        </a>
+        <div class="tr-hero-actions">
+            <a class="tr-token-chip" id="trTokenChip" href="{{ url_for('auth.account') }}#wallet" title="Treasure Tokens wallet" hidden>
+                <span class="tr-token-dot" aria-hidden="true"></span><span id="trTokenBalance"></span>
+            </a>
+            <a class="tr-icon-btn" href="{{ url_for('auth.view_cart') }}" aria-label="View shopping bag" title="My Bag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+            </a>
+            <a class="tr-avatar" href="{{ url_for('auth.account') }}" aria-label="View account" title="{{ tr_user or 'My Account' }}">{{ (tr_user[:1] or '?')|upper }}</a>
+        </div>
+    </div>
+    {% if tr_title %}
+    <div class="tr-hero-cards">
+        <div class="tr-announce">
+            <h1>{{ tr_title }}</h1>
+            {% if tr_subtitle %}<p>{{ tr_subtitle }}</p>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+</header>
+
+{% if not tr_hide_tabs %}
+<nav class="tr-tabs" aria-label="Sections">
+    <a class="tr-tab tr-tab--blue {{ 'active' if p in ['/storefronts', '/storefront', '/storefronts/my', '/auth/listings'] or (p.startswith('/storefronts/') and p.split('/')[2].isdigit() and not p.endswith('/edit')) }}" href="/storefronts">Storefronts</a>
+    <a class="tr-tab tr-tab--green {{ 'active' if p in ['/my-storefront', '/storefronts/dashboard'] or p.endswith('/edit') and p.startswith('/storefronts/') }}" href="/my-storefront">My Storefront</a>
+    <a class="tr-tab tr-tab--gold {{ 'active' if p in ['/create-listing', '/listings/create', '/create-storefront', '/storefronts/create'] or (p.startswith('/listings/') and p.endswith('/edit')) }}" href="{{ url_for('create_listing') }}">Sell an Item</a>
+    <a class="tr-tab tr-tab--red {{ 'active' if p in ['/cart', '/auth/cart', '/checkout', '/order-confirmation'] }}" href="{{ url_for('auth.view_cart') }}">My Bag</a>
+    <a class="tr-tab tr-tab--blue {{ 'active' if p == '/returns' }}" href="/returns">Returns</a>
+    <a class="tr-tab tr-tab--green {{ 'active' if p == '/auth/account' }}" href="{{ url_for('auth.account') }}">My Account</a>
+    <a class="tr-tab tr-tab--gold {{ 'active' if p in ['/about', '/sitemap'] }}" href="/about">About</a>
+    <a class="tr-tabs-cta" href="/storefronts">View all storefronts</a>
+</nav>
+{% endif %}
+
+<script>
+    (function () {
+        var btn = document.getElementById("trMenuBtn");
+        var pane = document.getElementById("trNavPane");
+        var overlay = document.getElementById("trNavOverlay");
+        function toggle(open) {
+            pane.classList.toggle("active", open);
+            overlay.classList.toggle("active", open);
+        }
+        btn.addEventListener("click", function () { toggle(!pane.classList.contains("active")); });
+        overlay.addEventListener("click", function () { toggle(false); });
+
+        // Treasure Tokens balance chip - Donovan Griffin, Iteration 3
+        var chip = document.getElementById("trTokenChip");
+        fetch("/api/wallet").then(function (r) { return r.ok ? r.json() : null; }).then(function (w) {
+            if (!w || !chip) return;
+            document.getElementById("trTokenBalance").textContent = Number(w.balance).toFixed(2) + " TT";
+            chip.hidden = false;
+        }).catch(function () {});
+    })();
+</script>

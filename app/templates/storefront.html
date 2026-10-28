@@ -3,9 +3,8 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Day Ekoi - Iteration 4
     3/18/2026-3/22/2026
-    Updated by Day Ekoi - Iteration 5 - 4/20/26 - removed hardcoded test card, added lightbox overlay element
+    Updated - Iteration 5 - 4/20/26 - removed hardcoded test card, added lightbox overlay element
 
 
 Description of file (What it does, how it is used, etc):
@@ -38,224 +37,40 @@ Start of Code w/ comments
 <!-- stores info that isnt actually shown on the page itself. Includes metadata, browser tab title, and links to the css file -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- ensures the screensize is consistent on different types of devices -->
-  <title>The Vault | Storefronts</title> <!-- Simple, this is the Title of the page -->
+  <title>Treasure Row | Storefronts</title> <!-- Simple, this is the Title of the page -->
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}" /> <!-- Updated by Day E 3/22/26 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}" />
 </head> <!-- end of head -->
 
 
 
 <!-- MAIN "BODY" CODE: This section holds what will actually be seen and interacted with on the storefront page -->
 
-<body>
+<body class="tr-app">
 
-<!-- Side navigation pane/menu (the 3 lines)
- -allows users to press create storefront button that now allows them to be a seller by creating a storefront and then creating listings
- -explore brands, all categories, new drops, and hot! sections included
- - About, FAQs, and sitemap sections (probably wont be functional for the full scale of the product but included for design purposes)
--->
-<div id="navOverlay" class="nav-overlay"></div>
+<!-- Old side nav, top bar, and logo/search section replaced by the shared
+     header (partials/_app_header.html) and the toolbar below.
+     Redesigned by Donovan Griffin, Iteration 3. -->
+  {% set tr_title = "Storefronts" %}
+  {% set tr_subtitle = "Shop student-run brands from across Hampton's campus." %}
+  {% include "partials/_app_header.html" %}
 
-<aside id="navPane" class="nav-pane">
-  
+<!-- Main page content: Holds the storefrotn cards and pagination -->
+  <main class="page-content tr-main">
 
-  <!-- Top half button and actions -->
-
- 
- <!--  -- OLD VERSION --
-  
- <div class="nav-top">
-    -- <button class="create-btn">Create Storefront</button> --
-     <a href="{{ url_for('storefront_pages_bp.create_storefront_page') }}">
-  <button class="create-btn">Create Storefront</button>
-</a>
-     <a href="{{ url_for('create_listing') }}">
-  <button class="create-btn">Create Listing</button>
-</a>
-  </div>
--->
-
-<!-- UPDATED VERSION : Day E 4/9/26 -->
-# Cameron Ridgley 9/30 updated to get rid of things in hamburgermenu for now
-<div class="nav-top">
-    <a href="{{ url_for('storefront_pages_bp.create_storefront_page') }}">
-        <button class="create-btn">Create Storefront</button>
-    </a>
-    <a href="{{ url_for('create_listing') }}">
-        <button class="create-btn">Create Listing</button>
-    </a>
-    <a href="/my-storefront">
-        <button class="create-btn my-storefront-btn">My Storefront</button>
-</a>
-    <hr class="nav-divider">
-</div>
-
-  <!-- Main navigation -->
-  <div class="nav-section">
-    <!-- <div class="nav-item">Explore Brands <span>→</span></div>
-    <div class="nav-item">All Categories <span>→</span></div>
-    <div class="nav-item">New Drops <span>→</span></div>
-    <div class="nav-item">Hot! <span>→</span></div> -->
-  </div>
-
-  <!-- extras -->
-  <div class="nav-section more">
-    <!-- <p class="nav-heading">More from The Vault</p>
-    <div class="nav-subitem">About</div> -->
-    <a href="/returns" class="nav-subitem">Returns</a>
-    <!-- <div class="nav-subitem">Sitemap</div> -->
-  </div>
-
-</aside>
-
-  <!-- 
-    Original top nav bar
-    This version used emoji placeholders for:
-    - menu
-    - cart
-    - profile
-
-    It has been replaced below with a version using SVG icons.
--->
-
-
-<!---
-  <header class="topbar">
-    <button class="icon-btn">☰</button>
-
-    <div class="topbar-actions">
-      <button class="icon-btn">🛒</button>
-      <button class="icon-btn">👤</button>
-    </div>
-  </header>
--->
-
-<!----
-Updated nav bar
-
-
-    Improvements:
-    - Replaced emojis with SVG icons 
-    - Added custom menu button (3-line hamburger)
-    - Styled profile button to match storefront logo design
-    - Added better spacing 
-
-    Future functionality:
-    - Menu button → opens navigation pane
-    - Bag icon → routes to cart
-    - Profile icon → routes to user account page
-  -->
-
-  <header class="topbar">
-
-    <!-- Menu button (custom hamburger icon) -->
-    <button class="icon-btn menu-btn" aria-label="Open navigation menu">
-      <span class="menu-line"></span>
-      <span class="menu-line"></span>
-      <span class="menu-line"></span>
-    </button>
-
-    <!-- Right-side actions -->
-    <div class="topbar-actions">
-    
-    <!--Shopping bag button -->
-      <a href="{{ url_for('auth.view_cart') }}" class="icon-btn bag-btn" aria-label="View shopping bag" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
-        <svg viewBox="0 0 24 24" class="topbar-svg" aria-hidden="true">
-          <path
-            d="M6 8h12l-1 11H7L6 8Z"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M9 8V6a3 3 0 0 1 6 0v2"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </a>
-
-      <!-- Shopping bag button 
-      <button class="icon-btn bag-btn" aria-label="View shopping bag">
-        <svg viewBox="0 0 24 24" class="topbar-svg" aria-hidden="true">
-          <path
-            d="M6 8h12l-1 11H7L6 8Z"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M9 8V6a3 3 0 0 1 6 0v2"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button> -->
-
-      <!-- Profile button 
-      <button class="profile-btn" aria-label="View account">
-        <div class="profile-avatar">
-          <svg viewBox="0 0 24 24" class="profile-svg" aria-hidden="true">
-            <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
-            <path
-              d="M5 19a7 7 0 0 1 14 0"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        </div>
-      </button> -->
-
-      <a href="{{ url_for('auth.account') }}" class="profile-btn" aria-label="View account" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
-        <div class="profile-avatar">
-          <svg viewBox="0 0 24 24" class="profile-svg" aria-hidden="true">
-            <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
-            <path
-              d="M5 19a7 7 0 0 1 14 0"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        </div>
-      </a>
-
-    </div>
-  </header>
-
-
-  <!-- Brand name/Logo & Search Features -->
-  <section class="logo-search-section">
-
-    <h1 class="brand-title">
-      <span class="gold">The</span> Vault
-    </h1>
-
-    <p class="brand-subtitle">Fashion Marketplace</p>
-
-    <!-- Search Bar input that allows users to type their search queries. As of right now there isnt any actual functionality -->
-
-    <div class="search-wrap">
+    <div class="tr-toolbar">
+      <h2>All Storefronts</h2>
+      <!-- search bar: storefront.js filters cards as the user types -->
       <input
         type="text"
         id="searchInput"
-        class="search-input"
-        placeholder="Explore The Vault"
+        class="tr-search"
+        placeholder="Search storefronts"
+        aria-label="Search storefronts"
       />
     </div>
-  </section>
 
-  <!-- Main page content: Holds the storefrotn cards and pagination -->
-  <main class="page-content">
 
     <section class="storefront-grid" id="storefrontGrid">
     </section>
@@ -270,12 +85,13 @@ Updated nav bar
 
   </main> <!-- end of main page content -->
 
-  <!-- Lightbox overlay - Added by Day Ekoi 4/20/26 -->
+  <!-- Lightbox overlay - Added 4/20/26 -->
   <div id="lightboxOverlay" class="lightbox-overlay">
     <img id="lightboxImg" class="lightbox-img" src="" alt="Preview">
   </div>
 
-  <script src="{{ url_for('static', filename='js/storefront.js') }}"></script> <!-- Updated by Day E 3/22/26 -->
+  <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/storefront.js') }}"></script>
   <!-- This line links this file to storefront.js 
    Placed at the bottom so that all HTML loads correctly first and then JS. This ensures everything runs correctly -->
 </body> <!-- end of body -->

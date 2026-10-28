@@ -3,7 +3,6 @@
 
     The Vault Campus Marketplace 
     CSC 405 Sp 26'
-    Created by Elali McNair - Iteration 4
 
 This file is the Create Listing page where users create listings for their storefronts using a form based UI 
 
@@ -198,23 +197,18 @@ This file acts as the UI structure (skeleton) of the Create Listing feature.
         }
     </style>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 
-<body> 
+<body class="tr-app"> 
 <!-- Start of main body code -->
 
     <!-- Header -->
-    <header class="create-header">
-        <div class="brand-block">
-            <h1 class="brand-title">
-                <span class="gold">The</span> Vault
-            </h1>
-            <p class="brand-subtitle">Fashion Marketplace</p>
-        </div>
-
-        <h2 class="page-title">Create Listing</h2>
-    </header>
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "Create Listing" %}
+    {% set tr_subtitle = "Add photos, sizes, and pricing for a new item." %}
+    {% include "partials/_app_header.html" %}
 
 
     <!-- Main container -->
@@ -283,8 +277,8 @@ This file acts as the UI structure (skeleton) of the Create Listing feature.
                     <div style="margin-bottom:0.75rem;">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
                             <input type="checkbox" id="oneSizeToggle" name="one_size" value="One Size">
-                            <span style="font-weight:600;color:#d4af37;">One Size</span>
-                            <span style="color:#aaa;font-size:0.8rem;">(hides all other sizes)</span>
+                            <span style="font-weight:600;color:var(--tr-blue);">One Size</span>
+                            <span style="color:var(--tr-muted);font-size:0.8rem;">(hides all other sizes)</span>
                         </label>
                     </div>
 
@@ -323,11 +317,11 @@ This file acts as the UI structure (skeleton) of the Create Listing feature.
                     </div>
 
                     <!-- Made to Order -->
-                    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(212,175,55,0.2);">
+                    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--tr-divider);">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
                             <input type="checkbox" id="madeToOrderToggle" name="is_made_to_order" value="true">
-                            <span style="font-weight:600;color:#d4af37;">Made to Order</span>
-                            <span style="color:#aaa;font-size:0.8rem;">(ignores inventory limits)</span>
+                            <span style="font-weight:600;color:var(--tr-blue);">Made to Order</span>
+                            <span style="color:var(--tr-muted);font-size:0.8rem;">(ignores inventory limits)</span>
                         </label>
                     </div>
                 </div>
@@ -375,7 +369,8 @@ This file acts as the UI structure (skeleton) of the Create Listing feature.
 
 
     <!-- javascript -->
-    <script src="{{ url_for('static', filename='js/create_listing.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/create_listing.js') }}"></script>
 
 </body>
 </html>

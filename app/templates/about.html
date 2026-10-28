@@ -1,0 +1,78 @@
+<!---
+    about.html
+
+    The Vault Campus Marketplace
+    CSC 404 - Treasure Row
+    Added by Donovan Griffin - Iteration 3 - fixes the "About" storefront nav
+    link that was previously commented out with no destination page.
+
+Description: Simple static info page explaining what Treasure Row is, reached
+from the storefront side nav. Reuses the same header/back-button pattern as
+returns.html for visual consistency, styled with create_storefront.css.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Treasure Row</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_storefront.css') }}">
+    <style>
+        .back-row {
+            width: min(1200px, 92%);
+            margin: 0 auto 0.8rem;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 999px;
+            color: #d4af37;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(212,175,55,0.15);
+            color: #f0cc55;
+        }
+        .about-body {
+            width: min(800px, 92%);
+            margin: 1.5rem auto 3rem;
+            color: #ddd;
+            line-height: 1.7;
+        }
+        .about-body h3 {
+            color: #d4af37;
+            margin-top: 1.6rem;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body class="tr-app">
+
+    <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
+    {% set tr_title = "About" %}
+    {% set tr_subtitle = "What Treasure Row is and how it works." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="about-body">
+        <p>Treasure Row is a campus marketplace built for Hampton University students. Open a storefront, list clothing you want to sell, and browse what other students on campus have up for grabs — all without leaving your Hampton email behind.</p>
+
+        <h3>How it works</h3>
+        <p>Create an account with your Hampton email, open a personal storefront, and list items with sizes, quantities, and fulfillment details. Buyers can browse storefronts, add items to a cart, check out, and request a return if something doesn't work out.</p>
+
+        <h3>Who it's for</h3>
+        <p>Any Hampton University student looking to buy, sell, or trade clothing with people on campus instead of strangers online.</p>
+
+        <h3>Questions or issues</h3>
+        <p>Reach out to a seller directly through their storefront for order questions, or email <a href="mailto:TreasureRowAdmins@my.hamptonu.edu" style="color:var(--tr-blue);">TreasureRowAdmins@my.hamptonu.edu</a> for anything else.</p>
+    </main>
+</body>
+</html>

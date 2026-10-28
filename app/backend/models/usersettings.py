@@ -1,4 +1,3 @@
-# Madison Boyd
 # CSC 405
 # Iteration 3
 
