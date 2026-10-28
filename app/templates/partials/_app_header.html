@@ -57,6 +57,7 @@
     </div>
     <div class="tr-nav-group">
         <a class="tr-nav-link {{ 'current' if p == '/auth/account' }}" href="{{ url_for('auth.account') }}">My Account</a>
+        <a class="tr-nav-link {{ 'current' if p == '/messages' }}" href="/messages">Messages</a>
         <a class="tr-nav-link {{ 'current' if p == '/about' }}" href="/about">About</a>
         <a class="tr-nav-link {{ 'current' if p == '/sitemap' }}" href="/sitemap">Sitemap</a>
         <a class="tr-nav-link danger" href="{{ url_for('auth.logout') }}">Log Out</a>
