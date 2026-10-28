@@ -12,7 +12,7 @@ AI-assisted review evidence for the two documents Jonah owns in Iteration 3. Eac
 | `Messaging_2_AFTER.docx` | After the main review prompt |
 | `Messaging_3_AFTER_followup.docx` | After the follow-up prompts |
 
-**Tool:** Claude (Anthropic) · **Date:** October 27, 2026
+**Tool:** ChatGPT (OpenAI) · **Date:** October 27, 2026
 
 Every AI suggestion was checked against the code and the AWS console before it was kept.
 
