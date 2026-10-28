@@ -1,7 +1,7 @@
 # The Vault Campus Marketplace
 # CSC 405 Sp 26'
 
-import random
+import secrets
 import string
 from datetime import datetime
 
@@ -23,7 +23,8 @@ from models.checkout_model import (
 
 def _generate_confirmation_number():
     date_str = datetime.now().strftime("%y%m%d")
-    suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    # Noah Higgs
+    suffix = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     return f"TR-{date_str}-{suffix}"  # was VAULT-; renamed for Treasure Row (Iteration 3)
 
 

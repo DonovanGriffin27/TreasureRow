@@ -22,7 +22,7 @@ def create_app():
                 template_folder='templates',
                 static_folder='static')
 
-    app.secret_key = os.getenv("SECRET_KEY") # pull secret key from .env
+    app.secret_key = (os.getenv("SECRET_KEY") or "").strip() # pull secret key from .env
 
     # largest request Flask will accept (up to 4 listing images of 5 MB each,
     # plus form fields); bigger requests get HTTP 413 - Donovan Griffin, Iteration 3
@@ -30,6 +30,13 @@ def create_app():
     if not app.secret_key:
         # without a key every login silently breaks; stop instead - Iteration 3
         raise RuntimeError("SECRET_KEY is not set. Add SECRET_KEY to your .env file (see .env.example).")
+    # Chase Jones
+    # a copied example value would let anyone forge a login cookie, so refuse it too
+    if app.secret_key.lower() in {"change-me", "change_me", "changeme", "dev-secret", "secret"}:
+        raise RuntimeError(
+            "SECRET_KEY is still a placeholder. Set a long random value in your .env file, e.g. "
+            "python -c \"import secrets; print(secrets.token_hex(32))\""
+        )
 
     # Session cookie hardening - Donovan Griffin, Iteration 3
     #  - SameSite=Lax: browsers don't send the login cookie on form posts from
@@ -41,6 +48,15 @@ def create_app():
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE") == "1",
     )
+
+    # Chase Jones
+    # Security headers on every response
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        return response
 
     # Run DB migrations on every startup so new columns are always present
     try:
