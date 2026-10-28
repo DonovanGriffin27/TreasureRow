@@ -3,6 +3,7 @@ import os
 from urllib.parse import urlparse
 from flask import Flask, render_template, redirect, url_for, session, request, jsonify
 #Cameron Ridgley edited 10/01
+# Edited by Cameron Ridgley - 10/27/26 - registered the Discover page and API blueprints (browse_controller.py)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend')))
 
 from controllers.listing_controller import listing_bp
@@ -14,6 +15,7 @@ from controllers.auth_controller import auth_bp
 from controllers.return_controller import returns_bp
 from controllers.checkout_controller import checkout_bp
 from controllers.wallet_controller import wallet_bp  # Treasure Tokens - Iteration 3
+from controllers.browse_controller import browse_bp, browse_pages_bp  # Discover pages - Cameron Ridgley 10/27/26
 from init_db import create_vault_tables
 
 
@@ -154,6 +156,8 @@ def create_app():
     app.register_blueprint(returns_bp)
     app.register_blueprint(checkout_bp, url_prefix='/api')
     app.register_blueprint(wallet_bp)
+    app.register_blueprint(browse_bp)
+    app.register_blueprint(browse_pages_bp)
 
     @app.get("/health")
     def health():
