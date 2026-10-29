@@ -1,0 +1,55 @@
+<!---
+    categories.html
+
+    Treasure Row Campus Marketplace
+    Added by Cameron Ridgley - 10/27/26
+
+Description: Browse brands by style, reached from "More" in the slide-out
+menu. Shows one tile per category (built from the categories each storefront
+picked), then the brands in the chosen category. The chosen category is kept
+in the address (?category=Vintage) so it can be linked to.
+Note: categories are stored per storefront, not per listing.
+Data: GET /api/storefronts. Script: static/js/categories.js.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Row | All Categories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+</head>
+<body class="tr-app">
+
+    {% set tr_title = "All Categories" %}
+    {% set tr_subtitle = "Shop student brands by style." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="tr-main">
+
+        <section class="br-section" aria-labelledby="categoriesHeading">
+            <div class="br-section-head">
+                <h2 id="categoriesHeading">Categories</h2>
+                <p>Pick a style to see the brands that sell it.</p>
+            </div>
+            <div class="br-category-grid" id="categoryGrid">
+                <p class="br-status">Loading categories...</p>
+            </div>
+        </section>
+
+        <section class="br-section" aria-labelledby="categoryBrandsHeading">
+            <div class="br-section-head">
+                <h2 id="categoryBrandsHeading">All brands</h2>
+                <p id="categoryBrandsCount"></p>
+            </div>
+            <div class="br-grid" id="categoryBrandGrid" aria-live="polite"></div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/browse_common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+</body>
+</html>

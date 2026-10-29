@@ -1,0 +1,65 @@
+<!---
+    new_drops.html
+
+    Treasure Row Campus Marketplace
+    Added by Cameron Ridgley - 10/27/26
+
+Description: The newest listings from every brand, reached from "More" in the
+slide-out menu. A "This week" row highlights items posted in the last 7 days,
+then a grid shows every listing newest first, with a price filter.
+Each card links to the brand's storefront, where the item can be bought.
+Data: GET /api/browse/listings?sort=new. Script: static/js/new_drops.js.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Row | New Drops</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+</head>
+<body class="tr-app">
+
+    {% set tr_title = "New Drops" %}
+    {% set tr_subtitle = "Fresh pieces from Hampton's campus brands." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="tr-main">
+
+        <section class="br-section" id="thisWeekSection" aria-labelledby="thisWeekHeading" hidden>
+            <div class="br-section-head">
+                <h2 id="thisWeekHeading">Just dropped this week</h2>
+                <p id="thisWeekCount"></p>
+            </div>
+            <div class="br-row" id="thisWeekRow"></div>
+        </section>
+
+        <section class="br-section" aria-labelledby="allDropsHeading">
+            <div class="tr-toolbar">
+                <h2 id="allDropsHeading">All drops <span class="br-meta-text" id="dropCount"></span></h2>
+                <div class="br-controls">
+                    <select id="priceFilter" class="br-select" aria-label="Filter by price">
+                        <option value="any">Any price</option>
+                        <option value="0-25">Under $25</option>
+                        <option value="25-50">$25 to $50</option>
+                        <option value="50-">Over $50</option>
+                    </select>
+                    <select id="stockFilter" class="br-select" aria-label="Filter by availability">
+                        <option value="available">Available only</option>
+                        <option value="all">Include sold out</option>
+                    </select>
+                </div>
+            </div>
+            <div class="br-grid" id="dropGrid" aria-live="polite">
+                <p class="br-status">Loading new drops...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/browse_common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/new_drops.js') }}"></script>
+</body>
+</html>

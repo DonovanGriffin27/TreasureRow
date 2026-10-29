@@ -5,6 +5,7 @@
     CSC 404 - Treasure Row
     Added by Donovan Griffin - Iteration 3 - fixes the "Sitemap" storefront
     nav link that was previously commented out with no destination page.
+    Edited by Cameron Ridgley - 10/27/26 - added the Discover section
 
 Description: Real index of the app's existing pages, reached from the
 storefront side nav. Reuses the same header/back-button pattern as
@@ -83,6 +84,15 @@ Links only to routes that actually exist in app.py / storefront_controller.py.
         <h3>Browse</h3>
         <ul>
             <li><a href="/storefronts">All Storefronts</a></li>
+        </ul>
+
+        <!-- Discover pages from "More" in the slide-out menu - Cameron Ridgley 10/27/26 -->
+        <h3>Discover</h3>
+        <ul>
+            <li><a href="{{ url_for('browse_pages_bp.explore_brands_page') }}">Explore Brands</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.categories_page') }}">All Categories</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.new_drops_page') }}">New Drops</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.hot_page') }}">Hot!</a></li>
         </ul>
 
         <h3>Selling</h3>
