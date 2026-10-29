@@ -1,0 +1,58 @@
+<!---
+    hot.html
+
+    Treasure Row Campus Marketplace
+    Added by Cameron Ridgley - 10/27/26
+
+
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Row | Hot!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+</head>
+<body class="tr-app">
+
+    {% set tr_title = "Hot!" %}
+    {% set tr_subtitle = "What Hampton is buying and saving right now." %}
+    {% include "partials/_app_header.html" %}
+
+    <main class="tr-main">
+
+        <section class="br-section" aria-labelledby="trendingHeading">
+            <div class="br-section-head">
+                <h2 id="trendingHeading">Trending now</h2>
+                
+            </div>
+            <div class="br-grid" id="trendingGrid" aria-live="polite">
+                <p class="br-status">Loading what's hot...</p>
+            </div>
+        </section>
+
+        <section class="br-section" id="topBrandsSection" aria-labelledby="topBrandsHeading" hidden>
+            <div class="br-section-head">
+                <h2 id="topBrandsHeading">Top brands</h2>
+                <p>Brands with the most items sold.</p>
+            </div>
+            <div class="br-top-brands" id="topBrands"></div>
+        </section>
+
+        <section class="br-section" id="freshSection" aria-labelledby="freshHeading" hidden>
+            <div class="br-section-head">
+                <h2 id="freshHeading">Fresh picks</h2>
+                
+            </div>
+            <div class="br-grid" id="freshGrid"></div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/safe_html.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/browse_common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hot.js') }}"></script>
+</body>
+</html>
