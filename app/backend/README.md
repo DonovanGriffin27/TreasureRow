@@ -1,7 +1,7 @@
 
-# The Vault – Backend (Flask)
+# Treasure Row – Backend (Flask)
 
-This folder contains the backend implementation for The Vault marketplace. The backend manages data storage, business rules, authentication, and API endpoints.
+This folder contains the backend implementation for the Treasure Row marketplace. The backend manages data storage, business rules, authentication, and API endpoints.
 
 ---
 
