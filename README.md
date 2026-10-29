@@ -1,6 +1,6 @@
 # Treasure Row
 
-CSC 404 team project — continuing development of **The Vault**, a campus
+CSC 404 team project — continuing development of **Treasure Row**, a campus
 marketplace web app for Hampton University students, inherited from CSC 405
 and selected over CloudMart after the team's Iteration 1 evaluation.
 
@@ -20,7 +20,7 @@ and selected over CloudMart after the team's Iteration 1 evaluation.
 ## Repo layout
 
 ```
-app/             The Vault codebase (Flask backend + templates/static)
+app/             Treasure Row codebase (Flask backend + templates/static)
 docs/            All formal deliverables, one folder per document
   evaluation/       Iteration 1 Evaluation Report
   project-plan/     Project Plan (scope, schedule, risk, staffing)
@@ -28,6 +28,11 @@ docs/            All formal deliverables, one folder per document
   functional-spec/  Functional Specification
   design-spec/      Design Specification (kept separate from the above two)
   test-plan/        Test Plan
+  risk-assessment/  Risk Assessment
+  aws-runbook/      AWS network runbook (access, troubleshooting, deploy, shutdown)
+  messaging/        Buyer/seller messaging feature documentation
+  payment-tokens/   Treasure Tokens payment system documentation
+  ai-polish/        AI-assisted document review evidence, one subfolder per person
   meeting-minutes/  Meeting minutes, one file per meeting
   time-logs/        Team time logs
 presentations/   Slide decks, one per iteration
