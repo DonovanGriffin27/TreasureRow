@@ -2,7 +2,7 @@
 
 **A cloud-based fashion marketplace for Hampton University students**
 
-CSC 404 — Fall 26'. Built on The Vault (CSC 405, Spring 2026).
+CSC 404 — Fall 26'. Built on the inherited CSC 405 (Spring 2026) marketplace codebase.
 
 ---
 
