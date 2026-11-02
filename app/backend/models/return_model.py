@@ -7,6 +7,24 @@ Handles database operations for marketplace return requests.
 from db import get_connection
 
 
+def get_return_for_order(user_id, order_number):
+    """Return the id of this user's existing (not deleted) return for the order, or None."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT id FROM returns
+        WHERE user_id = %s AND order_number = %s AND COALESCE(is_deleted, FALSE) = FALSE
+        LIMIT 1;
+        """,
+        (user_id, order_number),
+    )
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return row[0] if row else None
+
+
 def create_return_record(user_id, order_number, reason, has_damage, damage_image_url=None, status="pending"):
     conn = get_connection()
     cur = conn.cursor()
