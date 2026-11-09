@@ -33,6 +33,8 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required autocomplete="current-password">
                 </div>
+                <!-- Forgot password link - Donovan Griffin, Iteration 4 -->
+                <p class="tr-auth-forgot"><a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a></p>
                 <button type="submit" class="tr-btn">Sign In</button>
             </form>
 

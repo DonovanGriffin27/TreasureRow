@@ -21,7 +21,7 @@ def drive_registration():
         success, message = auth.register_user(
             "Testing67", 
             "password", 
-            "tester67@hamptonu.edu", 
+            "tester67@my.hamptonu.edu", 
             conn
         )
 

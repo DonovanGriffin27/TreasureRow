@@ -5,6 +5,9 @@ from services.auth_services import AuthService
 from config.db import get_connection
 from models.auth_model import get_user_by_username, add_cart_item, remove_cart_item
 from models.listing_model import get_listing_by_id
+from services.password_reset_service import send_reset_email, check_reset_token
+from services.password_reset_service import reset_password as reset_user_password
+from utils.auth_utils import validate_password
 
 auth_bp = Blueprint('auth', __name__)
 service = AuthService()
@@ -72,6 +75,54 @@ def signup():
         return render_template('signup.html', error=f"Couldn't create your account: {message}", username=user, email=email), 400
     
     return render_template('signup.html')
+
+# Forgot password - Donovan Griffin, Iteration 4
+# The same message shows whether or not the email has an account, so this page
+# can't be used to find out which students are signed up.
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = (request.form.get('email') or '').strip()
+        if email:
+            try:
+                send_reset_email(email)
+            except Exception as e:
+                print(f"Forgot password error: {e}")
+        flash("If that email belongs to an account, a reset link is on its way. Check your inbox (and spam folder).")
+        return redirect(url_for('auth.login'))
+
+    return render_template('forgot_password.html')
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        user, link_error = check_reset_token(token)
+    except Exception as e:
+        print(f"Reset password error: {e}")
+        return render_template('reset_password.html', error="We couldn't reach the database. Please try again in a moment.", token=token), 503
+    if link_error:
+        return render_template('reset_password.html', link_error=link_error), 400
+
+    if request.method == 'POST':
+        pw = request.form.get('password') or ''
+        confirm = request.form.get('confirm_password') or ''
+
+        password_error = validate_password(pw)
+        if not password_error and pw != confirm:
+            password_error = "Passwords don't match"
+        if password_error:
+            return render_template('reset_password.html', error=password_error, token=token), 400
+
+        try:
+            reset_user_password(user[0], pw)
+        except Exception as e:
+            print(f"Reset password error: {e}")
+            return render_template('reset_password.html', error="Couldn't save your new password. Please try again.", token=token), 503
+
+        flash("Your password has been reset. Sign in with your new password.")
+        return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html', token=token)
 
 @auth_bp.route('/listings')
 def listings():

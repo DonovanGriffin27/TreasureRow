@@ -5,8 +5,18 @@ from werkzeug.security import generate_password_hash, check_password_hash #Werkz
 def hash_password(password):
     return generate_password_hash(password, method='pbkdf2:sha256') #Hashes the password using the pbkdf2:sha256 algorithm
 
-def verify_password(hashed_password, password): 
+def verify_password(hashed_password, password):
     return check_password_hash(hashed_password, password) #Compares hash of inputted password to hash of storred password for that username
+
+
+# Password rules shared by signup, forgot password, and change password so all
+# three accept the same passwords - Donovan Griffin, Iteration 4
+# (the 8-128 length rule was added to signup by Noah Higgs)
+def validate_password(password):
+    """Return an error message, or None if the password is allowed."""
+    if not (8 <= len(password or "") <= 128):
+        return "Password must be between 8 and 128 characters"
+    return None
 
 
 # Added by Donovan Griffin, Iteration 3 - fixes the ownership/impersonation bug.
