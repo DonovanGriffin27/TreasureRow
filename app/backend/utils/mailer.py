@@ -17,10 +17,13 @@ def mail_configured():
 def send_email(to, subject, html, text):
     """Send one email. Returns True if it was sent (or printed), False on error."""
     if not mail_configured():
-        print(f"[mailer] MAIL_SERVER not set - email not sent.\n  To: {to}\n  Subject: {subject}\n{text}")
+        print(f"[mailer] MAIL_SERVER not set - email not sent.\n  To: {to}\n  Subject: {subject}\n{text}", flush=True)
         return True
 
     username = os.getenv("MAIL_USERNAME", "")
+    if not username or not os.getenv("MAIL_PASSWORD"):
+        print(f"[mailer] MAIL_USERNAME or MAIL_PASSWORD is not set - can't send to {to}", flush=True)
+        return False
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["From"] = os.getenv("MAIL_FROM") or username
@@ -34,8 +37,9 @@ def send_email(to, subject, html, text):
             smtp.starttls()
             smtp.login(username, os.getenv("MAIL_PASSWORD", ""))
             smtp.send_message(msg)
+        print(f"[mailer] Sent '{subject}' to {to}", flush=True)
         return True
     except Exception as e:
         # never let a mail problem crash the page; the error goes to the server log
-        print(f"[mailer] Could not send email to {to}: {e}")
+        print(f"[mailer] Could not send email to {to}: {e}", flush=True)
         return False

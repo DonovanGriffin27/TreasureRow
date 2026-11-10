@@ -87,7 +87,7 @@ def forgot_password():
             try:
                 send_reset_email(email)
             except Exception as e:
-                print(f"Forgot password error: {e}")
+                print(f"Forgot password error: {e}", flush=True)
         flash("If that email belongs to an account, a reset link is on its way. Check your inbox (and spam folder).")
         return redirect(url_for('auth.login'))
 

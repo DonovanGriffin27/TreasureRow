@@ -55,6 +55,8 @@ def send_reset_email(email):
     """Email a reset link if the address belongs to an account. Silent otherwise."""
     user = get_user_by_email(email)
     if not user:
+        # server log only; the page shows the same message either way
+        print(f"[forgot-password] no account has the email {email!r} - nothing sent", flush=True)
         return
 
     user_id, username, user_email, password_hash = user
