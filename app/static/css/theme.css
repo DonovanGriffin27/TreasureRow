@@ -1228,6 +1228,13 @@ body.tr-app {
 
 .tr-auth .tr-flash { text-align: left; }
 
+/* "Forgot password?" link under the password field - Donovan Griffin, Iteration 4 */
+.tr-auth-forgot { text-align: right; margin: -6px 0 10px; font-size: 0.85rem; }
+
+.tr-auth-forgot a { color: var(--tr-blue); text-decoration: none; font-weight: 600; }
+
+.tr-auth-forgot a:hover { text-decoration: underline; }
+
 .tr-flash--error {
     border-left-color: var(--tr-red);
     background: var(--tr-red-50);

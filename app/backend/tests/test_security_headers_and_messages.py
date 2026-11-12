@@ -82,7 +82,7 @@ def db_conn():
 ])
 def test_signup_length_rules(db_conn, username, password, error):
     username = username or f"t_len_{uuid.uuid4().hex[:8]}"
-    success, message = AuthService().register_user(username, password, f"{username[:40]}@hamptonu.edu", db_conn)
+    success, message = AuthService().register_user(username, password, f"{username[:40]}@my.hamptonu.edu", db_conn)
     assert not success
     assert error in message
     cur = db_conn.cursor()

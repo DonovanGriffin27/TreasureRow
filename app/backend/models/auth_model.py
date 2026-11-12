@@ -78,3 +78,57 @@ def remove_cart_item(userId, itemName, size):
 
     cur.close()
     conn.close()
+
+# Forgot password queries - Donovan Griffin, Iteration 4
+
+# returns (id, username, email, password_hash) or nothing; emails match case-insensitively
+def get_user_by_email(email):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT id, username, email, password FROM users
+            WHERE LOWER(email) = LOWER(%s);
+    """
+
+    cur.execute(query, (email,))
+    row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return row
+
+# returns (id, username, email, password_hash) or nothing
+def get_user_by_id(userId):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT id, username, email, password FROM users
+            WHERE id = %s;
+    """
+
+    cur.execute(query, (userId,))
+    row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return row
+
+# saves a new (already hashed) password for the user
+def update_user_password(userId, passwordHash):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        UPDATE users SET password = %s
+            WHERE id = %s;
+    """
+
+    cur.execute(query, (passwordHash, userId))
+    conn.commit()
+
+    cur.close()
+    conn.close()

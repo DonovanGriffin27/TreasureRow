@@ -24,8 +24,10 @@
                     <input type="text" id="username" name="username" value="{{ username or '' }}" required autocomplete="username" autofocus>
                 </div>
                 <div class="tr-field">
-                    <label for="email">Hampton email</label>
-                    <input type="email" id="email" name="email" value="{{ email or '' }}" required placeholder="first.last@my.hamptonu.edu" autocomplete="email">
+                    <label for="email">Hampton student email</label>
+                    <!-- browser-side hint only; the server check in auth_services.py is what enforces it - Donovan Griffin, Iteration 4 -->
+                    <input type="email" id="email" name="email" value="{{ email or '' }}" required placeholder="first.last@my.hamptonu.edu" autocomplete="email"
+                           pattern="[^@\s]+@[Mm][Yy]\.[Hh][Aa][Mm][Pp][Tt][Oo][Nn][Uu]\.[Ee][Dd][Uu]" title="Use your @my.hamptonu.edu student email">
                 </div>
                 <div class="tr-field">
                     <label for="password">Password</label>

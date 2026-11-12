@@ -70,7 +70,9 @@ def create_app():
 
     # Pages a signed-out visitor may see. Everything else requires a login.
     # Added by Donovan Griffin, Iteration 3
-    PUBLIC_ENDPOINTS = {"index", "auth.login", "auth.signup", "auth.admin_login", "static", "health"}
+    # forgot/reset password added by Donovan Griffin, Iteration 4
+    PUBLIC_ENDPOINTS = {"index", "auth.login", "auth.signup", "auth.admin_login",
+                        "auth.forgot_password", "auth.reset_password", "static", "health"}
 
     @app.before_request
     def block_cross_site_writes():
