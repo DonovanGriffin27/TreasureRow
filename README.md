@@ -11,7 +11,6 @@ and selected over CloudMart after the team's Iteration 1 evaluation.
 | Donovan Griffin | Project Manager |
 | Jonah Goodwine | Co-PM / Dev Team |
 | Cameron Ridgley | Dev Team |
-| Pilar Cummings | Dev Team |
 | Chi Martin | Docs Team |
 | Ricki Davis | Docs Team |
 | Chase Jones | Docs Team |
