@@ -52,15 +52,15 @@ def test_registration(conn, new_username):
 
 def test_registered_user_can_log_in(conn, new_username):
     auth = AuthService()
-    auth.register_user(new_username, "SecurePassword123", f"{new_username}@hamptonu.edu", conn)
+    auth.register_user(new_username, "SecurePassword123", f"{new_username}@my.hamptonu.edu", conn)
     assert auth.validate_login(new_username, "SecurePassword123", conn) == (True, "user")
     assert auth.validate_login(new_username, "wrong-password", conn) == (False, None)
 
 
 def test_duplicate_username_is_rejected(conn, new_username):
     auth = AuthService()
-    assert auth.register_user(new_username, "pw-123456", f"{new_username}@hamptonu.edu", conn)[0]
-    success, _ = auth.register_user(new_username, "pw-123456", f"{new_username}2@hamptonu.edu", conn)
+    assert auth.register_user(new_username, "pw-123456", f"{new_username}@my.hamptonu.edu", conn)[0]
+    success, _ = auth.register_user(new_username, "pw-123456", f"{new_username}2@my.hamptonu.edu", conn)
     assert not success
 
 
@@ -68,6 +68,10 @@ def test_duplicate_username_is_rejected(conn, new_username):
     "student@gmail.com",
     "student@fakehamptonu.edu",   # look-alike domain
     "hamptonu.edu",               # no @ at all
+    # student emails only - Donovan Griffin, Iteration 4
+    "staff@hamptonu.edu",                 # faculty/staff domain
+    "student@cs.hamptonu.edu",            # other subdomain
+    "student@my.hamptonu.edu.evil.com",   # real domain used as a prefix
 ])
 def test_non_hampton_email_is_rejected(conn, new_username, email):
     success, message = AuthService().register_user(new_username, "pw-123456", email, conn)
