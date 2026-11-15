@@ -19,7 +19,7 @@ def reset_request(email):
 
 def login_locked_timer(username):
     now = time.time()
-    username = username.strip().lower()
+    username = (username or "").strip().lower()  # a form posted with no username must not crash
     until = lockout_time.get(username)
     if until is None:
         return 0
@@ -30,7 +30,7 @@ def login_locked_timer(username):
     return int(until - now) + 1
 
 def record_login_fails(username):
-    username = username.strip().lower()
+    username = (username or "").strip().lower()  # a form posted with no username must not crash
     login_attempts[username] = login_attempts.get(username, 0) + 1
     if login_attempts[username] >= 5:
         lockout_time[username] = time.time() + 900
@@ -39,7 +39,7 @@ def record_login_fails(username):
     return False
 
 def record_login_success(username):
-    username = username.strip().lower()
+    username = (username or "").strip().lower()  # a form posted with no username must not crash
     login_attempts.pop(username, None)
     lockout_time.pop(username, None)
 

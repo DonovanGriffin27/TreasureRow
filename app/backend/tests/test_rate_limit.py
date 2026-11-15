@@ -40,3 +40,8 @@ def test_forgot_password(client, monkeypatch):
     assert len(sent) == 3  # Only 3 requests should be sent
     client.post("/auth/forgot-password", data={"email": "other@my.hamptonu.edu"})
     assert len(sent) == 4  # Different email should be allowed
+
+def test_login_without_username_does_not_crash(client):
+    # a login form posted with no username field used to raise a 500 error
+    response = client.post("/auth/login", data={"password": "wrong"})
+    assert response.status_code == 401
