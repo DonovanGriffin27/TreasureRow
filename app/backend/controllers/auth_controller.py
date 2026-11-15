@@ -1,13 +1,15 @@
+# Edited by Cameron Ridgley - Iteration 4
 # Updated 3/19/2026 | Edited by Jonah Goodwine 9/30
 import os
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash, jsonify
 from services.auth_services import AuthService 
 from config.db import get_connection
-from models.auth_model import get_user_by_username, add_cart_item, remove_cart_item
+from models.auth_model import get_user_by_username, add_cart_item, remove_cart_item, get_user_by_id, update_user_password
 from models.listing_model import get_listing_by_id
 from services.password_reset_service import send_reset_email, check_reset_token
 from services.password_reset_service import reset_password as reset_user_password
-from utils.auth_utils import validate_password
+from utils.auth_utils import validate_password, verify_password, hash_password
+from utils.rate_limit import reset_request, login_locked_timer, record_login_fails, record_login_success
 
 auth_bp = Blueprint('auth', __name__)
 service = AuthService()
@@ -17,6 +19,10 @@ def login():
     if request.method == 'POST':
         user = request.form.get('username')
         pw = request.form.get('password')
+        locked = login_locked_timer(user) #Ricki Davis - check the lockout timer
+        if locked:
+            minutes = (locked + 59) // 60
+            return render_template('login.html', error=f"Too many failed login attempts. Please try again in {minutes} minute(s).", username=user), 429
 
         conn = get_connection()
         if conn is None:
@@ -26,6 +32,7 @@ def login():
         # conn.close()
         
         if success:
+            record_login_success(user) #Ricki Davis - if login good it will clear the count
             session['user'] = user
             session['role'] = role
 
@@ -50,6 +57,7 @@ def login():
         # Noah Higgs
         # a failed login must not leave its database connection open
         conn.close()
+        record_login_fails(user) #Ricki Davis - counts a failed login
         # errors now show on the form instead of a bare text page - Donovan Griffin, Iteration 3
         return render_template('login.html', error="Incorrect username or password.", username=user), 401
     
@@ -83,7 +91,7 @@ def signup():
 def forgot_password():
     if request.method == 'POST':
         email = (request.form.get('email') or '').strip()
-        if email:
+        if email and reset_request(email): #Ricki Davis - limits forgot password
             try:
                 send_reset_email(email)
             except Exception as e:
@@ -135,6 +143,47 @@ def account():
     if 'user' not in session: 
         return redirect(url_for('auth.login'))
     return render_template('account.html')
+
+@auth_bp.route('/account/change-password', methods=['POST'])
+def change_password():
+    if 'user' not in session or session.get('user_id') is None:
+        return redirect(url_for('auth.login'))
+
+    current = request.form.get('current_password') or ''
+    new_pw = request.form.get('new_password') or ''
+    confirm = request.form.get('confirm_password') or ''
+
+    try:
+        user = get_user_by_id(session['user_id'])
+    except Exception as e:
+        print(f"Change password error: {e}")
+        user = None
+    if not user:
+        flash("We couldn't reach your account right now. Please try again in a moment.", "password_error")
+        return redirect(url_for('auth.account') + '#security')
+
+    error = None
+    if not verify_password(user[3], current):
+        error = "Your current password is incorrect."
+    else:
+        error = validate_password(new_pw)
+        if not error and new_pw != confirm:
+            error = "New passwords don't match."
+        if not error and new_pw == current:
+            error = "Your new password must be different from your current password."
+    if error:
+        flash(error, "password_error")
+        return redirect(url_for('auth.account') + '#security')
+
+    try:
+        update_user_password(user[0], hash_password(new_pw))
+    except Exception as e:
+        print(f"Change password error: {e}")
+        flash("Couldn't save your new password. Please try again.", "password_error")
+        return redirect(url_for('auth.account') + '#security')
+
+    flash("Your password has been updated.", "password_success")
+    return redirect(url_for('auth.account') + '#security')
     
 @auth_bp.route('/logout')
 def logout():

@@ -1,24 +1,16 @@
-import psycopg2
-import os
-from dotenv import load_dotenv
+# backend/tests/test_db.py
+# Rewritten by Jonah Goodwine - Iteration 4
+# Was a script that connected to the database when pytest imported it and
+# printed a message instead of asserting anything. Now it's a real test.
 
-env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../.env'))
-load_dotenv(env_path)
+from db import get_connection
 
-host = os.getenv('DB_HOST')
-if not host:
-    print(".env file not found at {env_path}")
 
-try:
-    # Attempt to "knock on the door" of the RDS server
-    conn = psycopg2.connect(
-        host=os.getenv('DB_HOST'),
-        database=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        port=os.getenv('DB_PORT')
-    )
-    print("SUCCESS: Your laptop is authorized. You have access to The Vault!")
+def test_database_connection():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT 1")
+    result = cur.fetchone()
+    cur.close()
     conn.close()
-except Exception as e:
-    print(f"CONNECTION FAILED: {e}")
+    assert result[0] == 1

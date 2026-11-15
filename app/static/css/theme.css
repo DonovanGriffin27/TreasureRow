@@ -1710,3 +1710,93 @@ body.tr-app {
     .tr-feature-row { grid-template-columns: 1fr; }
     .tr-portal h1 { font-size: 2rem; }
 }
+
+
+/* ===================== Site footer ===================== */
+/* Added by Chase Jones - Iteration 4 - shared footer with the Beta version.
+   Markup lives in templates/partials/_app_footer.html. */
+
+.tr-footer {
+    margin-top: 48px;
+    border-top: 1px solid var(--tr-divider);
+    background: var(--tr-surface);
+    font-family: var(--tr-font);
+    color: var(--tr-muted);
+}
+
+.tr-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 26px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 28px;
+}
+
+.tr-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.tr-footer-brand strong {
+    font-family: var(--tr-royal);
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    color: var(--tr-blue);
+}
+
+.tr-footer-brand span { font-size: 0.8rem; }
+
+.tr-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-left: auto;
+}
+
+.tr-footer-links a {
+    color: var(--tr-text);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.tr-footer-links a:hover {
+    color: var(--tr-blue);
+    text-decoration: underline;
+}
+
+/* margin-left:auto on both the links and the version keeps the brand left and
+   the version hard right whether or not the links are showing */
+.tr-footer-version {
+    margin: 0 0 0 auto;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.tr-footer-badge {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 2px 8px;
+    border: 1px solid var(--tr-gold);
+    border-radius: 999px;
+    background: var(--tr-gold-50);
+    color: var(--tr-gold-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+    .tr-footer-inner {
+        padding: 18px 16px 24px;
+        gap: 10px 18px;
+    }
+    .tr-footer-links { margin-left: 0; gap: 14px; }
+    .tr-footer-version { margin-left: 0; }
+}
+
+/* The About page now opens with an intro paragraph, so its first heading needs
+   its normal top margin back - Chase Jones 11/10/26 */
+.tr-app .about-body h3.release-heading { margin-top: 22px; }

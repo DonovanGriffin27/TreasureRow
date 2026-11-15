@@ -29,3 +29,6 @@ app/static/uploads/
 # old local copy of the app (contains a real .env) - never commit
 TreasureRow_dev/
 TreasureRow_dev.zip
+
+# Beta Release zip made by app/package_beta.py
+TreasureRow_Beta*.zip

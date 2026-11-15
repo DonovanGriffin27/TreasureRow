@@ -1,0 +1,5 @@
+# Windows batch files need CRLF line endings or goto labels break
+*.bat text eol=crlf
+# shell scripts need LF line endings to run on Mac/Linux
+*.sh text eol=lf
+*.command text eol=lf

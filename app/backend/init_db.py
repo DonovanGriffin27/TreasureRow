@@ -398,14 +398,18 @@ def create_vault_tables():
 
         conn.commit()
 
-        print("DATABASE INITIALIZED: users, storefronts, listings, listing_images, listing_sizes, purchases, wishlist, orders, order_items, wallets, order_escrow, and token_ledger tables are ready.")
+        print("DATABASE INITIALIZED: all Treasure Row tables are ready.")
 
         cur.close()
         conn.close()
+        return True
 
     except Exception as e:
         print(f"SCHEMA ERROR: {e}")
+        return False
 
 
 if __name__ == "__main__":
-    create_vault_tables()
+    # exit code 1 on failure so install.bat can tell the setup didn't work - Jonah Goodwine, Iteration 4
+    if not create_vault_tables():
+        raise SystemExit(1)
