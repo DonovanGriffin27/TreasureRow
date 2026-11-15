@@ -3,6 +3,7 @@ import os
 from urllib.parse import urlparse
 from flask import Flask, render_template, redirect, url_for, session, request, jsonify
 #Cameron Ridgley edited 10/01
+# Edited by Cameron Ridgley - 10/27/26 - registered the Discover page and API blueprints (browse_controller.py)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend')))
 
 from controllers.listing_controller import listing_bp
@@ -15,6 +16,8 @@ from controllers.return_controller import returns_bp
 from controllers.checkout_controller import checkout_bp
 from controllers.wallet_controller import wallet_bp  # Treasure Tokens - Iteration 3
 from controllers.message_controller import message_bp
+from controllers.browse_controller import browse_bp, browse_pages_bp  # Discover pages - Cameron Ridgley 10/27/26
+from config import APP_VERSION  # Beta version number for the footer - Chase Jones Iteration 4
 from init_db import create_vault_tables
 
 
@@ -28,6 +31,11 @@ def create_app():
     # largest request Flask will accept (up to 4 listing images of 5 MB each,
     # plus form fields); bigger requests get HTTP 413 - Donovan Griffin, Iteration 3
     app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
+
+    # Chase Jones - Iteration 4
+    # Flask hands app.config to every template
+    app.config["APP_VERSION"] = APP_VERSION
+
     if not app.secret_key:
         # without a key every login silently breaks; stop instead - Iteration 3
         raise RuntimeError("SECRET_KEY is not set. Add SECRET_KEY to your .env file (see .env.example).")
@@ -68,7 +76,9 @@ def create_app():
 
     # Pages a signed-out visitor may see. Everything else requires a login.
     # Added by Donovan Griffin, Iteration 3
-    PUBLIC_ENDPOINTS = {"index", "auth.login", "auth.signup", "auth.admin_login", "static", "health"}
+    # forgot/reset password added by Donovan Griffin, Iteration 4
+    PUBLIC_ENDPOINTS = {"index", "auth.login", "auth.signup", "auth.admin_login",
+                        "auth.forgot_password", "auth.reset_password", "static", "health"}
 
     @app.before_request
     def block_cross_site_writes():
@@ -172,10 +182,13 @@ def create_app():
     app.register_blueprint(checkout_bp, url_prefix='/api')
     app.register_blueprint(wallet_bp)
     app.register_blueprint(message_bp)
+    app.register_blueprint(browse_bp)
+    app.register_blueprint(browse_pages_bp)
 
+   
     @app.get("/health")
     def health():
-        return {"status": "ok"}
+        return {"status": "ok", "version": app.config["APP_VERSION"]}
 
     return app
 

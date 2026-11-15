@@ -5,6 +5,10 @@
     CSC 404 - Treasure Row
     Added by Donovan Griffin - Iteration 3 - fixes the "Sitemap" storefront
     nav link that was previously commented out with no destination page.
+    Edited by Cameron Ridgley - 10/27/26 - added the Discover section
+    Edited by Chase Jones - 11/14/26 - added Forgot Password to the Account
+    section for the Beta. Change Password is left commented out until
+    SCRUM-104 builds that page.
 
 Description: Real index of the app's existing pages, reached from the
 storefront side nav. Reuses the same header/back-button pattern as
@@ -85,6 +89,15 @@ Links only to routes that actually exist in app.py / storefront_controller.py.
             <li><a href="/storefronts">All Storefronts</a></li>
         </ul>
 
+        <!-- Discover pages from "More" in the slide-out menu - Cameron Ridgley 10/27/26 -->
+        <h3>Discover</h3>
+        <ul>
+            <li><a href="{{ url_for('browse_pages_bp.explore_brands_page') }}">Explore Brands</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.categories_page') }}">All Categories</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.new_drops_page') }}">New Drops</a></li>
+            <li><a href="{{ url_for('browse_pages_bp.hot_page') }}">Hot!</a></li>
+        </ul>
+
         <h3>Selling</h3>
         <ul>
             <li><a href="{{ url_for('storefront_pages_bp.create_storefront_page') }}">Create Storefront</a></li>
@@ -103,6 +116,12 @@ Links only to routes that actually exist in app.py / storefront_controller.py.
         <ul>
             <li><a href="/auth/login">Log In</a></li>
             <li><a href="/auth/signup">Sign Up</a></li>
+            <!-- Forgot Password - Chase Jones 11/14/26 -->
+            <li><a href="{{ url_for('auth.forgot_password') }}">Forgot Password</a></li>
+            <!-- Change Password goes here once SCRUM-104 ships the page.
+                 Not linked yet because this file links only to routes that
+                 exist, and /auth/change-password does not exist. - Chase Jones -->
+            {# <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li> #}
         </ul>
 
         <h3>More</h3>
@@ -110,5 +129,6 @@ Links only to routes that actually exist in app.py / storefront_controller.py.
             <li><a href="/about">About</a></li>
         </ul>
     </main>
+    {% include "partials/_app_footer.html" %}
 </body>
 </html>
