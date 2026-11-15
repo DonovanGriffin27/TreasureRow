@@ -27,9 +27,19 @@ This is the Beta Release for CSC 404. It runs on your own computer with a local 
 
 If the Mac refuses to open the files, see Troubleshooting below.
 
-## Install and launch on Windows (manual steps)
+## Install and launch on Windows (one click)
 
-There is no one-click installer for Windows yet. In PowerShell, from inside the `TreasureRow` folder:
+1. Unzip the Beta zip. You get a folder named `TreasureRow`.
+2. Make sure PostgreSQL is installed and running.
+3. Open the `TreasureRow` folder and double-click **`install.bat`**.
+   It checks Python, creates a virtual environment, installs the requirements, creates your `.env` file with a new random secret key, creates the database, and creates the tables.
+   It asks for your PostgreSQL username and password (the ones you set when installing PostgreSQL).
+   **At the end it prints the admin username and password. Write them down.** They are also saved in your `.env` file.
+4. Double-click **`Launch TreasureRow.bat`**. The app starts and your browser opens at <http://127.0.0.1:5001>. Keep the window open while you use the app; close it or press Ctrl+C to stop.
+
+### Windows manual steps (only if install.bat doesn't work)
+
+In PowerShell, from inside the `TreasureRow` folder:
 
 ```
 py -3.12 -m venv venv
@@ -60,7 +70,7 @@ If `createdb` is not found, open **pgAdmin** or **SQL Shell (psql)** and run `CR
 There are no built-in student accounts. Make your own so no password is shared in this package.
 
 - **Student accounts:** click **Create Account**. Use any address ending in `@my.hamptonu.edu` (it does not need to be a real mailbox, for example `seller1@my.hamptonu.edu` and `buyer1@my.hamptonu.edu`). The username must be 3 to 50 characters and the password 8 to 128 characters. Make two accounts so you can test buying and selling.
-- **Admin account:** go to <http://127.0.0.1:5001/auth/admin-login>. Mac: use the username and password the installer printed. Windows: use the `ADMIN_USERNAME` and `ADMIN_PASSWORD` you put in `.env`.
+- **Admin account:** go to <http://127.0.0.1:5001/auth/admin-login>. Use the username and password the installer printed (they are also in `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env`).
 
 ## Quick tour (about 5 minutes)
 
@@ -69,6 +79,7 @@ There are no built-in student accounts. Make your own so no password is shared i
 3. After checkout the buyer sees a one-time pickup code (`XXXX-XXXX`) on the confirmation page and in My Account, Wallet.
 4. Sign back in as `seller1` and enter that code under My Account, Sales History. The tokens move to the seller's wallet.
 5. In the admin account you can grant extra tokens from the admin dashboard.
+6. New in Iteration 4: change your password under My Account, Security, or click **Forgot password?** on the sign-in page (the reset link prints in the window running the app).
 
 ## Troubleshooting
 
@@ -80,18 +91,19 @@ There are no built-in student accounts. Make your own so no password is shared i
 | `Python 3.12 or newer was not found` | Install Python from [python.org](https://www.python.org/downloads/) (or `brew install python@3.12`), then run the installer again. |
 | Blank page on port 5000 | On a Mac, AirPlay Receiver uses port 5000. Treasure Row uses **5001**, so open `http://127.0.0.1:5001`. |
 | `Port 5001 is already in use` | Another copy of Treasure Row is running. Stop it with Control+C, or restart your computer. |
-| `SECRET_KEY` error when starting | `.env` is missing or still has `SECRET_KEY=change-me`. Delete `.env` and run the installer again (Mac), or set a real random key (Windows). |
+| `PostgreSQL login failed 3 times` (Windows) | Check that PostgreSQL is running and use the username and password you set when installing it, then run `install.bat` again. |
+| `SECRET_KEY` error when starting | `.env` is missing or still has `SECRET_KEY=change-me`. Delete `.env` and run the installer again. |
+| "Too many failed login attempts" | Sign-in locks for 15 minutes after 5 wrong passwords. Wait, or restart the app to clear it. |
 | `We couldn't reach the database` | PostgreSQL is not running, or `DB_USER` / `DB_PASSWORD` in `.env` are wrong. |
 | Signup says to use a student email | Only addresses ending in `@my.hamptonu.edu` are accepted. |
 | Start over from scratch | Delete the `venv` folder and the `.env` file, then run the installer again. |
 
 ## Known issues
 
-- There is no one-click installer for Windows yet. Use the manual steps above.
 - The Mac installer was written for Postgres.app / Homebrew Postgres (your Mac username, no password). Other setups need `DB_USER` and `DB_PASSWORD` edited in `.env`.
 - Password-reset emails are not sent in this package. The reset link is printed in the Terminal window instead (mail is switched off on purpose so no email password ships with the app).
 - Uploaded images are stored on your computer, not in Amazon S3.
-- There is no limit on how many times someone can try a wrong password at sign-in. This is planned for a later iteration.
+- Sign-in lockouts and the limit on password-reset requests are kept in memory, so they reset when the app restarts.
 - The package runs Flask's built-in server. It is meant for local testing, not for hosting on the internet. The live team deployment runs on AWS Elastic Beanstalk.
 - Tokens have no real-world value and cannot be cashed out.
 

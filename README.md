@@ -38,7 +38,7 @@ Install both before running the installer. On Windows, check **"Add Python to PA
 
 ## Install and Launch (one click)
 
-Download or clone this repository, then open the `app` folder.
+Download or clone this repository, then open the `app` folder. (The Beta Release zip has its own step-by-step guide, `README_BETA.md`, which becomes the zip's README.)
 
 ### Mac
 1. Double-click **`install.sh`**. If macOS blocks it, right-click → **Open** → **Open**.
@@ -50,7 +50,7 @@ Download or clone this repository, then open the `app` folder.
 2. When it finishes, double-click **`Launch TreasureRow.bat`**.
 3. Your browser opens to **http://127.0.0.1:5001**.
 
-The installer checks your Python version, creates a virtual environment, installs the required packages, creates your `.env` settings file, and sets up the database tables. You only run it once. After that, use the **Launch** file every time.
+The installer checks your Python version, creates a virtual environment, installs the required packages, creates your `.env` settings file with a new random secret key, and sets up the database and tables. On Windows it asks for your PostgreSQL username and password. **At the end it prints an admin username and password — write them down.** You only run it once. After that, use the **Launch** file every time.
 
 ---
 
@@ -93,7 +93,7 @@ Visit **http://127.0.0.1:5001**.
 2. Sign in, then browse items from the home page or open a store with **Create Storefront**.
 3. Every new account starts with **200 Treasure Tokens** for checkout.
 
-**Admin dashboard:** go to **Administrator sign in** on the login page and use the `ADMIN_USERNAME` and `ADMIN_PASSWORD` from your `.env`.
+**Admin dashboard:** go to **Administrator sign in** on the login page and use the admin login the installer printed (also saved as `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env`).
 
 ### Forgot password emails
 - **Running locally without email settings:** the reset link prints in the terminal window running the app. Copy it into your browser.
