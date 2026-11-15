@@ -17,6 +17,7 @@ from controllers.checkout_controller import checkout_bp
 from controllers.wallet_controller import wallet_bp  # Treasure Tokens - Iteration 3
 from controllers.message_controller import message_bp
 from controllers.browse_controller import browse_bp, browse_pages_bp  # Discover pages - Cameron Ridgley 10/27/26
+from config import APP_VERSION  # Beta version number for the footer - Chase Jones Iteration 4
 from init_db import create_vault_tables
 
 
@@ -30,6 +31,10 @@ def create_app():
     # largest request Flask will accept (up to 4 listing images of 5 MB each,
     # plus form fields); bigger requests get HTTP 413 - Donovan Griffin, Iteration 3
     app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
+
+    # Chase Jones - Iteration 4
+    # Flask hands app.config to every template
+    app.config["APP_VERSION"] = APP_VERSION
     if not app.secret_key:
         # without a key every login silently breaks; stop instead - Iteration 3
         raise RuntimeError("SECRET_KEY is not set. Add SECRET_KEY to your .env file (see .env.example).")
@@ -181,7 +186,7 @@ def create_app():
 
     @app.get("/health")
     def health():
-        return {"status": "ok"}
+        return {"status": "ok", "version": app.config["APP_VERSION"]}
 
     return app
 

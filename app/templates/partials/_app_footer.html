@@ -1,0 +1,24 @@
+<!--
+    app_footer.html - Chase Jones - Iteration 4
+    Shared footer for every Treasure Row page
+-->
+<footer class="tr-footer">
+    <div class="tr-footer-inner">
+        <div class="tr-footer-brand">
+            <strong>Treasure Row</strong>
+            <span>Hampton University Marketplace &middot; CSC 404</span>
+        </div>
+
+        {% if session.get('user') %}
+        <nav class="tr-footer-links" aria-label="Footer">
+            <a href="/about">About</a>
+            <a href="/sitemap">Sitemap</a>
+            <a href="/returns">Returns</a>
+        </nav>
+        {% endif %}
+
+        <p class="tr-footer-version">
+            Beta <span class="tr-footer-badge">v{{ config.APP_VERSION }}</span>
+        </p>
+    </div>
+</footer>

@@ -5,6 +5,8 @@
     CSC 404 - Treasure Row
     Added by Donovan Griffin - Iteration 3 - fixes the "About" storefront nav
     link that was previously commented out with no destination page.
+    Edited by Chase Jones - 11/10/26 - added the Beta Release block and the
+    current team roster for the Beta
 
 Description: Simple static info page explaining what Treasure Row is, reached
 from the storefront side nav. Reuses the same header/back-button pattern as
@@ -12,6 +14,7 @@ returns.html for visual consistency, styled with create_storefront.css.
 --->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,12 +25,13 @@ returns.html for visual consistency, styled with create_storefront.css.
             width: min(1200px, 92%);
             margin: 0 auto 0.8rem;
         }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(0,0,0,0.55);
-            border: 1px solid rgba(212,175,55,0.5);
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(212, 175, 55, 0.5);
             border-radius: 999px;
             color: #d4af37;
             font-size: 0.85rem;
@@ -38,23 +42,75 @@ returns.html for visual consistency, styled with create_storefront.css.
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
         }
+
         .back-btn:hover {
-            background: rgba(212,175,55,0.15);
+            background: rgba(212, 175, 55, 0.15);
             color: #f0cc55;
         }
+
         .about-body {
             width: min(800px, 92%);
             margin: 1.5rem auto 3rem;
             color: #ddd;
             line-height: 1.7;
         }
+
         .about-body h3 {
             color: #d4af37;
             margin-top: 1.6rem;
         }
+
+        /* Team roster and Beta Release block - Chase Jones 11/10/26 */
+        .about-release {
+            border: 1px solid var(--tr-border);
+            border-left: 3px solid var(--tr-gold);
+            border-radius: var(--tr-radius);
+            background: var(--tr-gold-50);
+            color: var(--tr-text);
+            padding: 14px 18px;
+            margin-top: 1rem;
+        }
+
+        .about-release .release-tag {
+            display: inline-block;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--tr-gold-text);
+            letter-spacing: 0.5px;
+        }
+
+        .about-team {
+            list-style: none;
+            padding: 0;
+            margin: 0.6rem 0 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2px 24px;
+        }
+
+        .about-team li {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--tr-divider);
+            font-size: 0.95rem;
+        }
+
+        .about-team .member {
+            font-weight: 600;
+            color: var(--tr-text);
+            white-space: nowrap;
+        }
+
+        .about-team .role {
+            color: var(--tr-muted);
+            text-align: right;
+        }
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
+
 <body class="tr-app">
 
     <!-- Page header replaced by the shared Treasure Row header - Donovan Griffin, Iteration 3 -->
@@ -63,16 +119,51 @@ returns.html for visual consistency, styled with create_storefront.css.
     {% include "partials/_app_header.html" %}
 
     <main class="about-body">
-        <p>Treasure Row is a campus marketplace built for Hampton University students. Open a storefront, list clothing you want to sell, and browse what other students on campus have up for grabs — all without leaving your Hampton email behind.</p>
+        <p>Treasure Row is a campus marketplace built for Hampton University students. Open a storefront, list clothing
+            you want to sell, and browse what other students on campus have up for grabs — all without leaving your
+            Hampton email behind.</p>
+
+        <!-- Beta Release block - Chase Jones 11/10/26 -->
+        <h3 class="release-heading">Beta Release</h3>
+        <div class="about-release">
+            <p style="margin:0 0 0.5rem;">
+                You are using the Treasure Row Beta
+                <span class="release-tag">v{{ config.APP_VERSION }}</span>.
+            </p>
+
+        </div>
 
         <h3>How it works</h3>
-        <p>Create an account with your Hampton email, open a personal storefront, and list items with sizes, quantities, and fulfillment details. Buyers can browse storefronts, add items to a cart, check out, and request a return if something doesn't work out.</p>
+        <p>Create an account with your Hampton email, open a personal storefront, and list items with sizes, quantities,
+            and fulfillment details. Buyers can browse storefronts, add items to a cart, check out, and request a return
+            if something doesn't work out.</p>
 
         <h3>Who it's for</h3>
-        <p>Any Hampton University student looking to buy, sell, or trade clothing with people on campus instead of strangers online.</p>
+        <p>Any Hampton University student looking to buy, sell, or trade clothing with people on campus instead of
+            strangers online.</p>
+
+        <!-- Current team - Chase Jones 11/10/26 roster and roles taken from the
+             main-branch README, which is the 7-member roster after the Iteration 4
+             reassignments.  -->
+        <h3>The team</h3>
+        <p>Treasure Row is built and maintained by a CSC 404 team at Hampton University.</p>
+        <ul class="about-team">
+            <li><span class="member">Donovan Griffin</span><span class="role">Project Manager</span></li>
+            <li><span class="member">Jonah Goodwine</span><span class="role">Co-PM, Dev Team</span></li>
+            <li><span class="member">Cameron Ridgley</span><span class="role">Dev Team</span></li>
+            <li><span class="member">Noah Higgs</span><span class="role">Security &amp; Deployment</span></li>
+            <li><span class="member">Chi Martin</span><span class="role">Docs / Design Specification &amp; Test
+                    Specification</span></li>
+            <li><span class="member">Ricki Davis</span><span class="role">Docs / Risk Assessment</span></li>
+            <li><span class="member">Chase Jones</span><span class="role"> Docs / Frontend </span></li>
+        </ul>
 
         <h3>Questions or issues</h3>
-        <p>Reach out to a seller directly through their storefront for order questions, or email <a href="mailto:TreasureRowAdmins@my.hamptonu.edu" style="color:var(--tr-blue);">TreasureRowAdmins@my.hamptonu.edu</a> for anything else.</p>
+        <p>Reach out to a seller directly through their storefront for order questions, or email <a
+                href="mailto:TreasureRowAdmins@my.hamptonu.edu"
+                style="color:var(--tr-blue);">TreasureRowAdmins@my.hamptonu.edu</a> for anything else.</p>
     </main>
+    {% include "partials/_app_footer.html" %}
 </body>
+
 </html>
