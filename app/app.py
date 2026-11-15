@@ -189,4 +189,5 @@ app = create_app()
 
 if __name__ == "__main__":
     # port 5001: macOS AirPlay Receiver already listens on 5000 - Donovan Griffin, Iteration 3
-    app.run(debug=True, port=int(os.getenv("PORT", 5001)))
+    # debug mode only when FLASK_DEBUG=1 is set, never by default - Jonah Goodwine, Iteration 4
+    app.run(debug=os.getenv("FLASK_DEBUG") == "1", port=int(os.getenv("PORT", 5001)))

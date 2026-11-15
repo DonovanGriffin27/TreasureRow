@@ -13,11 +13,11 @@ def get_connection():
     # Updated by Donovan Griffin, Iteration 3
     from db import get_connection as connect
 
+    # removed the "Connected to AWS RDS" print - it ran on every request, even on a
+    # local database, and filled the app window - Jonah Goodwine, Iteration 4
     try:
-        conn = connect()
-        print("Login Logic: Connected to AWS RDS")
-        return conn
+        return connect()
 
     except Exception as e:
-        print(f"Login Logic: Connection Error: {e}")
+        print(f"[db] Connection error: {e}")
         return None
