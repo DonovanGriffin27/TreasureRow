@@ -8,6 +8,7 @@ from models.listing_model import get_listing_by_id
 from services.password_reset_service import send_reset_email, check_reset_token
 from services.password_reset_service import reset_password as reset_user_password
 from utils.auth_utils import validate_password
+from utils.rate_limit import reset_request, login_locked_timer, record_login_fails, record_login_success
 
 auth_bp = Blueprint('auth', __name__)
 service = AuthService()
@@ -17,6 +18,10 @@ def login():
     if request.method == 'POST':
         user = request.form.get('username')
         pw = request.form.get('password')
+        locked = login_locked_timer(user) #Ricki Davis - check the lockout timer
+        if locked:
+            minutes = (locked + 59) // 60
+            return render_template('login.html', error=f"Too many failed login attempts. Please try again in {minutes} minute(s).", username=user), 429
 
         conn = get_connection()
         if conn is None:
@@ -26,6 +31,7 @@ def login():
         # conn.close()
         
         if success:
+            record_login_success(user) #Ricki Davis - if login good it will clear the count
             session['user'] = user
             session['role'] = role
 
@@ -50,6 +56,7 @@ def login():
         # Noah Higgs
         # a failed login must not leave its database connection open
         conn.close()
+        record_login_fails(user) #Ricki Davis - counts a failed login
         # errors now show on the form instead of a bare text page - Donovan Griffin, Iteration 3
         return render_template('login.html', error="Incorrect username or password.", username=user), 401
     
@@ -83,7 +90,7 @@ def signup():
 def forgot_password():
     if request.method == 'POST':
         email = (request.form.get('email') or '').strip()
-        if email:
+        if email and reset_request(email): #Ricki Davis - limits forgot password
             try:
                 send_reset_email(email)
             except Exception as e:
