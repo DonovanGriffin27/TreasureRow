@@ -1,3 +1,4 @@
+<!-- Edited by Cameron Ridgley - Iteration 4 -->
 <!--Updated by Donovan Griffin - 10/1/2026 - fixed account ownership bug: getCurrentUserId() now always fetches /auth/api/auth/me instead of trusting cached localStorage/sessionStorage, which let a second account inherit the first account's cached id after switching logins in the same browser; added clearCachedIdentity() on logout as a safety net-->
 
 <!DOCTYPE html>
@@ -40,6 +41,15 @@
         .tab-content.active { display: block; }
 
         .empty-state { color: #555; text-align: center; padding-top: 50px; font-style: italic; }
+
+        .pw-form { max-width: 420px; margin-top: 16px; }
+        .pw-form .tr-field label { color: #ccc; }
+        .pw-form .tr-field input { background: #111; color: white; border: 1px solid #333; }
+        .pw-form .tr-field input:focus { outline: none; border-color: var(--gold); }
+        .pw-flash { padding: 10px 14px; margin: 12px 0; border-left: 4px solid var(--gold); background: #1f1a0a; color: #f3e3b0; max-width: 420px; }
+        .pw-forgot { margin-top: 14px; }
+        .pw-forgot a { color: var(--gold); }
+        .pw-flash--error { border-left-color: #c0392b; background: #2a1010; color: #f5c6c6; }
 
         .listing-items { display: grid; gap: 12px; margin-top: 16px; }
         .listing-row {
@@ -164,6 +174,7 @@
         <button class="tab-link" onclick="openTab(event, 'purchases')">Purchases</button>
         <button class="tab-link" onclick="openTab(event, 'sales')">Sales History</button>
         <button class="tab-link" onclick="openTab(event, 'wallet')">Wallet</button>
+        <button class="tab-link" onclick="openTab(event, 'security')">Security</button>
     </div>
 
     <div id="listings" class="tab-content active">
@@ -204,6 +215,36 @@
         <div id="walletPending" class="token-rows"></div>
         <h4 class="token-subhead">History</h4>
         <div id="walletLedger" class="token-ledger"></div>
+    </div>
+
+    <div id="security" class="tab-content">
+        <h3>CHANGE PASSWORD</h3>
+        <p class="token-help">Enter your current password, then choose a new one of at least 8 characters.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                {% if category in ('password_success', 'password_error') %}
+                    <div class="pw-flash {{ 'pw-flash--error' if category == 'password_error' else 'pw-flash--success' }}" role="alert">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+
+        <form class="pw-form" action="{{ url_for('auth.change_password') }}" method="POST" autocomplete="off">
+            <div class="tr-field">
+                <label for="current_password">Current password</label>
+                <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
+            </div>
+            <div class="tr-field">
+                <label for="new_password">New password</label>
+                <input type="password" id="new_password" name="new_password" required minlength="8" maxlength="128" autocomplete="new-password">
+            </div>
+            <div class="tr-field">
+                <label for="confirm_password">Confirm new password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="8" maxlength="128" autocomplete="new-password">
+            </div>
+            <button type="submit" class="tr-btn tr-btn--gold">Update Password</button>
+        </form>
+        <p class="token-help pw-forgot">Forgot your current password? <a href="{{ url_for('auth.forgot_password') }}">Send yourself a reset link</a>.</p>
     </div>
 </div>
 
